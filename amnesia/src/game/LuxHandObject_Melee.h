@@ -27,63 +27,61 @@
 
 //----------------------------------------------
 
-class cLuxHandObject_Melee : public iLuxHandObject
-{
-public:	
-	cLuxHandObject_Melee(const tString& asName, cLuxPlayerHands *apHands);
-	~cLuxHandObject_Melee();
-	
-	void LoadImplementedVars(cXmlElement *apVarsElem);
+class cLuxHandObject_Melee : public iLuxHandObject {
+public:
+  cLuxHandObject_Melee(const tString& asName, cLuxPlayerHands* apHands);
+  ~cLuxHandObject_Melee();
 
-	void ImplementedCreateEntity(cLuxMap *apMap);
-	void ImplementedDestroyEntity(cLuxMap *apMap);
+  void LoadImplementedVars(cXmlElement* apVarsElem);
 
-	void RenderSolid(cRendererCallbackFunctions* apFunctions);
-	void RenderTrans(cRendererCallbackFunctions* apFunctions);
-	
-	void ImplementedReset();
+  void ImplementedCreateEntity(cLuxMap* apMap);
+  void ImplementedDestroyEntity(cLuxMap* apMap);
 
-	void Update(float afTimeStep);
+  void RenderSolid(cRendererCallbackFunctions* apFunctions);
+  void RenderTrans(cRendererCallbackFunctions* apFunctions);
 
-	bool DoAction(eLuxPlayerAction aAction, bool abPressed);
-	bool AnimationIsOver();
+  void ImplementedReset();
+
+  void Update(float afTimeStep);
+
+  bool DoAction(eLuxPlayerAction aAction, bool abPressed);
+  bool AnimationIsOver();
 
 private:
-	void UpdateCharge(float afTimeStep);
-	void UpdateCheckDamageEvent(float afTimeStep);
-	
-	
-	void Charge();
-	void Swing();
+  void UpdateCharge(float afTimeStep);
+  void UpdateCheckDamageEvent(float afTimeStep);
 
-	tString msHandsAnim_Swing;
-	tString msHandsAnim_SwingCharge;
-	tString msHandsAnim_Charge;
-	tString msSwingSound;
-	tString msSwingChargeSound;
-	tString msChargeSound;
-	tString msChargeDoneSound;
-	tString msHitSound;
 
-	cVector3f mvCollideShapeSize;
-	cVector3f mvCollideShapeOffset;
-	iCollideShape *mpCollideShape;
+  void Charge();
+  void Swing();
 
-	float mfChargePlayerSpeedMul;
-	float mfChargeTime;
-	float mfRelativeDamageTime;
+  tString msHandsAnim_Swing;
+  tString msHandsAnim_SwingCharge;
+  tString msHandsAnim_Charge;
+  tString msSwingSound;
+  tString msSwingChargeSound;
+  tString msChargeSound;
+  tString msChargeDoneSound;
+  tString msHitSound;
 
-	float mfAttackForce;
-	float mfMaxAttackForce;
+  cVector3f      mvCollideShapeSize;
+  cVector3f      mvCollideShapeOffset;
+  iCollideShape* mpCollideShape;
 
-	float mfAttackMinDamage;
-	float mfAttackMaxDamage;
-	float mfAttackHitSpeed;
-	int mlAttackStrength;
+  float mfChargePlayerSpeedMul;
+  float mfChargeTime;
+  float mfRelativeDamageTime;
+
+  float mfAttackForce;
+  float mfMaxAttackForce;
+
+  float mfAttackMinDamage;
+  float mfAttackMaxDamage;
+  float mfAttackHitSpeed;
+  int   mlAttackStrength;
 };
 
 //----------------------------------------------
-
 
 
 #endif // LUX_HAND_OBJECT_MELEE_H

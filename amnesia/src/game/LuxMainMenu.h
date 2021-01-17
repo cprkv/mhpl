@@ -25,282 +25,277 @@
 #include "LuxBase.h"
 
 
-enum eLuxMainMenuWindow
-{
-	eLuxMainMenuWindow_Profiles,
-	eLuxMainMenuWindow_Options,
-	eLuxMainMenuWindow_KeyConfig,
-	eLuxMainMenuWindow_LoadGame,
-	eLuxMainMenuWindow_CustomStoryList,
-	eLuxMainMenuWindow_CustomStory,
+enum eLuxMainMenuWindow {
+  eLuxMainMenuWindow_Profiles,
+  eLuxMainMenuWindow_Options,
+  eLuxMainMenuWindow_KeyConfig,
+  eLuxMainMenuWindow_LoadGame,
+  eLuxMainMenuWindow_CustomStoryList,
+  eLuxMainMenuWindow_CustomStory,
 
-	//////////////
-	// HARDMODE
-	eLuxMainMenuWindow_StartGame,
+  //////////////
+  // HARDMODE
+  eLuxMainMenuWindow_StartGame,
 
-	eLuxMainMenuWindow_LastEnum,
+  eLuxMainMenuWindow_LastEnum,
 };
 
 //----------------------------------------------
 
-enum eLuxMainMenuExit
-{
-	eLuxMainMenuExit_QuitGame,
-	eLuxMainMenuExit_ReturnToGame,
-	eLuxMainMenuExit_StartGame,
-	eLuxMainMenuExit_ContinueGame,
-	eLuxMainMenuExit_QuitToMenu,
-	eLuxMainMenuExit_QuitAndSave,
-	eLuxMainMenuExit_LoadGame,
-	
-	eLuxMainMenuExit_LastEnum,
+enum eLuxMainMenuExit {
+  eLuxMainMenuExit_QuitGame,
+  eLuxMainMenuExit_ReturnToGame,
+  eLuxMainMenuExit_StartGame,
+  eLuxMainMenuExit_ContinueGame,
+  eLuxMainMenuExit_QuitToMenu,
+  eLuxMainMenuExit_QuitAndSave,
+  eLuxMainMenuExit_LoadGame,
+
+  eLuxMainMenuExit_LastEnum,
 };
 
 //----------------------------------------------
 
-class iLuxMainMenuWindow
-{
+class iLuxMainMenuWindow {
 public:
-	iLuxMainMenuWindow(cGuiSet *apGuiSet, cGuiSkin *apGuiSkin);
-	virtual ~iLuxMainMenuWindow(){}
-	
-	virtual void CreateGui()=0;
+  iLuxMainMenuWindow(cGuiSet* apGuiSet, cGuiSkin* apGuiSkin);
+  virtual ~iLuxMainMenuWindow() {}
 
-	virtual void ExitPressed()=0;
+  virtual void CreateGui() = 0;
 
-	void SetActive(bool abX);
+  virtual void ExitPressed() = 0;
+
+  void SetActive(bool abX);
 
 protected:
-	virtual void OnSetActive(bool abX){}
+  virtual void OnSetActive(bool abX) {}
 
-	cGui *mpGui;
+  cGui* mpGui;
 
-	cGuiSkin *mpGuiSkin;
-	cGuiSet *mpGuiSet;
+  cGuiSkin* mpGuiSkin;
+  cGuiSet*  mpGuiSet;
 
-	cWidgetWindow *mpWindow;
+  cWidgetWindow* mpWindow;
 
-	cVector2f mvScreenSize;
+  cVector2f mvScreenSize;
 };
-
 
 
 //----------------------------------------------
 
-class cLuxMainMenu : public iLuxUpdateable
-{
-public:	
-	cLuxMainMenu();
-	~cLuxMainMenu();
+class cLuxMainMenu : public iLuxUpdateable {
+public:
+  cLuxMainMenu();
+  ~cLuxMainMenu();
 
-	void LoadUserConfig();
-	void SaveUserConfig();
+  void LoadUserConfig();
+  void SaveUserConfig();
 
-	void LoadFonts();
-	void OnClearFonts();
-	
-	void OnStart();
-	void Update(float afTimeStep);
-	void Reset();
-    void OnQuit();
+  void LoadFonts();
+  void OnClearFonts();
 
-	void OnEnterContainer(const tString& asOldContainer);
-	void OnLeaveContainer(const tString& asNewContainer);
+  void OnStart();
+  void Update(float afTimeStep);
+  void Reset();
+  void OnQuit();
 
-	void OnDraw(float afFrameTime);
-	void OnPostRender(float afFrameTime);
+  void OnEnterContainer(const tString& asOldContainer);
+  void OnLeaveContainer(const tString& asNewContainer);
 
-	cGuiSet* GetSet() { return mpGuiSet; }
+  void OnDraw(float afFrameTime);
+  void OnPostRender(float afFrameTime);
 
-	void SetWindowActive(eLuxMainMenuWindow aWindow);
-	void SetTopMenuAlpha(float afX) { mfTopMenuAlpha = afX; }
+  cGuiSet* GetSet() { return mpGuiSet; }
 
-	void ExitPressed();
+  void SetWindowActive(eLuxMainMenuWindow aWindow);
+  void SetTopMenuAlpha(float afX) { mfTopMenuAlpha = afX; }
 
-	void RecreateGui(){ mbRecreateGui = true;}
+  void ExitPressed();
 
-	void AppLostInputFocus();
-	void AppGotInputFocus();
+  void RecreateGui() { mbRecreateGui = true; }
 
-	void ExitMenu(eLuxMainMenuExit aMessage);
-	tWString msLoadGameFile;
+  void AppLostInputFocus();
+  void AppGotInputFocus();
+
+  void     ExitMenu(eLuxMainMenuExit aMessage);
+  tWString msLoadGameFile;
 #ifdef USE_GAMEPAD
-	void AppDeviceWasPlugged();
-	void AppDeviceWasRemoved();
+  void AppDeviceWasPlugged();
+  void AppDeviceWasRemoved();
 #endif
-	
+
 private:
-	///////////////////////
-	// Helper methods
-	
-	void OnMenuExit();
+  ///////////////////////
+  // Helper methods
 
-	void UpdateBase(float afTimeStep);
+  void OnMenuExit();
 
-	void UpdateTopMenu(float afTimeStep);
-	void SetTopMenuVisible(bool abVisible);
-	
-	void CreateGui();
+  void UpdateBase(float afTimeStep);
 
-	void CreateTopMenuGui();
-	void SetupTopMenuLabel(cWidgetLabel *apLabel);
+  void UpdateTopMenu(float afTimeStep);
+  void SetTopMenuVisible(bool abVisible);
 
-	void CreateBackground();
-	void CreateScreenTextures();
-	void RenderBlurTexture();
-	void RenderBlur(iTexture *apInputTexture, iTexture *apTempTexture, iFrameBuffer **apBlurBuffers);
+  void CreateGui();
 
-	void DestroyBackground();
+  void CreateTopMenuGui();
+  void SetupTopMenuLabel(cWidgetLabel* apLabel);
 
-	///////////////////////
-	// Widget callbacks
-    bool TopMenuTextMouseEnter(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(TopMenuTextMouseEnter);
+  void CreateBackground();
+  void CreateScreenTextures();
+  void RenderBlurTexture();
+  void RenderBlur(iTexture* apInputTexture, iTexture* apTempTexture, iFrameBuffer** apBlurBuffers);
 
-	bool TopMenuTextMouseLeave(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(TopMenuTextMouseLeave);
+  void DestroyBackground();
 
-	bool TopMenuTextPress(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(TopMenuTextPress);
+  ///////////////////////
+  // Widget callbacks
+  bool TopMenuTextMouseEnter(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(TopMenuTextMouseEnter);
 
-	bool TopMenuTextDraw(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(TopMenuTextDraw);
+  bool TopMenuTextMouseLeave(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(TopMenuTextMouseLeave);
 
-	bool PressContinue(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressContinue);
+  bool TopMenuTextPress(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(TopMenuTextPress);
 
-	bool ClickedContinuePopup(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ClickedContinuePopup);
+  bool TopMenuTextDraw(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(TopMenuTextDraw);
 
-	bool PressStartGame(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressStartGame);
+  bool PressContinue(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressContinue);
 
-	bool PressBackToGame(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressBackToGame);
-	
-	bool ClickedStartGamePopup(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ClickedStartGamePopup);
+  bool ClickedContinuePopup(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ClickedContinuePopup);
 
-	bool PressLoadGame(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressLoadGame);
+  bool PressStartGame(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressStartGame);
 
-	bool ClickedLoadGamePopup(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ClickedLoadGamePopup);
+  bool PressBackToGame(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressBackToGame);
 
-	bool PressCustomStory(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressCustomStory);
+  bool ClickedStartGamePopup(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ClickedStartGamePopup);
 
-	bool PressExit(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressExit);
+  bool PressLoadGame(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressLoadGame);
 
-	bool ClickedExitPopup(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ClickedExitPopup);
+  bool ClickedLoadGamePopup(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ClickedLoadGamePopup);
 
-	bool PressExitToMainMenu(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressExitToMainMenu);
-	
-	bool ClickedExitToMainMenuPopup(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ClickedExitToMainMenuPopup);
+  bool PressCustomStory(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressCustomStory);
 
-	bool PressExitAndSave(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressExitAndSave);
+  bool PressExit(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressExit);
 
-	bool ClickedExitAndSavePopup(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ClickedExitAndSavePopup);
+  bool ClickedExitPopup(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ClickedExitPopup);
 
-	bool PressChangeProfile(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressChangeProfile);
+  bool PressExitToMainMenu(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressExitToMainMenu);
 
-	bool PressOptions(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressOptions);
+  bool ClickedExitToMainMenuPopup(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ClickedExitToMainMenuPopup);
+
+  bool PressExitAndSave(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressExitAndSave);
+
+  bool ClickedExitAndSavePopup(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ClickedExitAndSavePopup);
+
+  bool PressChangeProfile(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressChangeProfile);
+
+  bool PressOptions(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressOptions);
 
 
-	/////////////////////
-	// HARDMODE
-	// Callbacks
-	bool PressSaveGame(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressSaveGame);
+  /////////////////////
+  // HARDMODE
+  // Callbacks
+  bool PressSaveGame(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressSaveGame);
 
-	bool ClickedSaveGamePopup(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ClickedSaveGamePopup);
+  bool ClickedSaveGamePopup(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ClickedSaveGamePopup);
 
-	bool HardModeTextDraw(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(HardModeTextDraw);
+  bool HardModeTextDraw(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(HardModeTextDraw);
 
-	float mfDescriptionAlpha;
-	bool mbFadeInDescription;
+  float mfDescriptionAlpha;
+  bool  mbFadeInDescription;
 
-	cWidgetLabel * mpSaveCost;
-	cWidgetLabel * mpNumTinderboxes;
+  cWidgetLabel* mpSaveCost;
+  cWidgetLabel* mpNumTinderboxes;
 
-	///////////////////////
-	// Settings
-	float mfMainFadeInTime;
-	float mfMainFadeOutTimeFast;
-	float mfMainFadeOutTimeSlow;
+  ///////////////////////
+  // Settings
+  float mfMainFadeInTime;
+  float mfMainFadeOutTimeFast;
+  float mfMainFadeOutTimeSlow;
 
-	float mfTopMenuFadeInTime;
-	float mfTopMenuFadeOutTime;
-	float mfTopMenuFontSizeMul;
-	cVector2f mvTopMenuFontSize;
-	cVector3f mvTopMenuStartPos;
-	cVector3f mvTopMenuStartPosInGame;
+  float     mfTopMenuFadeInTime;
+  float     mfTopMenuFadeOutTime;
+  float     mfTopMenuFontSizeMul;
+  cVector2f mvTopMenuFontSize;
+  cVector3f mvTopMenuStartPos;
+  cVector3f mvTopMenuStartPosInGame;
 
-	tString msMusic;
-	tString msZoomSound;
+  tString msMusic;
+  tString msZoomSound;
 
-	cVector2f mvLogoSize;
-	cVector3f mvLogoPos;
+  cVector2f mvLogoSize;
+  cVector3f mvLogoPos;
 
-	float mfBgCamera_FOV;
-	float mfBgCamera_ZoomedFOV;
+  float mfBgCamera_FOV;
+  float mfBgCamera_ZoomedFOV;
 
-	///////////////////////
-	// Variables
-	cGui *mpGui;
-	cScene *mpScene;
-	cGraphics *mpGraphics;
+  ///////////////////////
+  // Variables
+  cGui*      mpGui;
+  cScene*    mpScene;
+  cGraphics* mpGraphics;
 
-	cGuiSkin *mpGuiSkin;
-	cGuiSet *mpGuiSet;
+  cGuiSkin* mpGuiSkin;
+  cGuiSet*  mpGuiSet;
 
-	iFontData *mpFont;
-	
-	cViewport *mpViewport;
+  iFontData* mpFont;
 
-	iTexture *mpScreenTexture;
-	cGuiGfxElement *mpScreenGfx;
-	iTexture *mpScreenBlurTexture;
-	cGuiGfxElement *mpScreenBlurGfx;
-	iGpuProgram *mpBlurProgram[2]; //0=Hori, 1=Vert
+  cViewport* mpViewport;
 
-	cGuiGfxElement *mpLogoGfx;
-	
-	std::vector<iLuxMainMenuWindow*> mvWindows;
-	eLuxMainMenuWindow mCurrentWindow;
+  iTexture*       mpScreenTexture;
+  cGuiGfxElement* mpScreenGfx;
+  iTexture*       mpScreenBlurTexture;
+  cGuiGfxElement* mpScreenBlurGfx;
+  iGpuProgram*    mpBlurProgram[2]; //0=Hori, 1=Vert
 
-	iWidget* mpLastFocusedItem;
+  cGuiGfxElement* mpLogoGfx;
 
-	cWorld *mpBgWorld;
-	cCamera *mpBgCamera;
+  std::vector<iLuxMainMenuWindow*> mvWindows;
+  eLuxMainMenuWindow               mCurrentWindow;
 
-	bool mbGuiCreated;
-	cVector2f mvScreenSize;
+  iWidget* mpLastFocusedItem;
 
-	std::vector<cWidgetLabel*> mvTopMenuLabels;
-	bool mbTopMenuVisible;
-	float mfTopMenuAlpha;
-	
-	float mfMenuFadeAlpha;
-	
-	bool mbRecreateGui;
-	bool mbExiting;
-	eLuxMainMenuExit mExitMessage;
+  cWorld*  mpBgWorld;
+  cCamera* mpBgCamera;
 
-	cGuiGfxElement *mpBlackFade;
-	cGuiGfxElement *mpTopBackground;
+  bool      mbGuiCreated;
+  cVector2f mvScreenSize;
 
-	float mfCamTimer;
+  std::vector<cWidgetLabel*> mvTopMenuLabels;
+  bool                       mbTopMenuVisible;
+  float                      mfTopMenuAlpha;
+
+  float mfMenuFadeAlpha;
+
+  bool             mbRecreateGui;
+  bool             mbExiting;
+  eLuxMainMenuExit mExitMessage;
+
+  cGuiGfxElement* mpBlackFade;
+  cGuiGfxElement* mpTopBackground;
+
+  float mfCamTimer;
 };
 
 //----------------------------------------------

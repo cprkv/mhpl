@@ -1,6 +1,6 @@
 ;
 ;  AngelCode Scripting Library
-;  Copyright (c) 2003-2014 Andreas Jonsson
+;  Copyright (c) 2003-2009 Andreas Jonsson
 ;
 ;  This software is provided 'as-is', without any express or implied
 ;  warranty. In no event will the authors be held liable for any
@@ -29,27 +29,24 @@
 ;
 
 
-; Assembly routines for the ARM call convention used for Windows CE
+; Assembly routines for the ARM call convention
 ; Written by Fredrik Ehnbom in June 2009
 
 ; MSVC currently doesn't support inline assembly for the ARM platform
 ; so this separate file is needed.
 
-; Compile with Microsoft ARM assembler (armasm)
-; http://msdn.microsoft.com/en-us/library/hh873190.aspx
-
 
     AREA	|.rdata|, DATA, READONLY
-    EXPORT armFunc
+    EXPORT |armFunc|
     EXPORT armFuncR0
     EXPORT armFuncR0R1
     EXPORT armFuncObjLast
     EXPORT armFuncR0ObjLast
+    
 
-    AREA	|.text|, CODE, ARM, ALIGN=3
+    AREA	|.text|, CODE, ARM
 
-    ALIGN   8
-armFunc PROC
+|armFunc| PROC
     stmdb   sp!, {r4-r8, lr}
     mov     r6, r0  ; arg table
     movs    r7, r1  ; arg size (also set the condition code flags so that we detect if there are no arguments)
@@ -85,7 +82,6 @@ armFunc PROC
     ldmia   sp!, {r4-r8, pc}
     ENDP
 
-    ALIGN   8
 armFuncObjLast PROC
     stmdb   sp!, {r4-r8, lr}
     mov     r6, r0  ; arg table
@@ -129,7 +125,6 @@ armFuncObjLast PROC
     ldmia   sp!, {r4-r8, pc}
     ENDP
 
-    ALIGN   8
 armFuncR0ObjLast PROC
     stmdb   sp!, {r4-r8, lr}
     ldr     r7, [sp,#6*4]
@@ -173,7 +168,6 @@ armFuncR0ObjLast PROC
     ldmia   sp!, {r4-r8, pc}
     ENDP
 
-    ALIGN   8
 armFuncR0 PROC
     stmdb   sp!, {r4-r8, lr}
     mov     r6, r0  ; arg table
@@ -210,7 +204,6 @@ armFuncR0 PROC
     ldmia   sp!, {r4-r8, pc}
     ENDP
 
-    ALIGN   8
 armFuncR0R1 PROC
     stmdb   sp!, {r4-r8, lr}
     mov     r6, r0  ; arg table

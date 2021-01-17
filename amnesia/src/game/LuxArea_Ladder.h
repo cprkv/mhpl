@@ -26,87 +26,81 @@
 
 //----------------------------------------------
 
-class cLuxArea_Ladder_SaveData : public iLuxArea_SaveData
-{
-	kSerializableClassInit(cLuxArea_Ladder_SaveData)
-public:
-	iLuxArea* CreateArea(cLuxMap *apMap);
+class cLuxArea_Ladder_SaveData : public iLuxArea_SaveData {
+  kSerializableClassInit(cLuxArea_Ladder_SaveData) public : iLuxArea* CreateArea(cLuxMap* apMap);
 
-	tString msMaterial;
+  tString msMaterial;
 };
 
 //----------------------------------------------
 
-class cLuxArea_Ladder : public iLuxArea
-{
-typedef iLuxArea super_class;
-friend class cLuxAreaLoader_Ladder;
-public:	
-	cLuxArea_Ladder(const tString &asName, int alID, cLuxMap *apMap);
-	virtual ~cLuxArea_Ladder();
+class cLuxArea_Ladder : public iLuxArea {
+  typedef iLuxArea super_class;
+  friend class cLuxAreaLoader_Ladder;
 
-	//////////////////////
-	//General
-	void SetupAfterLoad(cWorld *apWorld);
+public:
+  cLuxArea_Ladder(const tString& asName, int alID, cLuxMap* apMap);
+  virtual ~cLuxArea_Ladder();
 
-	void OnUpdate(float afTimeStep);
+  //////////////////////
+  //General
+  void SetupAfterLoad(cWorld* apWorld);
 
-	bool CanInteract(iPhysicsBody *apBody);
-	bool OnInteract(iPhysicsBody *apBody, const cVector3f &avPos);
+  void OnUpdate(float afTimeStep);
 
-	eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody *apBody, const cVector3f &avPos);
+  bool CanInteract(iPhysicsBody* apBody);
+  bool OnInteract(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	//////////////////////
-	//Properties
-	cVector3f GetStartRotation();
-	
-	const cVector3f& GetForward(){ return mvForward;}
-	float GetMaxY(){ return mfMaxY;}
-	float GetMinY(){ return mfMinY;}
+  eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	const tString& GetMaterial(){return msMaterial;}
+  //////////////////////
+  //Properties
+  cVector3f GetStartRotation();
 
-	//////////////////////
-	//Connection callbacks
-	void OnConnectionStateChange(iLuxEntity *apEntity, int alState){}
+  const cVector3f& GetForward() { return mvForward; }
+  float            GetMaxY() { return mfMaxY; }
+  float            GetMinY() { return mfMinY; }
 
-	//////////////////////
-	//Save data stuff
-	iLuxEntity_SaveData* CreateSaveData();
-	virtual void SaveToSaveData(iLuxEntity_SaveData* apSaveData);
-	virtual void LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
-	virtual void SetupSaveData(iLuxEntity_SaveData *apSaveData);
+  const tString& GetMaterial() { return msMaterial; }
+
+  //////////////////////
+  //Connection callbacks
+  void OnConnectionStateChange(iLuxEntity* apEntity, int alState) {}
+
+  //////////////////////
+  //Save data stuff
+  iLuxEntity_SaveData* CreateSaveData();
+  virtual void         SaveToSaveData(iLuxEntity_SaveData* apSaveData);
+  virtual void         LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
+  virtual void         SetupSaveData(iLuxEntity_SaveData* apSaveData);
+
 protected:
-
 private:
-	cVector3f GetStartPosition();
+  cVector3f GetStartPosition();
 
-	/////////////////////////
-	// Data
-	cVector3f mvForward;
-	float mfMaxY;
-	float mfMinY;
+  /////////////////////////
+  // Data
+  cVector3f mvForward;
+  float     mfMaxY;
+  float     mfMinY;
 
-	tString msMaterial;
+  tString msMaterial;
 
-	/////////////////////////
-	// Variables
-
+  /////////////////////////
+  // Variables
 };
 
 //----------------------------------------------
 
-class cLuxAreaLoader_Ladder : public iLuxAreaLoader
-{
+class cLuxAreaLoader_Ladder : public iLuxAreaLoader {
 public:
-	cLuxAreaLoader_Ladder(const tString& asName);
-	~cLuxAreaLoader_Ladder();
+  cLuxAreaLoader_Ladder(const tString& asName);
+  ~cLuxAreaLoader_Ladder();
 
-	iLuxArea *CreateArea(const tString& asName, int alID, cLuxMap *apMap);
-	
-	void LoadVariables(iLuxArea *apArea, cWorld *apWorld);
-	void SetupArea(iLuxArea *apArea, cWorld *apWorld);
-	
+  iLuxArea* CreateArea(const tString& asName, int alID, cLuxMap* apMap);
+
+  void LoadVariables(iLuxArea* apArea, cWorld* apWorld);
+  void SetupArea(iLuxArea* apArea, cWorld* apWorld);
 };
 
 //----------------------------------------------

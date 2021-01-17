@@ -5,7 +5,7 @@
 #include "OpenAL/OAL_LowLevelObject.h"
 
 #ifdef USE_SDL2
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif

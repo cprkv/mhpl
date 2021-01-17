@@ -30,38 +30,34 @@ class cLuxInteractData_Lever;
 
 //------------------------------------
 
-class cLuxPlayerState_InteractLever_SaveData : public iLuxPlayerState_InteractRotateBase_SaveData
-{
-	kSerializableClassInit(cLuxPlayerState_InteractLever_SaveData)
-public:
-
+class cLuxPlayerState_InteractLever_SaveData : public iLuxPlayerState_InteractRotateBase_SaveData {
+  kSerializableClassInit(cLuxPlayerState_InteractLever_SaveData) public:
 };
 //----------------------------------------------
 
-class cLuxPlayerState_InteractLever : public iLuxPlayerState_InteractRotateBase
-{
-typedef iLuxPlayerState_InteractRotateBase super_class;
-public:	
-	cLuxPlayerState_InteractLever(cLuxPlayer *apPlayer);
-	virtual ~cLuxPlayerState_InteractLever();
+class cLuxPlayerState_InteractLever : public iLuxPlayerState_InteractRotateBase {
+  typedef iLuxPlayerState_InteractRotateBase super_class;
 
-	void RenderSolid(cRendererCallbackFunctions* apFunctions);
+public:
+  cLuxPlayerState_InteractLever(cLuxPlayer* apPlayer);
+  virtual ~cLuxPlayerState_InteractLever();
 
-	/////////////////////////////////
-	//Save data stuff
-	virtual bool IsSaved(){ return false; }
-	iLuxPlayerState_SaveData* CreateSaveData();
+  void RenderSolid(cRendererCallbackFunctions* apFunctions);
 
-	void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
-	void LoadFromSaveDataBeforeEnter(cLuxMap *apMap,iLuxPlayerState_SaveData* apSaveData);
-	void LoadFromSaveDataAfterEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData);
+  /////////////////////////////////
+  //Save data stuff
+  virtual bool              IsSaved() { return false; }
+  iLuxPlayerState_SaveData* CreateSaveData();
+
+  void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
+  void LoadFromSaveDataBeforeEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
+  void LoadFromSaveDataAfterEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
 
 protected:
-	float GetSpeedAdd(cCamera *apCam);
-	void OnThrow();
+  float GetSpeedAdd(cCamera* apCam);
+  void  OnThrow();
 
-	cLuxInteractData_Lever *mpLeverData;
-
+  cLuxInteractData_Lever* mpLeverData;
 };
 
 //----------------------------------------------

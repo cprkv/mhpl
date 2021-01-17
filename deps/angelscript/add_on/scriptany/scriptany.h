@@ -1,11 +1,7 @@
 #ifndef SCRIPTANY_H
 #define SCRIPTANY_H
 
-#ifndef ANGELSCRIPT_H 
-// Avoid having to inform include path if header is already include before
 #include <angelscript.h>
-#endif
-
 
 BEGIN_AS_NAMESPACE
 
@@ -49,7 +45,6 @@ protected:
 	void FreeObject();
 
 	mutable int refCount;
-	mutable bool gcFlag;
 	asIScriptEngine *engine;
 
 	// The structure for holding the values

@@ -94,7 +94,7 @@ struct DevMap {
     std::string device_name;
 };
 
-bool checkName(const al::vector<DevMap> &list, const std::string &name)
+[[maybe_unused]] bool checkName(const al::vector<DevMap> &list, const std::string &name)
 {
     return std::find_if(list.cbegin(), list.cend(),
         [&name](const DevMap &entry) -> bool

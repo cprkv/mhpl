@@ -27,21 +27,19 @@
 #include "LuxPlayerHands.h"
 
 
-
 //////////////////////////////////////////////////////////////////////////
 // CONSTRUCTORS
 //////////////////////////////////////////////////////////////////////////
 
 //-----------------------------------------------------------------------
 
-cLuxPlayerState_Normal::cLuxPlayerState_Normal(cLuxPlayer *apPlayer) : iLuxPlayerState_DefaultBase(apPlayer, eLuxPlayerState_Normal)
-{
+cLuxPlayerState_Normal::cLuxPlayerState_Normal(cLuxPlayer* apPlayer)
+    : iLuxPlayerState_DefaultBase(apPlayer, eLuxPlayerState_Normal) {
 }
 
 //-----------------------------------------------------------------------
 
-cLuxPlayerState_Normal::~cLuxPlayerState_Normal()
-{
+cLuxPlayerState_Normal::~cLuxPlayerState_Normal() {
 }
 
 //-----------------------------------------------------------------------
@@ -52,17 +50,15 @@ cLuxPlayerState_Normal::~cLuxPlayerState_Normal()
 
 //-----------------------------------------------------------------------
 
-bool cLuxPlayerState_Normal::ImplementedDoAction(eLuxPlayerAction aAction,bool abPressed)
-{
-	////////////////////
-	// Holster (draw hand object)
-	if(aAction == eLuxPlayerAction_Holster && abPressed)
-	{
-		mpPlayer->ChangeState(eLuxPlayerState_HandObject);
-		return false;
-	}
+bool cLuxPlayerState_Normal::ImplementedDoAction(eLuxPlayerAction aAction, bool abPressed) {
+  ////////////////////
+  // Holster (draw hand object)
+  if (aAction == eLuxPlayerAction_Holster && abPressed) {
+    mpPlayer->ChangeState(eLuxPlayerState_HandObject);
+    return false;
+  }
 
-	return true;
+  return true;
 }
 
 //-----------------------------------------------------------------------
@@ -84,56 +80,50 @@ bool cLuxPlayerState_Normal::ImplementedDoAction(eLuxPlayerAction aAction,bool a
 //-----------------------------------------------------------------------
 
 kBeginSerialize(cLuxPlayerState_Normal_SaveData, iLuxPlayerState_DefaultBase_SaveData)
-kEndSerialize()
+    kEndSerialize()
 
-//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
 
-iLuxPlayerState_SaveData* cLuxPlayerState_Normal::CreateSaveData()
-{
-	return hplNew(cLuxPlayerState_Normal_SaveData, ());
+    iLuxPlayerState_SaveData* cLuxPlayerState_Normal::CreateSaveData() {
+  return hplNew(cLuxPlayerState_Normal_SaveData, ());
 }
 
 //-----------------------------------------------------------------------
 
 
-void cLuxPlayerState_Normal::SaveToSaveData(iLuxPlayerState_SaveData* apSaveData)
-{
-	///////////////////////
-	// Init
-	super_class::SaveToSaveData(apSaveData);
-	cLuxPlayerState_Normal_SaveData *pData = static_cast<cLuxPlayerState_Normal_SaveData*>(apSaveData);
+void cLuxPlayerState_Normal::SaveToSaveData(iLuxPlayerState_SaveData* apSaveData) {
+  ///////////////////////
+  // Init
+  super_class::SaveToSaveData(apSaveData);
+  cLuxPlayerState_Normal_SaveData* pData = static_cast<cLuxPlayerState_Normal_SaveData*>(apSaveData);
 
 
-	///////////////////////
-	// Save vars
+  ///////////////////////
+  // Save vars
 }
 
 //-----------------------------------------------------------------------
 
-void cLuxPlayerState_Normal::LoadFromSaveDataBeforeEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData)
-{
-	///////////////////////
-	// Init
-	super_class::LoadFromSaveDataBeforeEnter(apMap,apSaveData);
-	cLuxPlayerState_Normal_SaveData *pData = static_cast<cLuxPlayerState_Normal_SaveData*>(apSaveData);
+void cLuxPlayerState_Normal::LoadFromSaveDataBeforeEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData) {
+  ///////////////////////
+  // Init
+  super_class::LoadFromSaveDataBeforeEnter(apMap, apSaveData);
+  cLuxPlayerState_Normal_SaveData* pData = static_cast<cLuxPlayerState_Normal_SaveData*>(apSaveData);
 
-	///////////////////////
-	// Load vars
+  ///////////////////////
+  // Load vars
 }
 
 //-----------------------------------------------------------------------
 
-void cLuxPlayerState_Normal::LoadFromSaveDataAfterEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData)
-{
-	///////////////////////
-	// Init
-	super_class::LoadFromSaveDataAfterEnter(apMap,apSaveData);
-	cLuxPlayerState_Normal_SaveData *pData = static_cast<cLuxPlayerState_Normal_SaveData*>(apSaveData);
+void cLuxPlayerState_Normal::LoadFromSaveDataAfterEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData) {
+  ///////////////////////
+  // Init
+  super_class::LoadFromSaveDataAfterEnter(apMap, apSaveData);
+  cLuxPlayerState_Normal_SaveData* pData = static_cast<cLuxPlayerState_Normal_SaveData*>(apSaveData);
 
-	///////////////////////
-	// Load vars
+  ///////////////////////
+  // Load vars
 }
 
 //-----------------------------------------------------------------------
-
-

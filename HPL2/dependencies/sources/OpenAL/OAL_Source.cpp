@@ -19,8 +19,8 @@
 #include "OpenAL/OAL_SourceManager.h"
 
 #ifdef USE_SDL2
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_thread.h>
+#include <SDL.h>
+#include <SDL_thread.h>
 #else
 #include <SDL/SDL.h>
 #include <SDL/SDL_thread.h>

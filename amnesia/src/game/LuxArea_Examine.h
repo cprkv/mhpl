@@ -26,92 +26,87 @@
 
 //----------------------------------------------
 
-class cLuxArea_Examine_SaveData : public iLuxArea_SaveData
-{
-	kSerializableClassInit(cLuxArea_Examine_SaveData)
-public:
-	iLuxArea* CreateArea(cLuxMap *apMap);
+class cLuxArea_Examine_SaveData : public iLuxArea_SaveData {
+  kSerializableClassInit(cLuxArea_Examine_SaveData) public : iLuxArea* CreateArea(cLuxMap* apMap);
 
-	tString msDescCat;
-	tString msDescEntry;
+  tString msDescCat;
+  tString msDescEntry;
 
-	tString msDescInsaneCat;
-	tString msDescInsaneEntry;
+  tString msDescInsaneCat;
+  tString msDescInsaneEntry;
 
-	tString msSound;
-	tString msInsaneSound;
+  tString msSound;
+  tString msInsaneSound;
 };
 
 //----------------------------------------------
 
-class cLuxArea_Examine : public iLuxArea
-{
-typedef iLuxArea super_class;
-friend class cLuxAreaLoader_Examine;
-public:	
-	cLuxArea_Examine(const tString &asName, int alID, cLuxMap *apMap);
-	virtual ~cLuxArea_Examine();
+class cLuxArea_Examine : public iLuxArea {
+  typedef iLuxArea super_class;
+  friend class cLuxAreaLoader_Examine;
 
-	//////////////////////
-	//General
-	void SetupAfterLoad(cWorld *apWorld);
+public:
+  cLuxArea_Examine(const tString& asName, int alID, cLuxMap* apMap);
+  virtual ~cLuxArea_Examine();
 
-	void OnUpdate(float afTimeStep);
+  //////////////////////
+  //General
+  void SetupAfterLoad(cWorld* apWorld);
 
-	bool CanInteract(iPhysicsBody *apBody);
-	bool OnInteract(iPhysicsBody *apBody, const cVector3f &avPos);
+  void OnUpdate(float afTimeStep);
 
-	eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody *apBody, const cVector3f &avPos);
+  bool CanInteract(iPhysicsBody* apBody);
+  bool OnInteract(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	//////////////////////
-	//Properties
-	
-	//////////////////////
-	//Connection callbacks
-	void OnConnectionStateChange(iLuxEntity *apEntity, int alState){}
+  eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	//////////////////////
-	//Save data stuff
-	iLuxEntity_SaveData* CreateSaveData();
-	virtual void SaveToSaveData(iLuxEntity_SaveData* apSaveData);
-	virtual void LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
-	virtual void SetupSaveData(iLuxEntity_SaveData *apSaveData);
+  //////////////////////
+  //Properties
+
+  //////////////////////
+  //Connection callbacks
+  void OnConnectionStateChange(iLuxEntity* apEntity, int alState) {}
+
+  //////////////////////
+  //Save data stuff
+  iLuxEntity_SaveData* CreateSaveData();
+  virtual void         SaveToSaveData(iLuxEntity_SaveData* apSaveData);
+  virtual void         LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
+  virtual void         SetupSaveData(iLuxEntity_SaveData* apSaveData);
+
 protected:
-
 private:
-	cVector3f GetStartPosition();
+  cVector3f GetStartPosition();
 
-	/////////////////////////
-	// Data
-	float mfInsaneLimit;
+  /////////////////////////
+  // Data
+  float mfInsaneLimit;
 
-	tString msDescCat;
-	tString msDescEntry;
+  tString msDescCat;
+  tString msDescEntry;
 
-	tString msDescInsaneCat;
-	tString msDescInsaneEntry;
+  tString msDescInsaneCat;
+  tString msDescInsaneEntry;
 
-	tString msSound;
-	tString msInsaneSound;
-	
-	/////////////////////////
-	// Variables
-	float mfPlaySoundCount;
+  tString msSound;
+  tString msInsaneSound;
+
+  /////////////////////////
+  // Variables
+  float mfPlaySoundCount;
 };
 
 //----------------------------------------------
 
-class cLuxAreaLoader_Examine : public iLuxAreaLoader
-{
+class cLuxAreaLoader_Examine : public iLuxAreaLoader {
 public:
-	cLuxAreaLoader_Examine(const tString& asName);
-	~cLuxAreaLoader_Examine();
+  cLuxAreaLoader_Examine(const tString& asName);
+  ~cLuxAreaLoader_Examine();
 
-	iLuxArea *CreateArea(const tString& asName, int alID, cLuxMap *apMap);
-	
-	void LoadVariables(iLuxArea *apArea, cWorld *apWorld);
-	void SetupArea(iLuxArea *apArea, cWorld *apWorld);
-	
+  iLuxArea* CreateArea(const tString& asName, int alID, cLuxMap* apMap);
+
+  void LoadVariables(iLuxArea* apArea, cWorld* apWorld);
+  void SetupArea(iLuxArea* apArea, cWorld* apWorld);
 };
 
 //----------------------------------------------

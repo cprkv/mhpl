@@ -26,173 +26,170 @@
 
 //----------------------------------------------
 
-class cLuxDebugMessage
-{
+class cLuxDebugMessage {
 public:
-	tWString msText;
-	float mfCount;
+  tWString msText;
+  float    mfCount;
 };
 
-typedef std::list<cLuxDebugMessage> tLuxDebugMessageList;
+typedef std::list<cLuxDebugMessage>    tLuxDebugMessageList;
 typedef tLuxDebugMessageList::iterator tLuxDebugMessageListIt;
 
 //----------------------------------------------
 
-class cLuxDebugHandler : public iLuxUpdateable
-{
-public:	
-	cLuxDebugHandler();
-	~cLuxDebugHandler();
+class cLuxDebugHandler : public iLuxUpdateable {
+public:
+  cLuxDebugHandler();
+  ~cLuxDebugHandler();
 
-	void LoadUserConfig();
-	void SaveUserConfig();
-	
-	void OnStart();
-	void Update(float afTimeStep);
-	void Reset();
+  void LoadUserConfig();
+  void SaveUserConfig();
 
-	void OnMapEnter(cLuxMap *apMap);
-	void OnMapLeave(cLuxMap *apMap);
+  void OnStart();
+  void Update(float afTimeStep);
+  void Reset();
+
+  void OnMapEnter(cLuxMap* apMap);
+  void OnMapLeave(cLuxMap* apMap);
 
 
-	void SetDebugWindowActive(bool abActive);
-	bool GetDebugWindowActive(){ return mbWindowActive;}
-		
-	void OnDraw(float afFrameTime);
-	void RenderSolid(cRendererCallbackFunctions* apFunctions);
+  void SetDebugWindowActive(bool abActive);
+  bool GetDebugWindowActive() { return mbWindowActive; }
 
-	void AddErrorOrWarningMessage(const tWString& asText);
-	void AddMessage(const tWString& asText, bool abCheckForDuplicates);
+  void OnDraw(float afFrameTime);
+  void RenderSolid(cRendererCallbackFunctions* apFunctions);
 
-	bool GetShowPlayerInfo(){ return mbShowPlayerInfo;}
-	bool GetShowEntityInfo(){ return mbShowEntityInfo;}
-	bool GetScriptDebugOn(){ return mbScriptDebugOn;}
-	bool GetDisableFlashBacks(){ return mbDisableFlashBacks;}
-	bool GetAllowQuickSave(){ return mbAllowQuickSave;}
+  void AddErrorOrWarningMessage(const tWString& asText);
+  void AddMessage(const tWString& asText, bool abCheckForDuplicates);
 
-	void SetFastForward(bool abX);
-	bool GetFastForward(){ return mbFastForward;}
+  bool GetShowPlayerInfo() { return mbShowPlayerInfo; }
+  bool GetShowEntityInfo() { return mbShowEntityInfo; }
+  bool GetScriptDebugOn() { return mbScriptDebugOn; }
+  bool GetDisableFlashBacks() { return mbDisableFlashBacks; }
+  bool GetAllowQuickSave() { return mbAllowQuickSave; }
 
-	void QuickReloadMap();
+  void SetFastForward(bool abX);
+  bool GetFastForward() { return mbFastForward; }
+
+  void QuickReloadMap();
 
 private:
-	void CheckLineObjectIntersection(iRenderable *apObject, const cVector3f& avStart, const cVector3f& avEnd, cBoundingVolume *apBV);
-	void IterateRenderableNode(iRenderableContainerNode *apNode, const cVector3f& avStart, const cVector3f& avEnd, cBoundingVolume *apBV);
-	void UpdateInspectionMeshEntity(float afTimeStep);
+  void CheckLineObjectIntersection(iRenderable* apObject, const cVector3f& avStart, const cVector3f& avEnd, cBoundingVolume* apBV);
+  void IterateRenderableNode(iRenderableContainerNode* apNode, const cVector3f& avStart, const cVector3f& avEnd, cBoundingVolume* apBV);
+  void UpdateInspectionMeshEntity(float afTimeStep);
 
-	void CreateGuiWindow();
-	void CreateScriptOutputWindow();
-	void CreateScriptOutputWindowText(const tWString& asOutput);
-	void UpdateMessages(float afTimeStep);
+  void CreateGuiWindow();
+  void CreateScriptOutputWindow();
+  void CreateScriptOutputWindowText(const tWString& asOutput);
+  void UpdateMessages(float afTimeStep);
 
-	void ShowScriptOutputWindow(const tWString& asName, const tString& asText);
-	bool RecompileScript();
-	void ReloadTranslations();
-	void ReloadMap();
-	void TestChangeMapSave();
+  void ShowScriptOutputWindow(const tWString& asName, const tString& asText);
+  bool RecompileScript();
+  void ReloadTranslations();
+  void ReloadMap();
+  void TestChangeMapSave();
 
-	void LoadBatchLoadFile(const tWString& asFilePath);
-	
-    void DrawDynamicContainerDebugInfo();
-	void OutputContainerContentsRec(iRenderableContainerNode *apNode, int alLevel);
-	void CheckDynamicContainerBugsRec(iRenderableContainerNode *apNode, int alLevel);
+  void LoadBatchLoadFile(const tWString& asFilePath);
 
-	/////////////////////
-	// GUI Callbacks
-	bool ChangeDebugText(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ChangeDebugText);
+  void DrawDynamicContainerDebugInfo();
+  void OutputContainerContentsRec(iRenderableContainerNode* apNode, int alLevel);
+  void CheckDynamicContainerBugsRec(iRenderableContainerNode* apNode, int alLevel);
 
-	bool PressPrinfContDebugInfo(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressPrinfContDebugInfo);
+  /////////////////////
+  // GUI Callbacks
+  bool ChangeDebugText(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ChangeDebugText);
 
-	bool PressRebuildDynCont(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressRebuildDynCont);
+  bool PressPrinfContDebugInfo(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressPrinfContDebugInfo);
 
-	bool PressLevelReload(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressLevelReload);
+  bool PressRebuildDynCont(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressRebuildDynCont);
 
-	bool PressQuickLevelReload(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressQuickLevelReload);
+  bool PressLevelReload(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressLevelReload);
 
-	bool PressTestChangeMapSave(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressTestChangeMapSave);
+  bool PressQuickLevelReload(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressQuickLevelReload);
 
-	bool PressLoadWorld(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressLoadWorld);
+  bool PressTestChangeMapSave(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressTestChangeMapSave);
 
-	bool LoadWorldFromFilePicker(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(LoadWorldFromFilePicker);
+  bool PressLoadWorld(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressLoadWorld);
 
-	bool PressTelportPlayer(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressTelportPlayer);
+  bool LoadWorldFromFilePicker(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(LoadWorldFromFilePicker);
 
-	bool PressReloadInsanityEffect(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressReloadInsanityEffect);
+  bool PressTelportPlayer(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressTelportPlayer);
 
-	bool PressStartInsanityEffect(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressStartInsanityEffect);
+  bool PressReloadInsanityEffect(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressReloadInsanityEffect);
 
-	bool PressRecompileScript(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressRecompileScript);
+  bool PressStartInsanityEffect(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressStartInsanityEffect);
 
-	bool PressCloseScriptOutput(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressCloseScriptOutput);
+  bool PressRecompileScript(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressRecompileScript);
 
-	bool PressBatchLoad(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressBatchLoad);
+  bool PressCloseScriptOutput(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressCloseScriptOutput);
 
-	bool PressLoadBatchLoadFile(iWidget* apWidget,const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressLoadBatchLoadFile);
+  bool PressBatchLoad(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressBatchLoad);
+
+  bool PressLoadBatchLoadFile(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressLoadBatchLoadFile);
 
 
+  cGui* mpGui;
 
-	cGui *mpGui;
+  cGuiSkin* mpGuiSkin;
+  cGuiSet*  mpGuiSet;
 
-	cGuiSkin *mpGuiSkin;
-	cGuiSet *mpGuiSet;
+  cWidgetComboBox* mpCBInsanityEvents;
+  cWidgetComboBox* mpCBPlayerStarts;
 
-	cWidgetComboBox *mpCBInsanityEvents;
-	cWidgetComboBox *mpCBPlayerStarts;
+  cWidgetWindow* mpDebugWindow;
 
-	cWidgetWindow *mpDebugWindow;
+  cWidgetWindow* mpScriptOutputWindow;
+  cWidgetFrame*  mpScriptOutputFrame;
 
-	cWidgetWindow *mpScriptOutputWindow;
-	cWidgetFrame *mpScriptOutputFrame;
+  cWidgetCheckBox* mpCBFastForward;
 
-	cWidgetCheckBox *mpCBFastForward;
-	
-	tWidgetList mlstScriptOutputWidgets;
+  tWidgetList mlstScriptOutputWidgets;
 
-	bool mbShowFPS;
-	bool mbShowSoundPlaying;
-	bool mbShowPlayerInfo;
-	bool mbShowEntityInfo;
-	bool mbShowDebugMessages;
-	bool mbScriptDebugOn;
-	bool mbInspectionMode;
-	bool mbDrawPhysics;
+  bool mbShowFPS;
+  bool mbShowSoundPlaying;
+  bool mbShowPlayerInfo;
+  bool mbShowEntityInfo;
+  bool mbShowDebugMessages;
+  bool mbScriptDebugOn;
+  bool mbInspectionMode;
+  bool mbDrawPhysics;
 
-	bool mbAllowQuickSave;
-    
-	bool mbWindowActive;
+  bool mbAllowQuickSave;
 
-	bool mbReloadFromCurrentPosition;
-	bool mbDisableFlashBacks;
+  bool mbWindowActive;
 
-	bool mbFastForward;
-	bool mbShowErrorMessages;
+  bool mbReloadFromCurrentPosition;
+  bool mbDisableFlashBacks;
 
-	cSubMeshEntity *mpInspectMeshEntity;
+  bool mbFastForward;
+  bool mbShowErrorMessages;
 
-	bool mbFirstUpdateOnMap;
+  cSubMeshEntity* mpInspectMeshEntity;
 
-	tStringList m_lstBatchMaps;
+  bool mbFirstUpdateOnMap;
 
-	tWStringVec mvPickedFiles;
-	tWString msCurrentFilePath;
+  tStringList m_lstBatchMaps;
 
-	tLuxDebugMessageList mlstMessages;
-	int mlTempCount;
+  tWStringVec mvPickedFiles;
+  tWString    msCurrentFilePath;
+
+  tLuxDebugMessageList mlstMessages;
+  int                  mlTempCount;
 };
 
 //----------------------------------------------

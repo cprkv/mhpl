@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2015 Andreas Jonsson
+   Copyright (c) 2003-2009 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -53,17 +53,16 @@ public:
 // asIScriptGeneric
 //------------------------------
 	// Miscellaneous
-	asIScriptEngine   *GetEngine() const;
-	asIScriptFunction *GetFunction() const;
-	void              *GetAuxiliary() const;
+	asIScriptEngine *GetEngine();
+	int              GetFunctionId();
 
 	// Object
 	void   *GetObject();
-	int     GetObjectTypeId() const;
+	int     GetObjectTypeId();
 
 	// Arguments
-	int     GetArgCount() const;
-	int     GetArgTypeId(asUINT arg, asDWORD *flags = 0) const;
+	int     GetArgCount();
+	int     GetArgTypeId(asUINT arg);
 	asBYTE  GetArgByte(asUINT arg);
 	asWORD  GetArgWord(asUINT arg);
 	asDWORD GetArgDWord(asUINT arg);
@@ -75,7 +74,7 @@ public:
 	void   *GetAddressOfArg(asUINT arg);
 
 	// Return value
-	int     GetReturnTypeId(asDWORD *flags = 0) const;
+	int     GetReturnTypeId();
 	int     SetReturnByte(asBYTE val);
 	int     SetReturnWord(asWORD val);
 	int     SetReturnDWord(asDWORD val);

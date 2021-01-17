@@ -33,16 +33,13 @@
 
 //-----------------------------------------------------------------------
 
-cLuxPlayerState_InteractLever::cLuxPlayerState_InteractLever(cLuxPlayer *apPlayer) : iLuxPlayerState_InteractRotateBase(apPlayer, eLuxPlayerState_InteractLever)
-{
-	
+cLuxPlayerState_InteractLever::cLuxPlayerState_InteractLever(cLuxPlayer* apPlayer)
+    : iLuxPlayerState_InteractRotateBase(apPlayer, eLuxPlayerState_InteractLever) {
 }
 
 //-----------------------------------------------------------------------
 
-cLuxPlayerState_InteractLever::~cLuxPlayerState_InteractLever()
-{
-	
+cLuxPlayerState_InteractLever::~cLuxPlayerState_InteractLever() {
 }
 
 //-----------------------------------------------------------------------
@@ -53,41 +50,39 @@ cLuxPlayerState_InteractLever::~cLuxPlayerState_InteractLever()
 
 //-----------------------------------------------------------------------
 
-void cLuxPlayerState_InteractLever::RenderSolid(cRendererCallbackFunctions* apFunctions)
-{
-	return;
+void cLuxPlayerState_InteractLever::RenderSolid(cRendererCallbackFunctions* apFunctions) {
+  return;
 
-	cCamera *pCam = mpPlayer->GetCamera();
+  cCamera* pCam = mpPlayer->GetCamera();
 
-	apFunctions->SetBlendMode(eMaterialBlendMode_None);
-	apFunctions->SetProgram(NULL);
-	apFunctions->SetMatrix(NULL);
+  apFunctions->SetBlendMode(eMaterialBlendMode_None);
+  apFunctions->SetProgram(NULL);
+  apFunctions->SetMatrix(NULL);
 
-	cVector3f vBodyCenter = cMath::MatrixMul(mpCurrentBody->GetLocalMatrix(), mpCurrentBody->GetMassCentre());
-	cVector3f vJointToBody =  cMath::Vector3Normalize(vBodyCenter - mpCurrentJoint->GetPivotPoint());
-	//cVector3f vJointMoveDir = cMath::Vector3Cross(vJointToBody, mpCurrentJoint->GetPinDir());
+  cVector3f vBodyCenter  = cMath::MatrixMul(mpCurrentBody->GetLocalMatrix(), mpCurrentBody->GetMassCentre());
+  cVector3f vJointToBody = cMath::Vector3Normalize(vBodyCenter - mpCurrentJoint->GetPivotPoint());
+  //cVector3f vJointMoveDir = cMath::Vector3Cross(vJointToBody, mpCurrentJoint->GetPinDir());
 
-	cVector3f vUp = pCam->GetUp();
-	cVector3f vRight = pCam->GetRight();
-	cVector3f vForward = pCam->GetForward();
+  cVector3f vUp      = pCam->GetUp();
+  cVector3f vRight   = pCam->GetRight();
+  cVector3f vForward = pCam->GetForward();
 
-	cVector3f vUpJointForward = cMath::Vector3Cross(vUp, mpCurrentJoint->GetPinDir());
-	cVector3f vUpAdd = vUpJointForward * cMath::Vector3Dot(vUp, vJointToBody);
-	vUp = cMath::Vector3Normalize(vUpAdd + vUp);
+  cVector3f vUpJointForward = cMath::Vector3Cross(vUp, mpCurrentJoint->GetPinDir());
+  cVector3f vUpAdd          = vUpJointForward * cMath::Vector3Dot(vUp, vJointToBody);
+  vUp                       = cMath::Vector3Normalize(vUpAdd + vUp);
 
-	cVector3f vRightJointForward = cMath::Vector3Cross(vRight, mpCurrentJoint->GetPinDir());
-	cVector3f vRightAdd = vRightJointForward * cMath::Vector3Dot(vRight, vJointToBody);
-	vRight = cMath::Vector3Normalize(vRightAdd + vRight);
+  cVector3f vRightJointForward = cMath::Vector3Cross(vRight, mpCurrentJoint->GetPinDir());
+  cVector3f vRightAdd          = vRightJointForward * cMath::Vector3Dot(vRight, vJointToBody);
+  vRight                       = cMath::Vector3Normalize(vRightAdd + vRight);
 
-	cVector3f vPushAmount = vUp * mvLastMouseAdd.y + vRight * -mvLastMouseAdd.x;
-	cVector3f vPushRotateDir = cMath::Vector3Cross(vJointToBody, vPushAmount);
+  cVector3f vPushAmount    = vUp * mvLastMouseAdd.y + vRight * -mvLastMouseAdd.x;
+  cVector3f vPushRotateDir = cMath::Vector3Cross(vJointToBody, vPushAmount);
 
-	cVector3f vPivot = mpCurrentJoint->GetPivotPoint();
-	apFunctions->GetLowLevelGfx()->DrawLine(vPivot, vPivot+vPushAmount*30, cColor(1,0,0,1));
-	apFunctions->GetLowLevelGfx()->DrawLine(vPivot, vPivot+vUpJointForward, cColor(1,0,1,1));
-	apFunctions->GetLowLevelGfx()->DrawLine(vPivot, vPivot+vJointToBody, cColor(0,1,0,1));
-	apFunctions->GetLowLevelGfx()->DrawLine(vPivot, vPivot+mpCurrentJoint->GetPinDir(), cColor(0,0,1,1));
-
+  cVector3f vPivot = mpCurrentJoint->GetPivotPoint();
+  apFunctions->GetLowLevelGfx()->DrawLine(vPivot, vPivot + vPushAmount * 30, cColor(1, 0, 0, 1));
+  apFunctions->GetLowLevelGfx()->DrawLine(vPivot, vPivot + vUpJointForward, cColor(1, 0, 1, 1));
+  apFunctions->GetLowLevelGfx()->DrawLine(vPivot, vPivot + vJointToBody, cColor(0, 1, 0, 1));
+  apFunctions->GetLowLevelGfx()->DrawLine(vPivot, vPivot + mpCurrentJoint->GetPinDir(), cColor(0, 0, 1, 1));
 }
 
 
@@ -99,36 +94,33 @@ void cLuxPlayerState_InteractLever::RenderSolid(cRendererCallbackFunctions* apFu
 
 //-----------------------------------------------------------------------
 
-float cLuxPlayerState_InteractLever::GetSpeedAdd(cCamera *apCam)
-{
-	cVector3f vBodyCenter = cMath::MatrixMul(mpCurrentBody->GetLocalMatrix(), mpCurrentBody->GetMassCentre());
-	cVector3f vJointToBody =  cMath::Vector3Normalize(vBodyCenter - mpCurrentJoint->GetPivotPoint());
+float cLuxPlayerState_InteractLever::GetSpeedAdd(cCamera* apCam) {
+  cVector3f vBodyCenter  = cMath::MatrixMul(mpCurrentBody->GetLocalMatrix(), mpCurrentBody->GetMassCentre());
+  cVector3f vJointToBody = cMath::Vector3Normalize(vBodyCenter - mpCurrentJoint->GetPivotPoint());
 
-	cVector3f vUp = apCam->GetUp();
-	cVector3f vRight = apCam->GetRight();
-	cVector3f vForward = apCam->GetForward();
-	
-	cVector3f vUpJointForward = cMath::Vector3Cross(vUp, mpCurrentJoint->GetPinDir());
-	cVector3f vUpAdd = vUpJointForward * cMath::Vector3Dot(vUp, vJointToBody);
-	vUp = cMath::Vector3Normalize(vUpAdd + vUp);
+  cVector3f vUp      = apCam->GetUp();
+  cVector3f vRight   = apCam->GetRight();
+  cVector3f vForward = apCam->GetForward();
 
-	cVector3f vRightJointForward = cMath::Vector3Cross(vRight, mpCurrentJoint->GetPinDir());
-	cVector3f vRightAdd = vRightJointForward * cMath::Vector3Dot(vRight, vJointToBody);
-	vRight = cMath::Vector3Normalize(vRightAdd + vRight);
-	
-	cVector3f vPushAmount = (vUp) * mvMouseAdd.y + (vRight) * -mvMouseAdd.x;
-	cVector3f vPushRotateDir = cMath::Vector3Cross(vJointToBody, vPushAmount);
+  cVector3f vUpJointForward = cMath::Vector3Cross(vUp, mpCurrentJoint->GetPinDir());
+  cVector3f vUpAdd          = vUpJointForward * cMath::Vector3Dot(vUp, vJointToBody);
+  vUp                       = cMath::Vector3Normalize(vUpAdd + vUp);
 
-	float fSpeedAdd = cMath::Vector3Dot(vPushRotateDir, mpCurrentJoint->GetPinDir());
+  cVector3f vRightJointForward = cMath::Vector3Cross(vRight, mpCurrentJoint->GetPinDir());
+  cVector3f vRightAdd          = vRightJointForward * cMath::Vector3Dot(vRight, vJointToBody);
+  vRight                       = cMath::Vector3Normalize(vRightAdd + vRight);
 
-	return fSpeedAdd;
+  cVector3f vPushAmount    = (vUp) *mvMouseAdd.y + (vRight) * -mvMouseAdd.x;
+  cVector3f vPushRotateDir = cMath::Vector3Cross(vJointToBody, vPushAmount);
+
+  float fSpeedAdd = cMath::Vector3Dot(vPushRotateDir, mpCurrentJoint->GetPinDir());
+
+  return fSpeedAdd;
 }
 
 //-----------------------------------------------------------------------
 
-void cLuxPlayerState_InteractLever::OnThrow()
-{
-
+void cLuxPlayerState_InteractLever::OnThrow() {
 }
 
 //-----------------------------------------------------------------------
@@ -140,59 +132,50 @@ void cLuxPlayerState_InteractLever::OnThrow()
 //-----------------------------------------------------------------------
 
 kBeginSerialize(cLuxPlayerState_InteractLever_SaveData, iLuxPlayerState_InteractRotateBase_SaveData)
-kEndSerialize()
+    kEndSerialize()
 
-//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
 
-iLuxPlayerState_SaveData* cLuxPlayerState_InteractLever::CreateSaveData()
-{
-	return hplNew(cLuxPlayerState_InteractLever_SaveData, ());
+    iLuxPlayerState_SaveData* cLuxPlayerState_InteractLever::CreateSaveData() {
+  return hplNew(cLuxPlayerState_InteractLever_SaveData, ());
 }
 
 //-----------------------------------------------------------------------
 
 
-void cLuxPlayerState_InteractLever::SaveToSaveData(iLuxPlayerState_SaveData* apSaveData)
-{
-	///////////////////////
-	// Init
-	super_class::SaveToSaveData(apSaveData);
-	cLuxPlayerState_InteractLever_SaveData *pData = static_cast<cLuxPlayerState_InteractLever_SaveData*>(apSaveData);
+void cLuxPlayerState_InteractLever::SaveToSaveData(iLuxPlayerState_SaveData* apSaveData) {
+  ///////////////////////
+  // Init
+  super_class::SaveToSaveData(apSaveData);
+  cLuxPlayerState_InteractLever_SaveData* pData = static_cast<cLuxPlayerState_InteractLever_SaveData*>(apSaveData);
 
 
-	///////////////////////
-	// Save vars
+  ///////////////////////
+  // Save vars
 }
 
 //-----------------------------------------------------------------------
 
-void cLuxPlayerState_InteractLever::LoadFromSaveDataBeforeEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData)
-{
-	///////////////////////
-	// Init
-	super_class::LoadFromSaveDataBeforeEnter(apMap,apSaveData);
-	cLuxPlayerState_InteractLever_SaveData *pData = static_cast<cLuxPlayerState_InteractLever_SaveData*>(apSaveData);
+void cLuxPlayerState_InteractLever::LoadFromSaveDataBeforeEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData) {
+  ///////////////////////
+  // Init
+  super_class::LoadFromSaveDataBeforeEnter(apMap, apSaveData);
+  cLuxPlayerState_InteractLever_SaveData* pData = static_cast<cLuxPlayerState_InteractLever_SaveData*>(apSaveData);
 
-	///////////////////////
-	// Load vars
+  ///////////////////////
+  // Load vars
 }
 
 //-----------------------------------------------------------------------
 
-void cLuxPlayerState_InteractLever::LoadFromSaveDataAfterEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData)
-{
-	///////////////////////
-	// Init
-	super_class::LoadFromSaveDataAfterEnter(apMap,apSaveData);
-	cLuxPlayerState_InteractLever_SaveData *pData = static_cast<cLuxPlayerState_InteractLever_SaveData*>(apSaveData);
+void cLuxPlayerState_InteractLever::LoadFromSaveDataAfterEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData) {
+  ///////////////////////
+  // Init
+  super_class::LoadFromSaveDataAfterEnter(apMap, apSaveData);
+  cLuxPlayerState_InteractLever_SaveData* pData = static_cast<cLuxPlayerState_InteractLever_SaveData*>(apSaveData);
 
-	///////////////////////
-	// Load vars
+  ///////////////////////
+  // Load vars
 }
 
 //-----------------------------------------------------------------------
-
-
-
-
-

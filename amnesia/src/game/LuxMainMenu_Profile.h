@@ -26,107 +26,105 @@
 
 //----------------------------------------------
 
-class cLuxGameProfile
-{
+class cLuxGameProfile {
 public:
-	tWString msName;
-	cDate mCreationDate;
+  tWString msName;
+  cDate    mCreationDate;
 };
 
 //----------------------------------------------
 
-class cLuxMainMenu_Profile : public iLuxMainMenuWindow
-{
-public:	
-	cLuxMainMenu_Profile(cGuiSet *apGuiSet, cGuiSkin *apGuiSkin);
-	~cLuxMainMenu_Profile();
-	
-	void CreateGui();
+class cLuxMainMenu_Profile : public iLuxMainMenuWindow {
+public:
+  cLuxMainMenu_Profile(cGuiSet* apGuiSet, cGuiSkin* apGuiSkin);
+  ~cLuxMainMenu_Profile();
 
-	void ExitPressed();
-	
+  void CreateGui();
+
+  void ExitPressed();
+
 private:
-	void OnSetActive(bool abX);
+  void OnSetActive(bool abX);
 
-	void CreateMainGui();
-	void CreateEnterNameGui();
+  void CreateMainGui();
+  void CreateEnterNameGui();
 
-	void AddProfilesInListBox();
+  void AddProfilesInListBox();
 
-	void SelectProfile(int alNum);
-	
-	////////////////////////
-	// Properties
-	tWString msDefaultProfileName;
+  void SelectProfile(int alNum);
 
-	cVector2f mvWindowSize;
-	float mfInformationWidth;
-	cVector2f mvListFontSize;
+  ////////////////////////
+  // Properties
+  tWString msDefaultProfileName;
 
-	cVector2f mvEnterNameWindowSize;
-	float mfEnterNameButtonLength;
+  cVector2f mvWindowSize;
+  float     mfInformationWidth;
+  cVector2f mvListFontSize;
+
+  cVector2f mvEnterNameWindowSize;
+  float     mfEnterNameButtonLength;
 
 
-	///////////////////////
-	// Data and varaibles
-	int mlLastPickedProfile;
-	cWidgetListBox *mpListProfiles;
+  ///////////////////////
+  // Data and varaibles
+  int             mlLastPickedProfile;
+  cWidgetListBox* mpListProfiles;
 
-	cWidgetWindow *mpWindowEnterName;
-	cWidgetTextBox *mpTextEnterName;
+  cWidgetWindow*  mpWindowEnterName;
+  cWidgetTextBox* mpTextEnterName;
 
-	cWidgetButton* mpSelectButton;
-	cWidgetButton* mpCreateButton;
+  cWidgetButton* mpSelectButton;
+  cWidgetButton* mpCreateButton;
 
-	std::vector<cLuxGameProfile*> mvProfiles;
+  std::vector<cLuxGameProfile*> mvProfiles;
 
-	///////////////////////
-	// Widget callbacks
-	bool WindowCloses(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(WindowCloses);
+  ///////////////////////
+  // Widget callbacks
+  bool WindowCloses(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(WindowCloses);
 
-	bool UIPressList(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(UIPressList);
+  bool UIPressList(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(UIPressList);
 
-	bool WindowUIPress(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(WindowUIPress); 
+  bool WindowUIPress(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(WindowUIPress);
 
-	bool ClickedExitPopup(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ClickedExitPopup);
+  bool ClickedExitPopup(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ClickedExitPopup);
 
-	bool SelectedProfileChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(SelectedProfileChange);
+  bool SelectedProfileChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(SelectedProfileChange);
 
-	bool DoubleClickSelection(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(DoubleClickSelection);
+  bool DoubleClickSelection(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(DoubleClickSelection);
 
-	bool PressSelectProfile(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressSelectProfile);
+  bool PressSelectProfile(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressSelectProfile);
 
-	bool PressCreateProfile(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressCreateProfile);
+  bool PressCreateProfile(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressCreateProfile);
 
-	bool PressDeleteProfile(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressDeleteProfile);
+  bool PressDeleteProfile(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressDeleteProfile);
 
-	bool PressDeleteProfilePopupClose(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressDeleteProfilePopupClose);
+  bool PressDeleteProfilePopupClose(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressDeleteProfilePopupClose);
 
-	
-	bool PressEnterNameCreate(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressEnterNameCreate);
 
-	bool PressEnterNameCancel(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressEnterNameCancel);
+  bool PressEnterNameCreate(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressEnterNameCreate);
 
-	bool UIPressEnterNameCancel(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(UIPressEnterNameCancel);
+  bool PressEnterNameCancel(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressEnterNameCancel);
 
-	bool ProfileSelectionClickChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ProfileSelectionClickChange);
+  bool UIPressEnterNameCancel(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(UIPressEnterNameCancel);
 
-	bool LockProfileList(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(LockProfileList);
+  bool ProfileSelectionClickChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ProfileSelectionClickChange);
+
+  bool LockProfileList(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(LockProfileList);
 };
 
 //----------------------------------------------

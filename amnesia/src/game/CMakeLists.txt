@@ -1,39 +1,31 @@
 cmake_minimum_required (VERSION 2.8.11)
 project(Amnesia)
 
-file(GLOB all_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    *.cpp
-    *.h
-)
+file(GLOB all_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.h)
 file(GLOB serial_source RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     LuxCopyProtection.cpp
     LuxKeyEntry.cpp
-    ../serial_gen/SerialGenAlgo.cpp
-)
+    ../serial_gen/SerialGenAlgo.cpp)
 list(REMOVE_ITEM all_sources ${serial_source})
 
 if (APPLE)
-    set(mac_assets
-        Lux.icns
-    )
-    list(APPEND all_sources
-        ${mac_assets}
-    )
-    set_source_files_properties(${mac_assets}
-        PROPERTIES
-            MACOSX_PACKAGE_LOCATION Resources
-    )
+    set(mac_assets Lux.icns)
+    list(APPEND all_sources ${mac_assets})
+    set_source_files_properties(${mac_assets} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 endif()
 
 set(compile_defs "")
 set(demo_compile_defs "LUX_DEMO_VERSION")
 
 option(USE_GAMEPAD "Enable gamepad support" ON)
+
 if(USE_GAMEPAD)
 	list(APPEND compile_defs USE_GAMEPAD)
 	list(APPEND demo_compile_defs USE_GAMEPAD)
 endif()
+
 option(AMNESIA_WITH_SERIAL "Enable Serial Key Checking" OFF)
+
 if(AMNESIA_WITH_SERIAL)
 	list(APPEND compile_defs COPY_PROTECTION_ENABLED)
 	set(full_sources ${all_sources} ${serial_source})
@@ -42,9 +34,7 @@ else()
 endif()
 
 
-add_executable(Amnesia MACOSX_BUNDLE
-    ${full_sources}
-)
+add_executable(Amnesia MACOSX_BUNDLE ${full_sources})
 target_link_libraries(Amnesia HPL2)
 set_target_properties(Amnesia PROPERTIES
 	COMPILE_DEFINITIONS "${compile_defs}"
@@ -58,19 +48,17 @@ set_target_properties(Amnesia PROPERTIES
 )
 
 IF(APPLE)
-add_definitions(
-    -DMAC_OS
-)
+	add_definitions(-DMAC_OS)
 ELSEIF(LINUX)
-add_definitions(
-    -DLINUX
-)
+	add_definitions(-DLINUX)
 ENDIF()
-add_executable(AmnesiaDemo MACOSX_BUNDLE EXCLUDE_FROM_ALL
-    ${all_sources}
-)
+
+add_executable(AmnesiaDemo MACOSX_BUNDLE EXCLUDE_FROM_ALL ${all_sources})
 target_link_libraries(AmnesiaDemo HPL2)
 set_target_properties(AmnesiaDemo PROPERTIES
+	CXX_STANDARD 20
+	CXX_STANDARD_REQUIRED TRUE
+	CXX_EXTENSIONS OFF
 	COMPILE_DEFINITIONS "${demo_compile_defs}"
     MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Game-Info.plist"
 	MACOSX_BUNDLE_ICON_FILE "Lux.icns"
@@ -88,5 +76,3 @@ IF(APPLE)
 		BUNDLE DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/../../redist"
 	)
 ENDIF()
-
-# vim: noet ts=4:

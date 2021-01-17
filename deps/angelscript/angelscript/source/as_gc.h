@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2018 Andreas Jonsson
+   Copyright (c) 2003-2009 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -54,26 +54,17 @@ class asCGarbageCollector
 {
 public:
 	asCGarbageCollector();
-	~asCGarbageCollector();
 
-	int    GarbageCollect(asDWORD flags, asUINT iterations);
-	void   GetStatistics(asUINT *currentSize, asUINT *totalDestroyed, asUINT *totalDetected, asUINT *newObjects, asUINT *totalNewDestroyed) const;
-	void   GCEnumCallback(void *reference);
-	int    AddScriptObjectToGC(void *obj, asCObjectType *objType);
-	int    GetObjectInGC(asUINT idx, asUINT *seqNbr, void **obj, asITypeInfo **type);
-
-	int    ReportAndReleaseUndestroyedObjects();
+	int  GarbageCollect(asDWORD flags);
+	void GetStatistics(asUINT *currentSize, asUINT *totalDestroyed, asUINT *totalDetected);
+	void GCEnumCallback(void *reference);
+	void AddScriptObjectToGC(void *obj, asCObjectType *objType);
 
 	asCScriptEngine *engine;
 
-	// Callback for when circular reference are detected
-	asCIRCULARREFFUNC_t circularRefDetectCallbackFunc;
-	void *              circularRefDetectCallbackParam;
-
 protected:
-	struct asSObjTypePair {void *obj; asCObjectType *type; asUINT seqNbr;};
+	struct asSObjTypePair {void *obj; asCObjectType *type;};
 	struct asSIntTypePair {int i; asCObjectType *type;};
-	typedef asSMapNode<void*, asSIntTypePair> asSMapNode_t;
 
 	enum egcDestroyState
 	{
@@ -86,33 +77,25 @@ protected:
 	{
 		clearCounters_init = 0,
 		clearCounters_loop,
-		buildMap_init,
-		buildMap_loop,
 		countReferences_init,
 		countReferences_loop,
 		detectGarbage_init,
 		detectGarbage_loop1,
 		detectGarbage_loop2,
-		verifyUnmarked_init,
-		verifyUnmarked_loop,
+		verifyUnmarked,
 		breakCircles_init,
 		breakCircles_loop,
 		breakCircles_haveGarbage
 	};
 
-	int            DestroyNewGarbage();
-	int            DestroyOldGarbage();
+	int            DestroyGarbage();
 	int            IdentifyGarbageWithCyclicRefs();
-	asSObjTypePair GetNewObjectAtIdx(int idx);
-	asSObjTypePair GetOldObjectAtIdx(int idx);
-	void           RemoveNewObjectAtIdx(int idx);
-	void           RemoveOldObjectAtIdx(int idx);
-	void           MoveObjectToOldList(int idx);
-	void           MoveAllObjectsToOldList();
+	void           ClearMap();
+	asSObjTypePair GetObjectAtIdx(int idx);
+	void           RemoveObjectAtIdx(int idx);
 
 	// Holds all the objects known by the garbage collector
-	asCArray<asSObjTypePair>           gcNewObjects;
-	asCArray<asSObjTypePair>           gcOldObjects;
+	asCArray<asSObjTypePair>           gcObjects;
 
 	// This array temporarily holds references to objects known to be live objects
 	asCArray<void*>                    liveObjects;
@@ -122,28 +105,16 @@ protected:
 	asCMap<void*, asSIntTypePair>      gcMap;
 
 	// State variables
-	egcDestroyState                    destroyNewState;
-	egcDestroyState                    destroyOldState;
-	asUINT                             destroyNewIdx;
-	asUINT                             destroyOldIdx;
+	egcDestroyState                    destroyState;
+	asUINT                             destroyIdx;
 	asUINT                             numDestroyed;
-	asUINT                             numNewDestroyed;
 	egcDetectState                     detectState;
 	asUINT                             detectIdx;
 	asUINT                             numDetected;
-	asUINT                             numAdded;
-	asUINT                             seqAtSweepStart[3];
-	asSMapNode_t                      *gcMapCursor;
-	bool                               isProcessing;
-
-	// We'll keep a pool of nodes to avoid allocating memory all the time
-	asSMapNode_t            *GetNode(void *obj, asSIntTypePair it);
-	void                     ReturnNode(asSMapNode_t *node);
-	asCArray<asSMapNode_t*>  freeNodes;
+	asSMapNode<void*, asSIntTypePair> *gcMapCursor;
 
 	// Critical section for multithreaded access
-	DECLARECRITICALSECTION(gcCritical)   // Used for adding/removing objects
-	DECLARECRITICALSECTION(gcCollecting) // Used for processing
+	DECLARECRITICALSECTION(gcCritical);
 };
 
 END_AS_NAMESPACE

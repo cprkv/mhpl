@@ -26,65 +26,60 @@
 
 //----------------------------------------------
 
-class cLuxArea_Insanity_SaveData : public iLuxArea_SaveData
-{
-	kSerializableClassInit(cLuxArea_Insanity_SaveData)
-public:
-	iLuxArea* CreateArea(cLuxMap *apMap);
+class cLuxArea_Insanity_SaveData : public iLuxArea_SaveData {
+  kSerializableClassInit(cLuxArea_Insanity_SaveData) public : iLuxArea* CreateArea(cLuxMap* apMap);
 
-	bool mbAutoDisable;
+  bool mbAutoDisable;
 };
 
 //----------------------------------------------
 
-class cLuxArea_Insanity : public iLuxArea
-{
-typedef iLuxArea super_class;
-friend class cLuxAreaLoader_Insanity;
-public:	
-	cLuxArea_Insanity(const tString &asName, int alID, cLuxMap *apMap);
-	virtual ~cLuxArea_Insanity();
+class cLuxArea_Insanity : public iLuxArea {
+  typedef iLuxArea super_class;
+  friend class cLuxAreaLoader_Insanity;
 
-	//////////////////////
-	//General
-	void OnUpdate(float afTimeStep);
+public:
+  cLuxArea_Insanity(const tString& asName, int alID, cLuxMap* apMap);
+  virtual ~cLuxArea_Insanity();
 
-	//////////////////////
-	//Connection callbacks
-	void OnConnectionStateChange(iLuxEntity *apEntity, int alState){}
+  //////////////////////
+  //General
+  void OnUpdate(float afTimeStep);
 
-	//////////////////////
-	//Save data stuff
-	iLuxEntity_SaveData* CreateSaveData();
-	virtual void SaveToSaveData(iLuxEntity_SaveData* apSaveData);
-	virtual void LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
-	virtual void SetupSaveData(iLuxEntity_SaveData *apSaveData);
+  //////////////////////
+  //Connection callbacks
+  void OnConnectionStateChange(iLuxEntity* apEntity, int alState) {}
+
+  //////////////////////
+  //Save data stuff
+  iLuxEntity_SaveData* CreateSaveData();
+  virtual void         SaveToSaveData(iLuxEntity_SaveData* apSaveData);
+  virtual void         LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
+  virtual void         SetupSaveData(iLuxEntity_SaveData* apSaveData);
+
 private:
+  /////////////////////////
+  // Data
+  float mfCheckTimeMin;
+  float mfCheckTimeMax;
 
-	/////////////////////////
-	// Data
-	float mfCheckTimeMin;
-	float mfCheckTimeMax;
-	
-	/////////////////////////
-	// Variables
-	float mfCheckCollisionCount;
-	bool mbAutoDisable;
+  /////////////////////////
+  // Variables
+  float mfCheckCollisionCount;
+  bool  mbAutoDisable;
 };
 
 //----------------------------------------------
 
-class cLuxAreaLoader_Insanity : public iLuxAreaLoader
-{
+class cLuxAreaLoader_Insanity : public iLuxAreaLoader {
 public:
-	cLuxAreaLoader_Insanity(const tString& asName);
-	~cLuxAreaLoader_Insanity();
+  cLuxAreaLoader_Insanity(const tString& asName);
+  ~cLuxAreaLoader_Insanity();
 
-	iLuxArea *CreateArea(const tString& asName, int alID, cLuxMap *apMap);
-	
-	void LoadVariables(iLuxArea *apArea, cWorld *apWorld);
-	void SetupArea(iLuxArea *apArea, cWorld *apWorld);
-	
+  iLuxArea* CreateArea(const tString& asName, int alID, cLuxMap* apMap);
+
+  void LoadVariables(iLuxArea* apArea, cWorld* apWorld);
+  void SetupArea(iLuxArea* apArea, cWorld* apWorld);
 };
 
 //----------------------------------------------

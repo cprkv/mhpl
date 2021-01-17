@@ -2,7 +2,7 @@
 #include <assert.h>  // assert()
 #include <string.h>  // strstr()
 #include <angelscript.h>
-#include "../../../add_on/scriptstdstring/scriptstdstring.h"
+#include "../../../add_on/scriptstring/scriptstring.h"
 #include "../../../add_on/contextmgr/contextmgr.h"
 
 #if defined(_MSC_VER)
@@ -30,7 +30,7 @@ using namespace std;
 #define UINT unsigned int 
 typedef unsigned int DWORD;
 
-// Linux doesn't have timeGetTime(), this essentially does the same
+// Linux doesn't have timeGetTime(), this essintially does the same
 // thing, except this is milliseconds since Epoch (Jan 1st 1970) instead
 // of system start. It will work the same though...
 DWORD timeGetTime()
@@ -73,7 +73,7 @@ int kbhit()
 #define UINT unsigned int
 typedef unsigned int DWORD;
 
-// MacOS doesn't have timeGetTime(), this essentially does the same
+// Linux doesn't have timeGetTime(), this essintially does the same
 // thing, except this is milliseconds since Epoch (Jan 1st 1970) instead
 // of system start. It will work the same though...
 DWORD timeGetTime()
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 	contextManager.SetGetTimeCallback((TIMEFUNC_t)&timeGetTime);
 
 	// Create the script engine
-	engine = asCreateScriptEngine();
+	engine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
 
 	if( engine == 0 )
 	{
@@ -149,8 +149,8 @@ int main(int argc, char **argv)
 	r = CompileScript(engine);
 	if( r < 0 ) return -1;
 
-	contextManager.AddContext(engine, engine->GetModule("script1")->GetFunctionByDecl("void main()"));
-	contextManager.AddContext(engine, engine->GetModule("script2")->GetFunctionByDecl("void main()"));
+	contextManager.AddContext(engine, engine->GetModule("script1")->GetFunctionIdByDecl("void main()"));
+	contextManager.AddContext(engine, engine->GetModule("script2")->GetFunctionIdByDecl("void main()"));
 	
 	// Print some useful information and start the input loop
 	cout << "This sample shows how two scripts can be executed concurrently." << endl; 
@@ -170,8 +170,8 @@ int main(int argc, char **argv)
 		contextManager.ExecuteScripts();
 	}
 
-	// Shut down the engine
-	engine->ShutDownAndRelease();
+	// Release the engine
+	engine->Release();
 
 	return 0;
 }
@@ -183,7 +183,8 @@ void ConfigureEngine(asIScriptEngine *engine)
 	// Register the script string type
 	// Look at the implementation for this function for more information  
 	// on how to register a custom string type, and other object types.
-	RegisterStdString(engine);
+	// The implementation is in "/add_on/scriptstring/scriptstring.cpp"
+	RegisterScriptString(engine);
 
 	// Register the functions that the scripts will be allowed to use
 	r = engine->RegisterGlobalFunction("void Print(string &in)", asFUNCTION(PrintString), asCALL_CDECL); assert( r >= 0 );

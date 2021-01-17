@@ -28,7 +28,7 @@
 
 // Include SDL Endian code
 #ifdef USE_SDL2
-#include <SDL2/SDL_endian.h>
+#include <SDL_endian.h>
 #else
 #include <SDL/SDL_endian.h>
 #endif

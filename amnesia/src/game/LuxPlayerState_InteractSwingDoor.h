@@ -30,36 +30,33 @@ class cLuxInteractData_SwingDoor;
 
 //------------------------------------
 
-class cLuxPlayerState_InteractSwingDoor_SaveData : public iLuxPlayerState_InteractRotateBase_SaveData
-{
-	kSerializableClassInit(cLuxPlayerState_InteractSwingDoor_SaveData)
-public:
-
+class cLuxPlayerState_InteractSwingDoor_SaveData : public iLuxPlayerState_InteractRotateBase_SaveData {
+  kSerializableClassInit(cLuxPlayerState_InteractSwingDoor_SaveData) public:
 };
 //----------------------------------------------
 
-class cLuxPlayerState_InteractSwingDoor : public iLuxPlayerState_InteractRotateBase
-{
-typedef iLuxPlayerState_InteractRotateBase super_class;
-public:	
-	cLuxPlayerState_InteractSwingDoor(cLuxPlayer *apPlayer);
-	virtual ~cLuxPlayerState_InteractSwingDoor();
+class cLuxPlayerState_InteractSwingDoor : public iLuxPlayerState_InteractRotateBase {
+  typedef iLuxPlayerState_InteractRotateBase super_class;
 
-	/////////////////////////////////
-	//Save data stuff
-	virtual bool IsSaved(){ return false; }
-	iLuxPlayerState_SaveData* CreateSaveData();
+public:
+  cLuxPlayerState_InteractSwingDoor(cLuxPlayer* apPlayer);
+  virtual ~cLuxPlayerState_InteractSwingDoor();
 
-	void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
-	void LoadFromSaveDataBeforeEnter(cLuxMap *apMap,iLuxPlayerState_SaveData* apSaveData);
-	void LoadFromSaveDataAfterEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData);
+  /////////////////////////////////
+  //Save data stuff
+  virtual bool              IsSaved() { return false; }
+  iLuxPlayerState_SaveData* CreateSaveData();
+
+  void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
+  void LoadFromSaveDataBeforeEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
+  void LoadFromSaveDataAfterEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
 
 
 protected:
-	float GetSpeedAdd(cCamera *apCam);
-	void OnThrow();
+  float GetSpeedAdd(cCamera* apCam);
+  void  OnThrow();
 
-	cLuxInteractData_SwingDoor *mpSwingDoorData;
+  cLuxInteractData_SwingDoor* mpSwingDoorData;
 };
 
 //----------------------------------------------

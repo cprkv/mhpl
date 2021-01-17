@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2018 Andreas Jonsson
+   Copyright (c) 2003-2010 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -74,6 +74,7 @@ enum eScriptNode
 	snDoWhile,
 	snAssignment,
 	snCondition,
+	snGlobalVar,
 	snSwitch,
 	snCase,
 	snImport,
@@ -84,14 +85,7 @@ enum eScriptNode
 	snTypedef,
 	snCast,
 	snVariableAccess,
-	snFuncDef,
-	snVirtualProperty,
-	snNamespace,
-	snMixin,
-	snListPattern,
-	snNamedArgument,
-	snScope,
-	snTryCatch
+	snFuncDef
 };
 
 struct sToken
@@ -109,7 +103,6 @@ public:
 	asCScriptNode(eScriptNode nodeType);
 
 	void Destroy(asCScriptEngine *engine);
-	asCScriptNode *CreateCopy(asCScriptEngine *engine);
 
 	void SetToken(sToken *token);
 	void AddChildLast(asCScriptNode *node);

@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2018 Andreas Jonsson
+   Copyright (c) 2003-2010 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied 
    warranty. In no event will the authors be held liable for any 
@@ -41,9 +41,6 @@
 #define AS_BYTECODE_H
 
 #include "as_config.h"
-
-#ifndef AS_NO_COMPILER
-
 #include "as_array.h"
 
 BEGIN_AS_NAMESPACE
@@ -54,7 +51,7 @@ BEGIN_AS_NAMESPACE
 
 class asCScriptEngine;
 class asCScriptFunction;
-class asCByteInstruction;
+class cByteInstruction;
 
 class asCByteCode
 {
@@ -66,17 +63,14 @@ public:
 
 	int GetSize();
 
-	void Finalize(const asCArray<int> &tempVariableOffsets);
+	void Finalize();
 
-	void Optimize();
-	void OptimizeLocally(const asCArray<int> &tempVariableOffsets);
+	int  Optimize();
 	void ExtractLineNumbers();
-	void ExtractObjectVariableInfo(asCScriptFunction *outFunc);
-	void ExtractTryCatchInfo(asCScriptFunction *outFunc);
 	int  ResolveJumpAddresses();
-	int  FindLabel(int label, asCByteInstruction *from, asCByteInstruction **dest, int *positionDelta);
+	int  FindLabel(int label, cByteInstruction *from, cByteInstruction **dest, int *positionDelta);
 
-	void AddPath(asCArray<asCByteInstruction *> &paths, asCByteInstruction *instr, int stackSize);
+	void AddPath(asCArray<cByteInstruction *> &paths, cByteInstruction *instr, int stackSize);
 
 	void Output(asDWORD *array);
 	void AddCode(asCByteCode *bc);
@@ -84,7 +78,7 @@ public:
 	void PostProcess();
 
 #ifdef AS_DEBUG
-	void DebugOutput(const char *name, asCScriptFunction *func);
+	void DebugOutput(const char *name, asCScriptEngine *engine, asCScriptFunction *func);
 #endif
 
 	int  GetLastInstr();
@@ -95,15 +89,9 @@ public:
 	void GetVarsUsed(asCArray<int> &vars);
 	bool IsVarUsed(int offset);
 	void ExchangeVar(int oldOffset, int newOffset);
-	bool IsSimpleExpression();
 
 	void Label(short label);
-	void Line(int line, int column, int scriptIdx);
-	void ObjInfo(int offset, int info);
-	void Block(bool start);
-	void TryBlock(short catchLabel);
-
-	void VarDecl(int varDeclIdx);
+	void Line(int line, int column);
 	void Call(asEBCInstr bc, int funcID, int pop);
 	void CallPtr(asEBCInstr bc, int funcPtrVar, int pop);
 	void Alloc(asEBCInstr bc, void *objID, int funcID, int pop);
@@ -131,61 +119,60 @@ public:
 	int InstrW_PTR(asEBCInstr bc, short a, void *param);
 	int InstrW_FLOAT(asEBCInstr bc, asWORD a, float b);
 	int InstrW_W(asEBCInstr bc, int w, int b);
-	int InstrSHORT_DW_DW(asEBCInstr bc, short a, asDWORD b, asDWORD c);
 
-	asCScriptEngine *GetEngine() const { return engine; };
+	int Pop (int numDwords);
+	int Push(int numDwords);
 
 	asCArray<int> lineNumbers;
-	asCArray<int> sectionIdxs;
 	int largestStackUsed;
 
-protected:
-	// Assignments are not allowed
-	void operator=(const asCByteCode &) {}
+	void DefineTemporaryVariable(int varOffset);
 
+protected:
 	// Helpers for Optimize
-	bool CanBeSwapped(asCByteInstruction *curr);
-	asCByteInstruction *ChangeFirstDeleteNext(asCByteInstruction *curr, asEBCInstr bc);
-	asCByteInstruction *DeleteFirstChangeNext(asCByteInstruction *curr, asEBCInstr bc);
-	asCByteInstruction *DeleteInstruction(asCByteInstruction *instr);
-	void RemoveInstruction(asCByteInstruction *instr);
-	asCByteInstruction *GoBack(asCByteInstruction *curr);
-	asCByteInstruction *GoForward(asCByteInstruction *curr);
-	void InsertBefore(asCByteInstruction *before, asCByteInstruction *instr);
-	bool RemoveUnusedValue(asCByteInstruction *curr, asCByteInstruction **next);
-	bool IsTemporary(int offset);
-	bool IsTempRegUsed(asCByteInstruction *curr);
-	bool IsTempVarRead(asCByteInstruction *curr, int offset);
-	bool PostponeInitOfTemp(asCByteInstruction *curr, asCByteInstruction **next);
-	bool IsTempVarReadByInstr(asCByteInstruction *curr, int var);
-	bool IsTempVarOverwrittenByInstr(asCByteInstruction *curr, int var);
-	bool IsInstrJmpOrLabel(asCByteInstruction *curr);
+	bool CanBeSwapped(cByteInstruction *curr);
+	bool IsCombination(cByteInstruction *curr, asEBCInstr bc1, asEBCInstr bc2);
+	bool IsCombination(cByteInstruction *curr, asEBCInstr bc1, asEBCInstr bc2, asEBCInstr bc3);
+	cByteInstruction *ChangeFirstDeleteNext(cByteInstruction *curr, asEBCInstr bc);
+	cByteInstruction *DeleteFirstChangeNext(cByteInstruction *curr, asEBCInstr bc);
+	cByteInstruction *DeleteInstruction(cByteInstruction *instr);
+	void RemoveInstruction(cByteInstruction *instr);
+	cByteInstruction *GoBack(cByteInstruction *curr);
+	void InsertBefore(cByteInstruction *before, cByteInstruction *instr);
+	bool RemoveUnusedValue(cByteInstruction *curr, cByteInstruction **next);
+	bool IsTemporary(short offset);
+	bool IsTempRegUsed(cByteInstruction *curr);
+	bool IsTempVarRead(cByteInstruction *curr, int offset);
+	bool PostponeInitOfTemp(cByteInstruction *curr, cByteInstruction **next);
+	bool IsTempVarReadByInstr(cByteInstruction *curr, int var);
+	bool IsTempVarOverwrittenByInstr(cByteInstruction *curr, int var);
+	bool IsInstrJmpOrLabel(cByteInstruction *curr);
 
 	int AddInstruction();
 	int AddInstructionFirst();
 
-	asCByteInstruction *first;
-	asCByteInstruction *last;
+	cByteInstruction *first;
+	cByteInstruction *last;
 
-	const asCArray<int> *temporaryVariables;
+	asCArray<int> temporaryVariables;
 
 	asCScriptEngine *engine;
 };
 
-class asCByteInstruction
+class cByteInstruction
 {
 public:
-	asCByteInstruction();
+	cByteInstruction();
 
-	void AddAfter(asCByteInstruction *nextCode);
-	void AddBefore(asCByteInstruction *nextCode);
+	void AddAfter(cByteInstruction *nextCode);
+	void AddBefore(cByteInstruction *nextCode);
 	void Remove();
 
 	int  GetSize();
 	int  GetStackIncrease();
 
-	asCByteInstruction *next;
-	asCByteInstruction *prev;
+	cByteInstruction *next;
+	cByteInstruction *prev;
 
 	asEBCInstr op;
 	asQWORD arg;
@@ -195,11 +182,9 @@ public:
 
 	// Testing
 	bool marked;
-	int  stackSize;
+	int stackSize;
 };
 
 END_AS_NAMESPACE
-
-#endif // AS_NO_COMPILER
 
 #endif

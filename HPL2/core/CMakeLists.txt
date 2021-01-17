@@ -6,6 +6,7 @@ include(BoilerPlate)
 
 set(HPL2_VERSION_MAJOR 2)
 set(HPL2_VERSION_MINOR 0)
+
 if(IS_APPLE_64)
     set(BIN_LIBROOT "${PLATFORM_PREFIX}64")
 else()
@@ -16,13 +17,10 @@ set(DEP_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/lib/${BIN_LIBROOT}"
 set(DEP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/include")
 find_path(PREBUILT_PLATFORM_ROOT .
     PATHS "${DEP_LIB_DIR}"
-    NO_DEFAULT_PATH
-)
+    NO_DEFAULT_PATH)
 set(DEP_LIB_DIR ${DEP_LIB_DIR} PARENT_SCOPE)
 set(DEP_INCLUDE_DIR ${DEP_INCLUDE_DIR} PARENT_SCOPE)
-mark_as_advanced(
-    PREBUILT_PLATFORM_ROOT
-)
+mark_as_advanced(PREBUILT_PLATFORM_ROOT)
 
 include(UtilityFunctions)
 
@@ -40,32 +38,17 @@ ENDIF()
 
 OPTION(USE_SDL2 "Use SDL2 instead of SDL1.2" ON)
 
-#add_subdirectory(../dependencies/OALWrapper OALWrapper)
+SET(HPL2_DEFINES PUBLIC $<$<BOOL:${USE_SDL2}>:USE_SDL2>)
 
-SET(HPL2_DEFINES
-    PUBLIC $<$<BOOL:${USE_SDL2}>:USE_SDL2>
-)
+add_definitions(-DUSE_OALWRAPPER)
 
-add_definitions(
-    -DUSE_OALWRAPPER
-)
-
-set(HPL2_INCLUDES
-    PUBLIC include
-    #Important that this is before dependencies so the correct OpenAL headers are used
-    PRIVATE ${OALWRAPPER_INCLUDE_DIR}
-    PUBLIC ../dependencies/include
-)
+set(HPL2_INCLUDES PUBLIC include PUBLIC ../dependencies/include)
 
 IF(LINUX)
     add_library(binreloc STATIC ../dependencies/sources/binreloc/binreloc.c)
     set_target_properties(binreloc PROPERTIES COMPILE_DEFINITIONS "ENABLE_BINRELOC")
-
-    list(APPEND HPL2_INCLUDES
-        ../dependencies/sources/binreloc/
-    )
+    list(APPEND HPL2_INCLUDES ../dependencies/sources/binreloc/)
 ENDIF()
-
 
 # common shared source
 file(GLOB common_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -158,19 +141,16 @@ IF(APPLE)
     LIST(APPEND impl_sources
         sources/impl/PlatformMacOSX.mm
         sources/impl/PlatformUnix.cpp
-        sources/impl/PlatformSDL.cpp
-    )
+        sources/impl/PlatformSDL.cpp    )
     IF(NOT USE_SDL2)
         LIST(APPEND impl_sources
             SDLMain.m
-            SDLMain.h
-        )
+            SDLMain.h)
     ENDIF()
 ELSEIF(LINUX)
     LIST(APPEND impl_sources
         sources/impl/PlatformUnix.cpp
-        sources/impl/PlatformSDL.cpp
-    )
+        sources/impl/PlatformSDL.cpp)
 ENDIF()
 
 # Setup buildID source
@@ -183,31 +163,6 @@ ELSE()
     message(FATAL_ERROR "Unknown platform")
 ENDIF()
 SET(BUILDID_SUFFIX ${BUILDID_SUFFIX} CACHE STRING "Build ID Suffix")
-#find_file(BUILDID_BIN buildcounter.pl
-#    PATHS ${CMAKE_CURRENT_SOURCE_DIR}
-#    NO_DEFAULT_PATH
-#)
-#mark_as_advanced(BUILDID_SUFFIX BUILDID_BIN)
-
-#function(GenerateBuildID outvar idname includedir sourcedir)
-#    add_custom_command(
-#        OUTPUT
-#            ${sourcedir}/BuildID_${idname}_${BUILDID_SUFFIX}.cpp
-#            ${includedir}/BuildID_${idname}.h
-#        COMMAND
-#            ${BUILDID_BIN}
-#        ARGS
-#            ${idname} ${includedir} ${sourcedir}
-#    )
-#    set(${outvar} ${sourcedir}/BuildID_${idname}_${BUILDID_SUFFIX}.cpp
-#            ${includedir}/BuildID_${idname}.h PARENT_SCOPE)
-#endfunction()
-#
-#GenerateBuildID(version_source
-#    HPL2_0
-#    ${CMAKE_CURRENT_SOURCE_DIR}/include
-#    ${CMAKE_CURRENT_SOURCE_DIR}/sources
-#)
 
 # setup source groups
 source_group("AI" REGULAR_EXPRESSION "\\/ai\\/.+")
@@ -234,66 +189,52 @@ source_group("OpenAL Specific" REGULAR_EXPRESSION "\\/impl\\/.*OpenAL.+")
 source_group("Win32" REGULAR_EXPRESSION "\\/impl\\/.+Win32.+")
 source_group("Platform" REGULAR_EXPRESSION "\\/impl\\/Platform.+")
 
-
 # setup libs
 # TODO
 
 FindPrebuiltLibrary(NEWTON_LIBRARY Newton)
-FindPrebuiltLibrary(ANGELSCRIPT_LIBRARY angelscript)
+#FindPrebuiltLibrary(ANGELSCRIPT_LIBRARY angelscript)
 # FindPrebuiltLibrary(FBX_LIBRARY fbxsdk-2012.2-static)
 FindPrebuiltLibrary(GLEW_LIBRARY GLEW)
 FindPrebuiltLibrary(THEORA_LIBRARY theora)
 FindPrebuiltLibrary(DEVIL_LIBRARY IL)
 
-find_package(OpenGL)
-mark_as_advanced(NEWTON_LIBRARY ANGELSCRIPT_LIBRARY GLEW_LIBRARY THEORA_LIBRARY DEVIL_LIBRARY) #FBX_LIBRARY
+find_package(OpenGL REQUIRED COMPONENTS OpenGL)
+mark_as_advanced(NEWTON_LIBRARY GLEW_LIBRARY THEORA_LIBRARY DEVIL_LIBRARY) #FBX_LIBRARY
 
 # setup HPL2 compile target
 
-add_library(HPL2 STATIC
-    ${common_sources}
-    ${version_sources}
-    ${impl_sources}
-)
+add_library(HPL2 STATIC ${common_sources} ${version_sources} ${impl_sources})
 
-target_include_directories(HPL2
-    ${HPL2_INCLUDES}
-)
-
-target_compile_definitions(HPL2
-    ${HPL2_DEFINES}
-)
+target_include_directories(HPL2 ${HPL2_INCLUDES})
+target_compile_definitions(HPL2 ${HPL2_DEFINES})
 
 if(LINUX)
-    set(PLATFORM_LIBS
-        binreloc
-        pthread
-        dl
-    )
+    set(PLATFORM_LIBS binreloc pthread dl)
 elseif(APPLE)
     FIND_LIBRARY(SC_LIBRARY SystemConfiguration)
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
     mark_as_advanced(COCOA_LIBRARY THEORA_LIBRARY SC_LIBRARY)
-
-    set(PLATFORM_LIBS
-        iconv ${SC_LIBRARY}
-        ${COCOA_LIBRARY}
-    )
+    set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY})
 endif()
 
-target_link_libraries(HPL2
-    OALWrapper # also pulls in ogg,vorbis,SDL
+target_link_libraries(HPL2 PUBLIC
+    OALWrapper
+    SDL2-static
+    angelscript
     ${NEWTON_LIBRARY}
-    ${ANGELSCRIPT_LIBRARY}
     ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
     ${GLEW_LIBRARY}
     ${THEORA_LIBRARY}
     ${DEVIL_LIBRARY}
     z
     #${FBX_LIBRARY}
-    ${PLATFORM_LIBS}
-)
+    ${PLATFORM_LIBS})
 
+set_target_properties(HPL2 PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED TRUE
+    CXX_EXTENSIONS OFF)
 
 if(APPLE)   
     # helper function to copy the needed frameworks in at build time
@@ -335,14 +276,10 @@ if(APPLE)
 ENDIF()
 
 FUNCTION(AddTestTarget target_name)
-    add_executable(${target_name} EXCLUDE_FROM_ALL
-        ${ARGN}
-    )
+    add_executable(${target_name} EXCLUDE_FROM_ALL ${ARGN})
     target_link_libraries(${target_name} HPL2)
     set_target_properties(${target_name} PROPERTIES
         XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "${DEP_LIB_DIR}"
-        INSTALL_RPATH "${DEP_LIB_DIR}"
-    )
+        INSTALL_RPATH "${DEP_LIB_DIR}")
 ENDFUNCTION()
-
 

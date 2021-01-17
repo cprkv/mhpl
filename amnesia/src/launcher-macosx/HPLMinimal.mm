@@ -31,30 +31,30 @@
 #include <stdarg.h>
 
 namespace hpl {
-	void Warning(const char* fmt, ...) {
-		va_list ap;
-		va_start(ap, fmt);
-        char buff[1024];
-        vsnprintf(buff, 1024, fmt, ap);
-        NSLog(@"Warn: %s", buff);
-		va_end(ap);
-	}
+  void Warning(const char* fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    char buff[1024];
+    vsnprintf(buff, 1024, fmt, ap);
+    NSLog(@"Warn: %s", buff);
+    va_end(ap);
+  }
 
-	void Error(const char* fmt, ...) {
-		va_list ap;
-		va_start(ap, fmt);
-        char buff[1024];
-        vsnprintf(buff, 1024, fmt, ap);
-        NSLog(@"Err: %s", buff);
-		va_end(ap);
-	}
+  void Error(const char* fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    char buff[1024];
+    vsnprintf(buff, 1024, fmt, ap);
+    NSLog(@"Err: %s", buff);
+    va_end(ap);
+  }
 
-	void Log(const char* fmt, ...) {
-		va_list ap;
-		va_start(ap, fmt);
-        char buff[1024];
-        vsnprintf(buff, 1024, fmt, ap);
-        NSLog(@"Log: %s", buff);
-		va_end(ap);
-	}
+  void Log(const char* fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    char buff[1024];
+    vsnprintf(buff, 1024, fmt, ap);
+    NSLog(@"Log: %s", buff);
+    va_end(ap);
+  }
 }

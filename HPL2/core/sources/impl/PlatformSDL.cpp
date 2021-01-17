@@ -24,7 +24,7 @@
 #include "system/LowLevelSystem.h"
 
 #if USE_SDL2
-#include "SDL2/SDL.h"
+#include "SDL.h"
 #else
 #include "SDL/SDL.h"
 #endif

@@ -26,48 +26,48 @@
 
 //----------------------------------------------
 
-class cLuxGlobalDataHandler : public iLuxUpdateable
-{
-friend class cLuxGlobalDataHandler_SaveData;
-public:	
-	cLuxGlobalDataHandler();
-	~cLuxGlobalDataHandler();
-	
-	void LoadAndInitGlobalScript();
-	void OnGameStart();
-	void OnStart();
-	void Update(float afTimeStep);
-	void Reset();
+class cLuxGlobalDataHandler : public iLuxUpdateable {
+  friend class cLuxGlobalDataHandler_SaveData;
 
-	void OnMapEnter(cLuxMap *apMap);
-	void OnMapLeave(cLuxMap *apMap);
+public:
+  cLuxGlobalDataHandler();
+  ~cLuxGlobalDataHandler();
 
-	void LoadScript();
-	bool RecompileScript(tString *apOutput);
+  void LoadAndInitGlobalScript();
+  void OnGameStart();
+  void OnStart();
+  void Update(float afTimeStep);
+  void Reset();
 
-	void RunScript(const tString& asCommand);
+  void OnMapEnter(cLuxMap* apMap);
+  void OnMapLeave(cLuxMap* apMap);
 
-	cLuxScriptVar* GetVar(const tString &asName);
+  void LoadScript();
+  bool RecompileScript(tString* apOutput);
 
-	/////////////////////////////
-	// AI
-	bool GetEnemyActivateSoundAllowed();
-	void SetEnemyActivateSoundMade();
+  void RunScript(const tString& asCommand);
+
+  cLuxScriptVar* GetVar(const tString& asName);
+
+  /////////////////////////////
+  // AI
+  bool GetEnemyActivateSoundAllowed();
+  void SetEnemyActivateSoundMade();
 
 
-	/////////////////////////////
-	// Misc settings
-	float GetLightLampMinSanityIncrease(){return mfLightLampMinSanityIncrease;}
-	float GetLightLampMaxSanityIncrease(){return mfLightLampMaxSanityIncrease;}
+  /////////////////////////////
+  // Misc settings
+  float GetLightLampMinSanityIncrease() { return mfLightLampMinSanityIncrease; }
+  float GetLightLampMaxSanityIncrease() { return mfLightLampMaxSanityIncrease; }
 
 private:
-	tLuxScriptVarMap m_mapVars;
-	iScript *mpScript;
+  tLuxScriptVarMap m_mapVars;
+  iScript*         mpScript;
 
-	float mfEnemyActivateSoundCount;
+  float mfEnemyActivateSoundCount;
 
-	float mfLightLampMinSanityIncrease;
-	float mfLightLampMaxSanityIncrease;
+  float mfLightLampMinSanityIncrease;
+  float mfLightLampMaxSanityIncrease;
 };
 
 //----------------------------------------------

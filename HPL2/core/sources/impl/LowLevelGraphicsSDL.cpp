@@ -53,7 +53,7 @@
 #endif
 
 #if USE_SDL2
-#include "SDL2/SDL_syswm.h"
+#include "SDL_syswm.h"
 #else
 #include "SDL/SDL_syswm.h"
 #endif

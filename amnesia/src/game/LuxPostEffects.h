@@ -26,74 +26,71 @@
 
 //----------------------------------------
 
-class iLuxPostEffect : public iPostEffect
-{
+class iLuxPostEffect : public iPostEffect {
 public:
-	iLuxPostEffect(cGraphics *apGraphics, cResources *apResources) : iPostEffect(apGraphics, apResources, NULL){}
-	virtual ~iLuxPostEffect(){}
+  iLuxPostEffect(cGraphics* apGraphics, cResources* apResources)
+      : iPostEffect(apGraphics, apResources, NULL) {}
+  virtual ~iLuxPostEffect() {}
 
-	virtual void Update(float afTimeStep){}
+  virtual void Update(float afTimeStep) {}
 
 protected:
-	void OnSetParams(){}
-	iPostEffectParams *GetTypeSpecificParams() { return NULL; }
+  void               OnSetParams() {}
+  iPostEffectParams* GetTypeSpecificParams() { return NULL; }
 };
 
 
 //----------------------------------------
 
-class cLuxPostEffect_Insanity : public iLuxPostEffect
-{
+class cLuxPostEffect_Insanity : public iLuxPostEffect {
 public:
-	cLuxPostEffect_Insanity(cGraphics *apGraphics, cResources *apResources);
-	~cLuxPostEffect_Insanity();
+  cLuxPostEffect_Insanity(cGraphics* apGraphics, cResources* apResources);
+  ~cLuxPostEffect_Insanity();
 
-	void Update(float afTimeStep);
+  void Update(float afTimeStep);
 
-	void SetWaveAlpha(float afX){ mfWaveAlpha = afX;}
-	void SetZoomAlpha(float afX){ mfZoomAlpha = afX;}
-	void SetWaveSpeed(float afX){ mfWaveSpeed = afX;}
+  void SetWaveAlpha(float afX) { mfWaveAlpha = afX; }
+  void SetZoomAlpha(float afX) { mfZoomAlpha = afX; }
+  void SetWaveSpeed(float afX) { mfWaveSpeed = afX; }
 
 private:
-	iTexture* RenderEffect(iTexture *apInputTexture, iFrameBuffer *apFinalTempBuffer);
+  iTexture* RenderEffect(iTexture* apInputTexture, iFrameBuffer* apFinalTempBuffer);
 
-	iGpuProgram *mpProgram;
-	std::vector<iTexture*> mvAmpMaps;
-	iTexture* mpZoomMap;
+  iGpuProgram*           mpProgram;
+  std::vector<iTexture*> mvAmpMaps;
+  iTexture*              mpZoomMap;
 
-	float mfT;
-	float mfAnimCount;
-	float mfWaveAlpha;
-	float mfZoomAlpha;
-	float mfWaveSpeed;
+  float mfT;
+  float mfAnimCount;
+  float mfWaveAlpha;
+  float mfZoomAlpha;
+  float mfWaveSpeed;
 };
 
 
 //----------------------------------------------
 
 
-class cLuxPostEffectHandler : public iLuxUpdateable
-{
-public:	
-	cLuxPostEffectHandler();
-	~cLuxPostEffectHandler();
+class cLuxPostEffectHandler : public iLuxUpdateable {
+public:
+  cLuxPostEffectHandler();
+  ~cLuxPostEffectHandler();
 
-	void OnStart();
-	void Update(float afTimeStep);
-	void Reset();
+  void OnStart();
+  void Update(float afTimeStep);
+  void Reset();
 
-	cLuxPostEffect_Insanity* GetInsanity(){ return mpInsanity; }
+  cLuxPostEffect_Insanity* GetInsanity() { return mpInsanity; }
 
 private:
-	void LoadMainConfig();
-	void SaveMainConfig();
+  void LoadMainConfig();
+  void SaveMainConfig();
 
-	void AddEffect(iLuxPostEffect *apPostEffect, int alPrio);
+  void AddEffect(iLuxPostEffect* apPostEffect, int alPrio);
 
-	cLuxPostEffect_Insanity *mpInsanity;
+  cLuxPostEffect_Insanity* mpInsanity;
 
-	std::vector<iLuxPostEffect*> mvPostEffects;
-	
+  std::vector<iLuxPostEffect*> mvPostEffects;
 };
 
 //----------------------------------------------

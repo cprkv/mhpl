@@ -26,75 +26,70 @@
 
 //----------------------------------------------
 
-class cLuxArea_Sign_SaveData : public iLuxArea_SaveData
-{
-	kSerializableClassInit(cLuxArea_Sign_SaveData)
-public:
-	iLuxArea* CreateArea(cLuxMap *apMap);
+class cLuxArea_Sign_SaveData : public iLuxArea_SaveData {
+  kSerializableClassInit(cLuxArea_Sign_SaveData) public : iLuxArea* CreateArea(cLuxMap* apMap);
 
-	tString msTextCat;
-	tString msTextEntry;
+  tString msTextCat;
+  tString msTextEntry;
 };
 
 //----------------------------------------------
 
-class cLuxArea_Sign : public iLuxArea
-{
-typedef iLuxArea super_class;
-friend class cLuxAreaLoader_Sign;
-public:	
-	cLuxArea_Sign(const tString &asName, int alID, cLuxMap *apMap);
-	virtual ~cLuxArea_Sign();
+class cLuxArea_Sign : public iLuxArea {
+  typedef iLuxArea super_class;
+  friend class cLuxAreaLoader_Sign;
 
-	//////////////////////
-	//General
-	void SetupAfterLoad(cWorld *apWorld);
+public:
+  cLuxArea_Sign(const tString& asName, int alID, cLuxMap* apMap);
+  virtual ~cLuxArea_Sign();
 
-	void OnUpdate(float afTimeStep);
+  //////////////////////
+  //General
+  void SetupAfterLoad(cWorld* apWorld);
 
-	bool CanInteract(iPhysicsBody *apBody);
-	bool OnInteract(iPhysicsBody *apBody, const cVector3f &avPos);
+  void OnUpdate(float afTimeStep);
 
-	eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody *apBody, const cVector3f &avPos);
-	tWString GetFocusText();
+  bool CanInteract(iPhysicsBody* apBody);
+  bool OnInteract(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	//////////////////////
-	//Properties
-	
-	//////////////////////
-	//Connection callbacks
-	void OnConnectionStateChange(iLuxEntity *apEntity, int alState){}
+  eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody* apBody, const cVector3f& avPos);
+  tWString           GetFocusText();
 
-	//////////////////////
-	//Save data stuff
-	iLuxEntity_SaveData* CreateSaveData();
-	virtual void SaveToSaveData(iLuxEntity_SaveData* apSaveData);
-	virtual void LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
-	virtual void SetupSaveData(iLuxEntity_SaveData *apSaveData);
+  //////////////////////
+  //Properties
+
+  //////////////////////
+  //Connection callbacks
+  void OnConnectionStateChange(iLuxEntity* apEntity, int alState) {}
+
+  //////////////////////
+  //Save data stuff
+  iLuxEntity_SaveData* CreateSaveData();
+  virtual void         SaveToSaveData(iLuxEntity_SaveData* apSaveData);
+  virtual void         LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
+  virtual void         SetupSaveData(iLuxEntity_SaveData* apSaveData);
+
 protected:
-
 private:
-	cVector3f GetStartPosition();
+  cVector3f GetStartPosition();
 
-	/////////////////////////
-	// Data
-	tString msTextCat;
-	tString msTextEntry;
+  /////////////////////////
+  // Data
+  tString msTextCat;
+  tString msTextEntry;
 };
 
 //----------------------------------------------
 
-class cLuxAreaLoader_Sign : public iLuxAreaLoader
-{
+class cLuxAreaLoader_Sign : public iLuxAreaLoader {
 public:
-	cLuxAreaLoader_Sign(const tString& asName);
-	~cLuxAreaLoader_Sign();
+  cLuxAreaLoader_Sign(const tString& asName);
+  ~cLuxAreaLoader_Sign();
 
-	iLuxArea *CreateArea(const tString& asName, int alID, cLuxMap *apMap);
-	
-	void LoadVariables(iLuxArea *apArea, cWorld *apWorld);
-	void SetupArea(iLuxArea *apArea, cWorld *apWorld);
-	
+  iLuxArea* CreateArea(const tString& asName, int alID, cLuxMap* apMap);
+
+  void LoadVariables(iLuxArea* apArea, cWorld* apWorld);
+  void SetupArea(iLuxArea* apArea, cWorld* apWorld);
 };
 
 //----------------------------------------------

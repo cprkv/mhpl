@@ -7,14 +7,15 @@ OPTION(USERDIR_RESOURCES "Allow using local userdirectory resources" ON)
 
 set(MACOSX_BUNDLE_COPYRIGHT "Copyright © 2010-2013 Frictional Games")
 
-OPTION(IS_APPLE_64 "Apple build in 64 bits" OFF)
+# OPTION(IS_APPLE_64 "Apple build in 64 bits" OFF)
+# TODO this is BAAAD
+#if(APPLE)
+#    if(NOT IS_APPLE_64)
+#        set(CMAKE_OSX_ARCHITECTURES "i386")
+#    endif()
+#endif()
 
-if(APPLE)
-    if(NOT IS_APPLE_64)
-        set(CMAKE_OSX_ARCHITECTURES "i386")
-    endif()
-endif()
-
+# TODO this is BAAAD
 # silence some annoying warnings
 add_definitions(
     -Wno-switch
@@ -23,12 +24,8 @@ add_definitions(
     -Wno-unused-function
 )
 
-add_subdirectory(../../HPL2/core core2)
-
 if(USERDIR_RESOURCES)
-    add_definitions(
-        -DUSERDIR_RESOURCES
-    )
+    add_definitions(-DUSERDIR_RESOURCES)
 endif()
 
 set(VERSION "1.3.1")
@@ -41,6 +38,4 @@ else()
     add_subdirectory(launcher launcher)
 endif()
 
-add_custom_target(GameRelease
-    DEPENDS Amnesia Launcher
-)
+add_custom_target(GameRelease DEPENDS Amnesia Launcher)

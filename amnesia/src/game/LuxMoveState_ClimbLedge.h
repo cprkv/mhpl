@@ -26,37 +26,36 @@
 
 //----------------------------------------------
 
-class cLuxMoveState_ClimbLedge : public iLuxMoveState
-{
-public:	
-	cLuxMoveState_ClimbLedge(cLuxPlayer *apPlayer);
-	~cLuxMoveState_ClimbLedge();
-	
-	void OnMapEnter();
+class cLuxMoveState_ClimbLedge : public iLuxMoveState {
+public:
+  cLuxMoveState_ClimbLedge(cLuxPlayer* apPlayer);
+  ~cLuxMoveState_ClimbLedge();
 
-	void OnEnterState(eLuxMoveState aPrevState);
-	void OnLeaveState(eLuxMoveState aNewState);
+  void OnMapEnter();
 
-	void OnUpdate(float afTimeStep);
+  void OnEnterState(eLuxMoveState aPrevState);
+  void OnLeaveState(eLuxMoveState aNewState);
 
-	bool GetAllowsInteraction();
+  void OnUpdate(float afTimeStep);
 
-	bool OnMove(eCharDir aDir, float afMul);
-	bool OnAddYaw(float afAmount);
-	bool OnAddPitch(float afAmount);
+  bool GetAllowsInteraction();
 
-	void OnRun(bool abActive);
-	void OnCrouch(bool abActive);
-	void OnJump(bool abActive);
+  bool OnMove(eCharDir aDir, float afMul);
+  bool OnAddYaw(float afAmount);
+  bool OnAddPitch(float afAmount);
 
-	void OnDraw(float afFrameTime);
-	
+  void OnRun(bool abActive);
+  void OnCrouch(bool abActive);
+  void OnJump(bool abActive);
+
+  void OnDraw(float afFrameTime);
+
 private:
-	float mfHeadMoveSpeed;
-	float mfHeadMoveSlowdownDist;
-	float mfGivePlayerControlDist;
-	float mfMovePitchFactor;
-	float mfMaxMovePitchSpeed;
+  float mfHeadMoveSpeed;
+  float mfHeadMoveSlowdownDist;
+  float mfGivePlayerControlDist;
+  float mfMovePitchFactor;
+  float mfMaxMovePitchSpeed;
 };
 
 //----------------------------------------------

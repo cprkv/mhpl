@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2015 Andreas Jonsson
+   Copyright (c) 2003-2009 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -35,18 +35,7 @@
 // These functions handle the actual calling of system functions on the arm platform
 //
 // Written by Fredrik Ehnbom in June 2009, based on as_callfunc_x86.cpp
-//
-// The code was complemented to support Linux with ARM by Carlos Luna in December, 2012.
-//
-// Added support for functor methods by Jordi Oliveras Rovira in April, 2014.
 
-
-// This code has to conform to both AAPCS and the modified ABI for iOS
-//
-// Reference:
-//
-// AAPCS: http://infocenter.arm.com/help/topic/com.arm.doc.ihi0042d/IHI0042D_aapcs.pdf
-// iOS: http://developer.apple.com/library/ios/documentation/Xcode/Conceptual/iPhoneOSABIReference/iPhoneOSABIReference.pdf
 
 #include "as_config.h"
 
@@ -57,100 +46,106 @@
 #include "as_scriptengine.h"
 #include "as_texts.h"
 #include "as_tokendef.h"
-#include "as_context.h"
-
-#if defined(AS_SOFTFP)
-
-// This code supports the soft-float ABI, i.e. g++ -mfloat-abi=softfp
-//
-// The code for iOS, Android, Marmalade and Windows Phone goes here
 
 BEGIN_AS_NAMESPACE
 
-extern "C" asQWORD armFunc          (const asDWORD *, int, asFUNCTION_t);
-extern "C" asQWORD armFuncR0        (const asDWORD *, int, asFUNCTION_t, asDWORD r0);
-extern "C" asQWORD armFuncR0R1      (const asDWORD *, int, asFUNCTION_t, asDWORD r0, asDWORD r1);
-extern "C" asQWORD armFuncObjLast   (const asDWORD *, int, asFUNCTION_t, asDWORD obj);
-extern "C" asQWORD armFuncR0ObjLast (const asDWORD *, int, asFUNCTION_t, asDWORD r0, asDWORD obj);
+extern "C" asQWORD armFunc(const asDWORD *, int, size_t);
+extern "C" asQWORD armFuncR0(const asDWORD *, int, size_t, asDWORD r0);
+extern "C" asQWORD armFuncR0R1(const asDWORD *, int, size_t, asDWORD r0, asDWORD r1);
+extern "C" asQWORD armFuncObjLast(const asDWORD *, int, size_t, asDWORD obj);
+extern "C" asQWORD armFuncR0ObjLast(const asDWORD *, int, size_t, asDWORD r0, asDWORD obj);
 
-asQWORD CallSystemFunctionNative(asCContext *context, asCScriptFunction *descr, void *obj, asDWORD *args, void *retPointer, asQWORD &/*retQW2*/, void *secondObject)
+// TODO: CallSystemFunction should be split in two layers. The top layer
+//       implements the parts that are common to all system functions,
+//       e.g. the check for generic calling convention, the extraction of the
+//       object pointer, the processing of auto handles, and the pop size.
+//       Remember that the proper handling of auto handles is implemented in
+//       as_callfunc_x64_gcc.cpp as that code can handle both 32bit and 64bit pointers.
+//
+//       The lower layer implemented in CallNativeSystemFunction will then
+//       be responsible for just transforming the parameters to the native
+//       calling convention.
+//
+//       This should be done for all supported platforms.
+int CallSystemFunction(int id, asCContext *context, void *objectPointer)
 {
-	asCScriptEngine *engine = context->m_engine;
+	asCScriptEngine *engine = context->engine;
+	asCScriptFunction *descr = engine->scriptFunctions[id];
 	asSSystemFunctionInterface *sysFunc = descr->sysFuncIntf;
 	int callConv = sysFunc->callConv;
+	if( callConv == ICC_GENERIC_FUNC || callConv == ICC_GENERIC_METHOD )
+		return context->CallGeneric(id, objectPointer);
 
-	asQWORD       retQW     = 0;
-	asFUNCTION_t  func      = sysFunc->func;
-	int           paramSize = sysFunc->paramSize;
-	asFUNCTION_t *vftable;
+	asQWORD  retQW             = 0;
+	void    *func              = (void*)sysFunc->func;
+	int      paramSize         = sysFunc->paramSize;
+	asDWORD *args              = context->regs.stackPointer;
+	void    *retPointer        = 0;
+	void    *obj               = 0;
+	asDWORD *vftable;
+	int      popSize           = paramSize;
 
-	if( sysFunc->hostReturnInMemory )
+	context->regs.objectType = descr->returnType.GetObjectType();
+	if( descr->returnType.IsObject() && !descr->returnType.IsReference() && !descr->returnType.IsObjectHandle() )
 	{
-		// The return is made in memory
-		callConv++;
-	}
-	bool isThisCallMethod = callConv >= ICC_THISCALL_OBJLAST;
+		// Allocate the memory for the object
+		retPointer = engine->CallAlloc(descr->returnType.GetObjectType());
 
-
-	asDWORD paramBuffer[64+2];
-	// Android & Linux needs to align 64bit types on even registers, but this isn't done on iOS or Windows Phone
-	// TODO: optimize runtime: There should be a check for this in PrepareSystemFunction() so this 
-	//                         doesn't have to be done for functions that don't have any 64bit types
-#if !defined(AS_ANDROID) && !defined(AS_LINUX)
-	// In cases of thiscall methods, the callstack is configured as a standard thiscall
-	// adding the secondObject as first or last element in callstack
-	if( sysFunc->takesObjByVal || isThisCallMethod )
-#endif
-	{
-#if defined(AS_ANDROID) || defined(AS_LINUX)
-		// mask is used as a toggler to skip uneven registers.
-		int mask = 1;
-
-		if( isThisCallMethod )
+		if( sysFunc->hostReturnInMemory )
 		{
-			mask = 0;
+			// The return is made in memory
+			callConv++;
+		}
+	}
+
+	if( callConv >= ICC_THISCALL )
+	{
+		if( objectPointer )
+		{
+			obj = objectPointer;
 		}
 		else
 		{
-			// Check for object pointer as first argument
-			switch( callConv )
-			{
-				case ICC_THISCALL:
-				case ICC_CDECL_OBJFIRST:
-				case ICC_VIRTUAL_THISCALL:
-				case ICC_THISCALL_RETURNINMEM:
-				case ICC_CDECL_OBJFIRST_RETURNINMEM:
-				case ICC_VIRTUAL_THISCALL_RETURNINMEM:
-					mask = 0;
-					break;
-				default:
-					break;
-			}
-		}
+			// The object pointer should be popped from the context stack
+			popSize++;
 
-		// Check for hidden address in case of return by value
-		if( sysFunc->hostReturnInMemory )
-			mask = !mask;
+			// Check for null pointer
+			obj = (void*)*(size_t*)(args);
+			if( obj == 0 )
+			{
+				context->SetInternalException(TXT_NULL_POINTER_ACCESS);
+				if( retPointer )
+					engine->CallFree(retPointer);
+				return 0;
+			}
+
+			// Add the base offset for multiple inheritance
+#ifdef __GNUC__
+			// On GNUC + ARM the lsb of the offset is used to indicate a virtual function
+			// and the whole offset is thus shifted one bit left to keep the original
+			// offset resolution
+			obj = (void*)(size_t(obj) + (sysFunc->baseOffset>>1));
+#else
+			obj = (void*)(size_t(obj) + sysFunc->baseOffset);
 #endif
+
+			// Skip the object pointer
+			args++;
+		}
+	}
+
+	asDWORD paramBuffer[64];
+	if( sysFunc->takesObjByVal )
+	{
 		paramSize = 0;
 		int spos = 0;
-		int dpos = 2;
-
-		if( isThisCallMethod && (callConv >= ICC_THISCALL_OBJFIRST &&
-			callConv <= ICC_VIRTUAL_THISCALL_OBJFIRST_RETURNINMEM) )
-		{
-			// Add the object pointer as the first parameter
-			paramBuffer[dpos++] = (asDWORD)secondObject;
-			paramSize++;
-		}
-
+		int dpos = 1;
 		for( asUINT n = 0; n < descr->parameterTypes.GetLength(); n++ )
 		{
-			// TODO: runtime optimize: Declare a reference to descr->parameterTypes[n] so the array doesn't have to be access all the time
-			if( descr->parameterTypes[n].IsObject() && !descr->parameterTypes[n].IsObjectHandle() && !descr->parameterTypes[n].IsReference() )
+            if( descr->parameterTypes[n].IsObject() && !descr->parameterTypes[n].IsObjectHandle() && !descr->parameterTypes[n].IsReference() )
 			{
 #ifdef COMPLEX_OBJS_PASSED_BY_REF
-				if( descr->parameterTypes[n].GetTypeInfo()->flags & COMPLEX_MASK )
+				if( descr->parameterTypes[n].GetObjectType()->flags & COMPLEX_MASK )
 				{
 					paramBuffer[dpos++] = args[spos++];
 					paramSize++;
@@ -158,15 +153,6 @@ asQWORD CallSystemFunctionNative(asCContext *context, asCScriptFunction *descr, 
 				else
 #endif
 				{
-#if defined(AS_ANDROID) || defined(AS_LINUX)
-					if( (descr->parameterTypes[n].GetTypeInfo()->flags & asOBJ_APP_CLASS_ALIGN8) &&
-						((dpos & 1) == mask) )
-					{
-						// 64 bit value align
-						dpos++;
-						paramSize++;
-					}
-#endif
 					// Copy the object's memory to the buffer
 					memcpy(&paramBuffer[dpos], *(void**)(args+spos), descr->parameterTypes[n].GetSizeInMemoryBytes());
 
@@ -179,19 +165,6 @@ asQWORD CallSystemFunctionNative(asCContext *context, asCScriptFunction *descr, 
 			}
 			else
 			{
-#if defined(AS_ANDROID) || defined(AS_LINUX)
-				// Should an alignment be performed?
-				if( !descr->parameterTypes[n].IsObjectHandle() && 
-					!descr->parameterTypes[n].IsReference() && 
-					descr->parameterTypes[n].GetSizeOnStackDWords() == 2 && 
-					((dpos & 1) == mask) )
-				{
-					// 64 bit value align
-					dpos++;
-					paramSize++;
-				}
-#endif
-
 				// Copy the value directly
 				paramBuffer[dpos++] = args[spos++];
 				if( descr->parameterTypes[n].GetSizeOnStackDWords() > 1 )
@@ -199,463 +172,169 @@ asQWORD CallSystemFunctionNative(asCContext *context, asCScriptFunction *descr, 
 				paramSize += descr->parameterTypes[n].GetSizeOnStackDWords();
 			}
 		}
-
-		if( isThisCallMethod && (callConv >= ICC_THISCALL_OBJLAST &&
-			callConv <= ICC_VIRTUAL_THISCALL_OBJLAST_RETURNINMEM) )
-		{
-			// Add the object pointer as the last parameter
-			paramBuffer[dpos++] = (asDWORD)secondObject;
-			paramSize++;
-		}
-
 		// Keep a free location at the beginning
-		args = &paramBuffer[2];
+		args = &paramBuffer[1];
 	}
+
+	context->isCallingSystemFunction = true;
 
 	switch( callConv )
 	{
 	case ICC_CDECL_RETURNINMEM:     // fall through
 	case ICC_STDCALL_RETURNINMEM:
-		retQW = armFuncR0(args, paramSize<<2, func, (asDWORD)retPointer);
+        retQW = armFuncR0(args, paramSize<<2, (asDWORD)func, (asDWORD) retPointer);
+        break;
+    case ICC_CDECL:     // fall through
+    case ICC_STDCALL:
+		retQW = armFunc(args, paramSize<<2, (asDWORD)func);
 		break;
-	case ICC_CDECL:     // fall through
-	case ICC_STDCALL:
-		retQW = armFunc(args, paramSize<<2, func);
-		break;
-	case ICC_THISCALL:  // fall through
+    case ICC_THISCALL:  // fall through
 	case ICC_CDECL_OBJFIRST:
-	case ICC_THISCALL_OBJFIRST:
-	case ICC_THISCALL_OBJLAST:
-		retQW = armFuncR0(args, paramSize<<2, func, (asDWORD)obj);
+        retQW = armFuncR0(args, paramSize<<2, (asDWORD)func, (asDWORD) obj);
+        break;
+    case ICC_THISCALL_RETURNINMEM:
+#ifndef __GNUC__
+        retQW = armFuncR0R1(args, paramSize<<2, (asDWORD)func, (asDWORD) obj, (asDWORD) retPointer);
 		break;
-	case ICC_THISCALL_RETURNINMEM:
-	case ICC_THISCALL_OBJFIRST_RETURNINMEM:
-	case ICC_THISCALL_OBJLAST_RETURNINMEM:
-#ifdef __GNUC__
-		// On GNUC the address where the return value will be placed should be put in R0
-		retQW = armFuncR0R1(args, paramSize<<2, func, (asDWORD)retPointer, (asDWORD)obj);
-#else
-		// On Windows the R0 should always hold the object pointer, and the address for the return value comes after
-		retQW = armFuncR0R1(args, paramSize<<2, func, (asDWORD)obj, (asDWORD)retPointer);
 #endif
-		break;
-	case ICC_CDECL_OBJFIRST_RETURNINMEM:
-		retQW = armFuncR0R1(args, paramSize<<2, func, (asDWORD)retPointer, (asDWORD)obj);
+    case ICC_CDECL_OBJFIRST_RETURNINMEM:
+        retQW = armFuncR0R1(args, paramSize<<2, (asDWORD)func, (asDWORD) retPointer, (asDWORD) obj);
 		break;
 	case ICC_VIRTUAL_THISCALL:
-	case ICC_VIRTUAL_THISCALL_OBJFIRST:
-	case ICC_VIRTUAL_THISCALL_OBJLAST:
 		// Get virtual function table from the object pointer
-		vftable = *(asFUNCTION_t**)obj;
-		retQW = armFuncR0(args, paramSize<<2, vftable[FuncPtrToUInt(func)>>2], (asDWORD)obj);
-		break;
-	case ICC_VIRTUAL_THISCALL_RETURNINMEM:
-	case ICC_VIRTUAL_THISCALL_OBJFIRST_RETURNINMEM:
-	case ICC_VIRTUAL_THISCALL_OBJLAST_RETURNINMEM:
+		vftable = *(asDWORD**)obj;
+        retQW = armFuncR0(args, paramSize<<2, vftable[asDWORD(func)>>2], (asDWORD) obj);
+        break;
+    case ICC_VIRTUAL_THISCALL_RETURNINMEM:
 		// Get virtual function table from the object pointer
-		vftable = *(asFUNCTION_t**)obj;
-#ifdef __GNUC__
-		// On GNUC the address where the return value will be placed should be put in R0
-		retQW = armFuncR0R1(args, (paramSize+1)<<2, vftable[FuncPtrToUInt(func)>>2], (asDWORD)retPointer, (asDWORD)obj);
+		vftable = *(asDWORD**)obj;
+#ifndef __GNUC__
+        retQW = armFuncR0R1(args, (paramSize+1)<<2, vftable[asDWORD(func)>>2], (asDWORD) retPointer, (asDWORD) obj);
 #else
-		// On Windows the R0 should always hold the object pointer, and the address for the return value comes after
-		retQW = armFuncR0R1(args, (paramSize+1)<<2, vftable[FuncPtrToUInt(func)>>2], (asDWORD)obj, (asDWORD)retPointer);
+        retQW = armFuncR0R1(args, (paramSize+1)<<2, vftable[asDWORD(func)>>2], (asDWORD) obj, (asDWORD) retPointer);
 #endif
 		break;
 	case ICC_CDECL_OBJLAST:
-		retQW = armFuncObjLast(args, paramSize<<2, func, (asDWORD)obj);
-		break;
-	case ICC_CDECL_OBJLAST_RETURNINMEM:
-		retQW = armFuncR0ObjLast(args, paramSize<<2, func, (asDWORD)retPointer, (asDWORD)obj);
+		retQW = armFuncObjLast(args, paramSize<<2, (asDWORD)func, (asDWORD) obj);
+        break;
+    case ICC_CDECL_OBJLAST_RETURNINMEM:
+		retQW = armFuncR0ObjLast(args, paramSize<<2, (asDWORD)func, (asDWORD) retPointer, (asDWORD) obj);
 		break;
 	default:
 		context->SetInternalException(TXT_INVALID_CALLING_CONVENTION);
 	}
-
-	return retQW;
-}
-
-END_AS_NAMESPACE
-
-#elif !defined(AS_SOFTFP)
-
-// This code supports the hard-float ABI, i.e. g++ -mfloat-abi=hard
-// The main difference is that the floating point values are passed in the fpu registers
-
-#define VFP_OFFSET 70
-#define STACK_OFFSET 6
-#define PARAM_BUFFER_SIZE 104
-
-BEGIN_AS_NAMESPACE
-
-extern "C" asQWORD armFunc          (const asDWORD *, int, asFUNCTION_t);
-extern "C" asQWORD armFuncR0        (const asDWORD *, int, asFUNCTION_t, asDWORD r0);
-extern "C" asQWORD armFuncR0R1      (const asDWORD *, int, asFUNCTION_t, asDWORD r0, asDWORD r1);
-extern "C" asQWORD armFuncObjLast   (const asDWORD *, int, asFUNCTION_t, asDWORD obj);
-extern "C" asQWORD armFuncR0ObjLast (const asDWORD *, int, asFUNCTION_t, asDWORD r0, asDWORD obj);
-
-asQWORD CallSystemFunctionNative(asCContext *context, asCScriptFunction *descr, void *obj, asDWORD *args, void *retPointer, asQWORD &/*retQW2*/, void *secondObject)
-{
-	asCScriptEngine *engine = context->m_engine;
-	asSSystemFunctionInterface *sysFunc = descr->sysFuncIntf;
-	int callConv = sysFunc->callConv;
-
-	asQWORD       retQW     = 0;
-	asFUNCTION_t  func      = sysFunc->func;
-	int           paramSize = sysFunc->paramSize;
-	asFUNCTION_t *vftable;
-
-	//---------------------------------------------------------------------------- RPi
-	int freeFloatSlot	= VFP_OFFSET;
-	int freeDoubleSlot	= VFP_OFFSET;
-	int stackPos		= STACK_OFFSET;
-	int stackSize		= 0;
-	//----------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------- RPi
-	// We´ll divide paramBuffer into several segments:
-	//
-	// 0-1							Unused
-	// 2-5		(+8   / +0   asm)	values that should be placed in R0 - R3
-	// 6-67		(+24  / +16  asm)	values that should be placed on the stack
-	// 68		(+272 / +264 asm)	number of values stored in r registers (R0 - R3)
-	// 69		(+276 / +268 asm)	number of args stored on the stack
-	// 70-85	(+280 / +272 asm)	values that should be placed in VFP registers (16)
-	// 86-87	(+344 / +336 asm)	sp original value - sp final value - for debugging
-	// 88-103	(+352 / +344 asm)	Check area for free-used VFP registers
-	//
-	// Total number of elements: 104
-	//
-	// When passing the paramBuffer to the asm routines via the args pointer we are
-	// offsetting the start of the array to being at element # 2. That´s why in asm
-	// all addresses must have an offset of -2 words (-8 bytes).
-	//---------------------------------------------------------------------------- RPi
-
-	asDWORD paramBuffer[PARAM_BUFFER_SIZE];
-	memset(paramBuffer, 0, sizeof(asDWORD) * PARAM_BUFFER_SIZE);
-
-	if( sysFunc->hostReturnInMemory )
+	context->isCallingSystemFunction = false;
+#ifdef COMPLEX_OBJS_PASSED_BY_REF
+	if( sysFunc->takesObjByVal )
 	{
-		// TODO: runtime optimize: This check should be done in PrepareSystemFunction
-		if ( !( descr->returnType.GetTypeInfo()->flags & COMPLEX_RETURN_MASK )		&&
-			  ( descr->returnType.GetTypeInfo()->flags & asOBJ_APP_CLASS_ALLFLOATS )	&&
-			    descr->returnType.GetSizeInMemoryBytes() <= 8 )
-			callConv--;
-		
-		// The return is made in memory
-		callConv++;
-	}
+		// Need to free the complex objects passed by value
+		args = context->regs.stackPointer;
+		if( callConv >= ICC_THISCALL && !objectPointer )
+		    args++;
 
-	bool isThisCallMethod = callConv >= ICC_THISCALL_OBJLAST;
-
-	// Linux needs to align 64bit types on even registers, but this isn't done on iOS or Windows Phone
-	// TODO: optimize runtime: There should be a check for this in PrepareSystemFunction() so this 
-	//                         doesn't have to be done for functions that don't have any 64bit types
-	{
-		// mask is used as a toggler to skip uneven registers.
-		int mask = 1;
-
-		if( isThisCallMethod )
+		int spos = 0;
+		for( asUINT n = 0; n < descr->parameterTypes.GetLength(); n++ )
 		{
-			mask = 0;
+			if( descr->parameterTypes[n].IsObject() &&
+				!descr->parameterTypes[n].IsReference() &&
+                !descr->parameterTypes[n].IsObjectHandle()
+                )
+            {
+                if (descr->parameterTypes[n].GetObjectType()->flags & COMPLEX_MASK)
+                {
+			        void *obj = (void*)args[spos++];
+
+                    // Running the destructor here results in the destructor being 
+                    // run twice as it has already been called in the native function.
+                    // TODO: Should this be an ifdef or removed completely?
+//			        asSTypeBehaviour *beh = &descr->parameterTypes[n].GetObjectType()->beh;
+//			        if( beh->destruct )
+//				        engine->CallObjectMethod(obj, beh->destruct);
+
+			        engine->CallFree(obj);
+                }
+                else
+                {
+                    // The original data was already freed earlier
+                    spos += descr->parameterTypes[n].GetSizeInMemoryDWords();
+                }
+            }
+		    else
+            {
+			    spos += descr->parameterTypes[n].GetSizeOnStackDWords();
+            }
+        }
+	}
+#endif
+
+	// Store the returned value in our stack
+	if( descr->returnType.IsObject() && !descr->returnType.IsReference() )
+	{
+		if( descr->returnType.IsObjectHandle() )
+		{
+			context->regs.objectRegister = (void*)(size_t)retQW;
+
+			if( sysFunc->returnAutoHandle && context->regs.objectRegister )
+				engine->CallObjectMethod(context->regs.objectRegister, descr->returnType.GetObjectType()->beh.addref);
 		}
 		else
 		{
-			// Check for object pointer as first argument
-			switch( callConv )
+			if( !sysFunc->hostReturnInMemory )
 			{
-				case ICC_THISCALL:
-				case ICC_CDECL_OBJFIRST:
-				case ICC_VIRTUAL_THISCALL:
-				case ICC_THISCALL_RETURNINMEM:
-				case ICC_CDECL_OBJFIRST_RETURNINMEM:
-				case ICC_VIRTUAL_THISCALL_RETURNINMEM:
-					mask = 0;
-					break;
-				default:
-					break;
+				// Copy the returned value to the pointer sent by the script engine
+				if( sysFunc->hostReturnSize == 1 )
+					*(asDWORD*)retPointer = (asDWORD)retQW;
+				else
+					*(asQWORD*)retPointer = retQW;
 			}
+
+			// Store the object in the register
+			context->regs.objectRegister = retPointer;
 		}
-		// Check for hidden address in case of return by value
-		if( sysFunc->hostReturnInMemory )
-			mask = !mask;
-
-		paramSize = 0;
-		int spos = 0;
-		int dpos = 2;
-
-		if( isThisCallMethod && (callConv >= ICC_THISCALL_OBJFIRST &&
-			callConv <= ICC_VIRTUAL_THISCALL_OBJFIRST_RETURNINMEM) )
+	}
+	else
+	{
+		// Store value in valueRegister
+		if( sysFunc->hostReturnFloat )
 		{
-			// Add the object pointer as the first parameter
-			paramBuffer[dpos++] = (asDWORD)secondObject;
-			paramSize++;
+			if( sysFunc->hostReturnSize == 1 )
+				*(asDWORD*)&context->regs.valueRegister = (asDWORD) retQW;
+			else
+				context->regs.valueRegister = retQW;
 		}
+		else if( sysFunc->hostReturnSize == 1 )
+			*(asDWORD*)&context->regs.valueRegister = (asDWORD)retQW;
+		else
+			context->regs.valueRegister = retQW;
+	}
 
+	if( sysFunc->hasAutoHandles )
+	{
+		args = context->regs.stackPointer;
+		if( callConv >= ICC_THISCALL && !objectPointer )
+			args++;
+
+		int spos = 0;
 		for( asUINT n = 0; n < descr->parameterTypes.GetLength(); n++ )
 		{
-			// TODO: runtime optimize: Declare a reference to descr->parameterTypes[n] so the array doesn't have to be access all the time
-			if( descr->parameterTypes[n].IsObject() && !descr->parameterTypes[n].IsObjectHandle() && !descr->parameterTypes[n].IsReference() &&
-				!(descr->parameterTypes[n].GetTypeInfo()->flags & asOBJ_APP_ARRAY) )
+			if( sysFunc->paramAutoHandles[n] && args[spos] )
 			{
-#ifdef COMPLEX_OBJS_PASSED_BY_REF
-				if( descr->parameterTypes[n].GetTypeInfo()->flags & COMPLEX_MASK )
-				{
-					paramBuffer[dpos++] = args[spos++];
-					paramSize++;
-				}
-				else
-#endif
-				{
-					if( (descr->parameterTypes[n].GetTypeInfo()->flags & asOBJ_APP_CLASS_ALIGN8) )
-					{
-						if ( (dpos & 1) == mask )
-						{
-							// 64 bit value align
-							dpos++;
-							paramSize++;
-						}
-
-						if ( (stackPos & 1) == mask )
-						{
-							// 64 bit value align
-							stackPos++;
-							stackSize++;
-						}
-					}
-
-					// Copy the object's memory to the buffer
-					if (descr->parameterTypes[n].GetTypeInfo()->flags & asOBJ_APP_CLASS_ALLFLOATS)
-					{
-						int target = (freeFloatSlot > freeDoubleSlot) ? freeFloatSlot : freeDoubleSlot;
-
-						if ( descr->parameterTypes[n].GetSizeInMemoryDWords() <= ( (VFP_OFFSET + 16) - target) )
-						{
-							memcpy(&paramBuffer[target], *(void**)(args+spos), descr->parameterTypes[n].GetSizeInMemoryBytes());
-							memset(&paramBuffer[target + 18], (asDWORD)1, descr->parameterTypes[n].GetSizeInMemoryDWords());
-							target += descr->parameterTypes[n].GetSizeInMemoryDWords();
-							freeFloatSlot = freeDoubleSlot = target;
-						}
-						else
-						{
-							memcpy(&paramBuffer[stackPos], *(void**)(args+spos), descr->parameterTypes[n].GetSizeInMemoryBytes());
-							stackPos += descr->parameterTypes[n].GetSizeInMemoryDWords();
-							stackSize += descr->parameterTypes[n].GetSizeOnStackDWords();
-						}
-					}
-					else
-					{
-						memcpy(&paramBuffer[dpos], *(void**)(args+spos), descr->parameterTypes[n].GetSizeInMemoryBytes());
-						dpos += descr->parameterTypes[n].GetSizeInMemoryDWords();
-						paramSize += descr->parameterTypes[n].GetSizeInMemoryDWords();
-					}
-
-					// Delete the original memory
-					engine->CallFree(*(char**)(args+spos));
-					spos++;					
-				}
-
-				continue;
+				// Call the release method on the type
+				engine->CallObjectMethod((void*)*(size_t*)&args[spos], descr->parameterTypes[n].GetObjectType()->beh.release);
+				args[spos] = 0;
 			}
-			else if( descr->parameterTypes[n].IsFloatType() && !descr->parameterTypes[n].IsReference() )
-			{
-				// Are there any "s" registers available?
-				if ( freeFloatSlot < (VFP_OFFSET + 16) )
-				{
-					if (freeFloatSlot == freeDoubleSlot)
-						freeDoubleSlot += 2;
 
-					paramBuffer[freeFloatSlot + 18] = (asDWORD)1;
-					paramBuffer[freeFloatSlot++] = args[spos++];
-
-					while(freeFloatSlot < (VFP_OFFSET + 16) && paramBuffer[freeFloatSlot + 18] != 0)
-						freeFloatSlot++;
-				}
-				// If not, then store the float arg in the stack area
-				else
-				{
-					paramBuffer[stackPos++] = args[spos++];
-					stackSize++;
-				}
-
-				continue;
-			}
-			else if( descr->parameterTypes[n].IsDoubleType() && !descr->parameterTypes[n].IsReference() )
-			{
-				// Are there any "d" registers available?
-				if ( freeDoubleSlot < (VFP_OFFSET + 15) )
-				{
-					if (freeFloatSlot == freeDoubleSlot)
-						freeFloatSlot += 2;
-
-					// Copy two dwords for the double
-					paramBuffer[freeDoubleSlot + 18] = (asDWORD)1;
-					paramBuffer[freeDoubleSlot + 19] = (asDWORD)1;
-					paramBuffer[freeDoubleSlot++] = args[spos++];
-					paramBuffer[freeDoubleSlot++] = args[spos++];
-
-					while(freeDoubleSlot < (VFP_OFFSET + 15) && paramBuffer[freeDoubleSlot + 18] != 0)
-						freeDoubleSlot += 2;
-				}
-				// If not, then store the double arg in the stack area
-				else
-				{
-					if ( (stackPos & 1) == mask )
-					{
-						// 64 bit value align
-						stackPos++;
-						stackSize++;
-					}
-
-					paramBuffer[stackPos++] = args[spos++];
-					paramBuffer[stackPos++] = args[spos++];
-					stackSize += 2;
-				}
-				
-				continue;
-			}
+			if( descr->parameterTypes[n].IsObject() && !descr->parameterTypes[n].IsObjectHandle() && !descr->parameterTypes[n].IsReference() )
+				spos++;
 			else
-			{
-				// Copy the value directly to "r" registers or the stack, checking for alignment
-				if (paramSize < 4)
-				{
-					// Should an alignment be performed?
-					if( (dpos & 1) == mask && descr->parameterTypes[n].GetSizeOnStackDWords() == 2 && 
-						!descr->parameterTypes[n].IsObjectHandle() && !descr->parameterTypes[n].IsReference() &&
-						!descr->parameterTypes[n].IsAnyType() )
-					{
-						// 64 bit value align
-						dpos++;
-						paramSize++;
-					}
-
-					paramBuffer[dpos++] = args[spos++];
-					paramSize += descr->parameterTypes[n].GetSizeOnStackDWords();
-				}
-				else
-				{
-					// Should an alignment be performed?
-					if( (stackPos & 1) == mask && descr->parameterTypes[n].GetSizeOnStackDWords() == 2 &&
-						!descr->parameterTypes[n].IsObjectHandle() && !descr->parameterTypes[n].IsReference() &&
-						!descr->parameterTypes[n].IsAnyType() )
-					{
-						// 64 bit value align
-						stackPos++;
-						stackSize++;
-					}
-
-					paramBuffer[stackPos++] = args[spos++];
-					stackSize += descr->parameterTypes[n].GetSizeOnStackDWords();
-				}
-
-				if( descr->parameterTypes[n].GetSizeOnStackDWords() > 1 )
-				{
-					if (paramSize < 5)
-						paramBuffer[dpos++] = args[spos++];
-					else
-						paramBuffer[stackPos++] = args[spos++];
-				}
-			}// else...
-		}// Loop
-
-		if( isThisCallMethod && (callConv >= ICC_THISCALL_OBJLAST &&
-			callConv <= ICC_VIRTUAL_THISCALL_OBJLAST_RETURNINMEM) )
-		{
-			if (paramSize < 4)
-			{
-				paramBuffer[dpos++] = (asDWORD)secondObject;
-				paramSize++;
-			}
-			else
-			{
-				paramBuffer[stackPos++] = (asDWORD)secondObject;
-				stackSize++;
-			}
+				spos += descr->parameterTypes[n].GetSizeOnStackDWords();
 		}
-
-		// Keep a free location at the beginning
-		args = &paramBuffer[2];
 	}
 
-	paramBuffer[69] = static_cast<asDWORD>(stackSize<<2);
-
-	switch( callConv )
-	{
-	case ICC_CDECL_RETURNINMEM:     // fall through
-	case ICC_STDCALL_RETURNINMEM:
-		retQW = armFuncR0(args, paramSize<<2, func, (asDWORD)retPointer);
-		break;
-	case ICC_CDECL:     // fall through
-	case ICC_STDCALL:
-		retQW = armFunc(args, paramSize<<2, func);
-		break;
-	case ICC_THISCALL:  // fall through
-	case ICC_CDECL_OBJFIRST:
-	case ICC_THISCALL_OBJFIRST:
-	case ICC_THISCALL_OBJLAST:
-		retQW = armFuncR0(args, paramSize<<2, func, (asDWORD)obj);
-		break;
-	case ICC_THISCALL_RETURNINMEM:
-	case ICC_THISCALL_OBJFIRST_RETURNINMEM:
-	case ICC_THISCALL_OBJLAST_RETURNINMEM:
-		// On GNUC the address where the return value will be placed should be put in R0
-		retQW = armFuncR0R1(args, paramSize<<2, func, (asDWORD)retPointer, (asDWORD)obj);
-		break;
-	case ICC_CDECL_OBJFIRST_RETURNINMEM:
-		retQW = armFuncR0R1(args, paramSize<<2, func, (asDWORD)retPointer, (asDWORD)obj);
-		break;
-	case ICC_VIRTUAL_THISCALL:
-	case ICC_VIRTUAL_THISCALL_OBJFIRST:
-	case ICC_VIRTUAL_THISCALL_OBJLAST:
-		// Get virtual function table from the object pointer
-		vftable = *(asFUNCTION_t**)obj;
-		retQW = armFuncR0(args, paramSize<<2, vftable[FuncPtrToUInt(func)>>2], (asDWORD)obj);
-		break;
-	case ICC_VIRTUAL_THISCALL_RETURNINMEM:
-	case ICC_VIRTUAL_THISCALL_OBJFIRST_RETURNINMEM:
-	case ICC_VIRTUAL_THISCALL_OBJLAST_RETURNINMEM:
-		// Get virtual function table from the object pointer
-		vftable = *(asFUNCTION_t**)obj;
-		// On GNUC the address where the return value will be placed should be put in R0
-		retQW = armFuncR0R1(args, (paramSize+1)<<2, vftable[FuncPtrToUInt(func)>>2], (asDWORD)retPointer, (asDWORD)obj);
-		break;
-	case ICC_CDECL_OBJLAST:
-		retQW = armFuncObjLast(args, paramSize<<2, func, (asDWORD)obj);
-		break;
-	case ICC_CDECL_OBJLAST_RETURNINMEM:
-		retQW = armFuncR0ObjLast(args, paramSize<<2, func, (asDWORD)retPointer, (asDWORD)obj);
-		break;
-	default:
-		context->SetInternalException(TXT_INVALID_CALLING_CONVENTION);
-	}
-
-	// On Linux with arm the float and double values are returns in the 
-	// floating point registers, s0 and s1. Objects that contain only 
-	// float types and are not considered complex are also returned in the
-	// floating point registers.
-	if( sysFunc->hostReturnFloat )
-	{
-		retQW = paramBuffer[VFP_OFFSET];
-
-		if ( sysFunc->hostReturnSize > 1 )
-			retQW = *( (asQWORD*)&paramBuffer[VFP_OFFSET] );
-	}
-	else if ( descr->returnType.IsObject() )
-	{
-		// TODO: runtime optimize: This should be identified with a flag determined in PrepareSystemFunction
-		if ( !descr->returnType.IsObjectHandle()									&&
-			 !descr->returnType.IsReference()										&&
-			 !(descr->returnType.GetTypeInfo()->flags & COMPLEX_RETURN_MASK)		&&
-			 (descr->returnType.GetTypeInfo()->flags & asOBJ_APP_CLASS_ALLFLOATS) )
-			memcpy( retPointer, &paramBuffer[VFP_OFFSET], descr->returnType.GetSizeInMemoryBytes() );
-	}
-
-	return retQW;
+	return popSize;
 }
 
 END_AS_NAMESPACE
-
-#endif // AS_LINUX
 
 #endif // AS_ARM
 #endif // AS_MAX_PORTABILITY

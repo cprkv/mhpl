@@ -30,67 +30,64 @@ class cLuxPlayer;
 
 //------------------------------------
 
-class iLuxPlayerState_DefaultBase_SaveData : public iLuxPlayerState_SaveData
-{
-	kSerializableClassInit(iLuxPlayerState_DefaultBase_SaveData)
-public:
-
+class iLuxPlayerState_DefaultBase_SaveData : public iLuxPlayerState_SaveData {
+  kSerializableClassInit(iLuxPlayerState_DefaultBase_SaveData) public:
 };
 
 
 //----------------------------------------------
 
-class iLuxPlayerState_DefaultBase : public iLuxPlayerState
-{
-typedef iLuxPlayerState super_class;
-public:	
-	iLuxPlayerState_DefaultBase(cLuxPlayer *apPlayer, eLuxPlayerState aType);
-	virtual ~iLuxPlayerState_DefaultBase();
+class iLuxPlayerState_DefaultBase : public iLuxPlayerState {
+  typedef iLuxPlayerState super_class;
 
-	void OnEnterState(eLuxPlayerState aPrevState);
-	void OnLeaveState(eLuxPlayerState aNewState);
+public:
+  iLuxPlayerState_DefaultBase(cLuxPlayer* apPlayer, eLuxPlayerState aType);
+  virtual ~iLuxPlayerState_DefaultBase();
 
-	void OnMapEnter(cLuxMap *apMap);
-	void OnMapLeave(cLuxMap *apMap);
+  void OnEnterState(eLuxPlayerState aPrevState);
+  void OnLeaveState(eLuxPlayerState aNewState);
 
-	void Update(float afTimeStep);
-	void PostUpdate(float afTimeStep);
-	virtual void OnDraw(cGuiSet *apGuiSet ,float afFrameTime);
+  void OnMapEnter(cLuxMap* apMap);
+  void OnMapLeave(cLuxMap* apMap);
 
-	virtual cGuiGfxElement* GetCrosshair();
+  void         Update(float afTimeStep);
+  void         PostUpdate(float afTimeStep);
+  virtual void OnDraw(cGuiSet* apGuiSet, float afFrameTime);
 
-	bool OnDoAction(eLuxPlayerAction aAction,bool abPressed);
+  virtual cGuiGfxElement* GetCrosshair();
 
-	void OnSaveBody(iPhysicsBody *apBody, float &afMass, bool &abCollideCharacter){}
+  bool OnDoAction(eLuxPlayerAction aAction, bool abPressed);
 
-	float DrawDebug(cGuiSet *apSet,iFontData *apFont, float afStartY);
+  void OnSaveBody(iPhysicsBody* apBody, float& afMass, bool& abCollideCharacter) {}
 
-	/////////////////////////////////
-	//Save data stuff
-	virtual bool IsSaved(){ return true; }
-	
-	void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
-	void LoadFromSaveDataBeforeEnter(cLuxMap *apMap,iLuxPlayerState_SaveData* apSaveData);
-	void LoadFromSaveDataAfterEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData);
+  float DrawDebug(cGuiSet* apSet, iFontData* apFont, float afStartY);
+
+  /////////////////////////////////
+  //Save data stuff
+  virtual bool IsSaved() { return true; }
+
+  void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
+  void LoadFromSaveDataBeforeEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
+  void LoadFromSaveDataAfterEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
 
 protected:
-	virtual bool ShowOutlineOnEntity(iLuxEntity *apEntity, iPhysicsBody *apBody, const cVector3f &avFocusPos);
+  virtual bool ShowOutlineOnEntity(iLuxEntity* apEntity, iPhysicsBody* apBody, const cVector3f& avFocusPos);
 
-	virtual void ImplementedUpdate(float afTimeStep){}
-	virtual bool ImplementedDoAction(eLuxPlayerAction aAction,bool abPressed){return true;}
-	virtual void ImplementedOnEnterState(eLuxPlayerState aPrevState){}
-	virtual void ImplementedOnLeaveState(eLuxPlayerState aNewState){}
+  virtual void ImplementedUpdate(float afTimeStep) {}
+  virtual bool ImplementedDoAction(eLuxPlayerAction aAction, bool abPressed) { return true; }
+  virtual void ImplementedOnEnterState(eLuxPlayerState aPrevState) {}
+  virtual void ImplementedOnLeaveState(eLuxPlayerState aNewState) {}
 
-	bool CanInteractWithEntity();	
+  bool CanInteractWithEntity();
 
-	void AddOutlineObjects(iPhysicsBody *apBody, iLuxEntity *apEntity, const cVector3f &avFocusPos);
-	void GetAttachedBodies(iPhysicsBody *apBody, tPhysicsBodyList &alstBodies);
+  void AddOutlineObjects(iPhysicsBody* apBody, iLuxEntity* apEntity, const cVector3f& avFocusPos);
+  void GetAttachedBodies(iPhysicsBody* apBody, tPhysicsBodyList& alstBodies);
 
-	iPhysicsBody *mpBodyInFocus;
-	iLuxEntity *mpEntityInFocus;
-	float mfFocusDistance;
-	cVector3f mvFocusPos;
-	bool mbCurrentEntityHasOutline;
+  iPhysicsBody* mpBodyInFocus;
+  iLuxEntity*   mpEntityInFocus;
+  float         mfFocusDistance;
+  cVector3f     mvFocusPos;
+  bool          mbCurrentEntityHasOutline;
 };
 
 //----------------------------------------------

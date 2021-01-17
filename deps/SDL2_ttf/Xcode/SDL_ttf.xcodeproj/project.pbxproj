@@ -317,7 +317,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $SYMROOT/$CONFIGURATION/$PUBLIC_HEADERS_FOLDER_PATH\nHEADER=SDL_ttf.h\nsed 's,#include \"\\(.*\\)\",#include <SDL2/\\1>,' <$HEADER >$HEADER.new\nmv $HEADER.new $HEADER";
+			shellScript = "cd $SYMROOT/$CONFIGURATION/$PUBLIC_HEADERS_FOLDER_PATH\nHEADER=SDL_ttf.h\nsed 's,#include \"\\(.*\\)\",#include <\\1>,' <$HEADER >$HEADER.new\nmv $HEADER.new $HEADER";
 		};
 		BE48FD7107AFA17000BB41DA /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

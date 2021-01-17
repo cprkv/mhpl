@@ -24,71 +24,71 @@
 
 #include "LuxBase.h"
 
-class cGlowObject
-{
+class cGlowObject {
 public:
-	cGlowObject() {}
-	cGlowObject(iRenderable* apObject, float afAlpha) : mpObject(apObject), mfAlpha(afAlpha) {}
+  cGlowObject() {}
+  cGlowObject(iRenderable* apObject, float afAlpha)
+      : mpObject(apObject)
+      , mfAlpha(afAlpha) {}
 
-	iRenderable* mpObject;
-	float mfAlpha;
+  iRenderable* mpObject;
+  float        mfAlpha;
 };
 
 //----------------------------------------------
 
-class cLuxEffectRenderer : public iLuxUpdateable
-{
-public:	
-	cLuxEffectRenderer();
-	~cLuxEffectRenderer();
+class cLuxEffectRenderer : public iLuxUpdateable {
+public:
+  cLuxEffectRenderer();
+  ~cLuxEffectRenderer();
 
-	void Reset();
+  void Reset();
 
-	void Update(float afTimeStep);
+  void Update(float afTimeStep);
 
-	void ClearRenderLists();
+  void ClearRenderLists();
 
-	void RenderSolid(cRendererCallbackFunctions* apFunctions);
-	void RenderTrans(cRendererCallbackFunctions* apFunctions);
+  void RenderSolid(cRendererCallbackFunctions* apFunctions);
+  void RenderTrans(cRendererCallbackFunctions* apFunctions);
 
-	void AddOutlineObject(iRenderable *apObject);
-	void ClearOutlineObjects();
+  void AddOutlineObject(iRenderable* apObject);
+  void ClearOutlineObjects();
 
-	void AddFlashObject(iRenderable *apObject, float afAlpha);
-	void AddEnemyGlow(iRenderable *apObject, float afAlpha);
+  void AddFlashObject(iRenderable* apObject, float afAlpha);
+  void AddEnemyGlow(iRenderable* apObject, float afAlpha);
 
 private:
-	void RenderFlashObjects(cRendererCallbackFunctions* apFunctions);
-	void RenderEnemyGlow(cRendererCallbackFunctions* apFunctions);
-	
-	void RenderOutline(cRendererCallbackFunctions* apFunctions);
-	void RenderOutlineBlur(cRendererCallbackFunctions* apFunctions, iTexture *apInputTex);
-		
-	std::vector<cGlowObject> mvFlashObjects;
-	std::vector<cGlowObject> mvEnemyGlowObjects;
-	
-	std::vector<iRenderable*> mvOutlineObjects;
+  void RenderFlashObjects(cRendererCallbackFunctions* apFunctions);
+  void RenderEnemyGlow(cRendererCallbackFunctions* apFunctions);
 
-	iFrameBuffer *mpDeferredAccumBuffer;
-	iFrameBuffer *mpFrameBufferColor;
+  void RenderOutline(cRendererCallbackFunctions* apFunctions);
+  void RenderOutlineBlur(cRendererCallbackFunctions* apFunctions, iTexture* apInputTex);
 
-	int mlBlurSizeDiv;
-	iGpuProgram *mpBlurProgram[2];
-	iFrameBuffer *mpBlurBuffer[2];
-	iTexture *mpBlurTexture[2];
+  std::vector<cGlowObject> mvFlashObjects;
+  std::vector<cGlowObject> mvEnemyGlowObjects;
 
-	iTexture *mpOutlineColorTexture;
+  std::vector<iRenderable*> mvOutlineObjects;
 
-	iGpuProgram *mpOutlineColorProgram[2];
-	iGpuProgram *mpOutlineStencilProgram;
-	iGpuProgram *mpOutlineStencilAlphaProgram;
+  iFrameBuffer* mpDeferredAccumBuffer;
+  iFrameBuffer* mpFrameBufferColor;
 
-	iGpuProgram *mpFlashProgram;
-	cLinearOscillation mFlashOscill;
+  int           mlBlurSizeDiv;
+  iGpuProgram*  mpBlurProgram[2];
+  iFrameBuffer* mpBlurBuffer[2];
+  iTexture*     mpBlurTexture[2];
 
-	iGpuProgram *mpEnemyGlowProgram;
+  iTexture* mpOutlineColorTexture;
 
-	cMatrixf m_mtxTemp;
+  iGpuProgram* mpOutlineColorProgram[2];
+  iGpuProgram* mpOutlineStencilProgram;
+  iGpuProgram* mpOutlineStencilAlphaProgram;
+
+  iGpuProgram*       mpFlashProgram;
+  cLinearOscillation mFlashOscill;
+
+  iGpuProgram* mpEnemyGlowProgram;
+
+  cMatrixf m_mtxTemp;
 };
 
 //----------------------------------------------

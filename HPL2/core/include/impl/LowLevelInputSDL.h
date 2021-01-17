@@ -24,7 +24,7 @@
 #include "input/LowLevelInput.h"
 
 #if USE_SDL2
-#include "SDL2/SDL_events.h"
+#include "SDL_events.h"
 #else
 #include "SDL/SDL_events.h"
 #endif

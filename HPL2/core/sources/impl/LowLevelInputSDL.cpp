@@ -30,8 +30,8 @@
 #include "engine/Engine.h"
 
 #if USE_SDL2
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_syswm.h"
+#include "SDL.h"
+#include "SDL_syswm.h"
 #else
 #include "SDL/SDL.h"
 #include "SDL/SDL_syswm.h"

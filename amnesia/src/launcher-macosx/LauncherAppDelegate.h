@@ -31,39 +31,39 @@
 #import "../launcher/QualityChooser.h"
 #import "resources/LanguageFile.h"
 
-@interface LauncherAppDelegate : NSObject<NSApplicationDelegate> {
-	IBOutlet NSWindow *mainWindow;
-	
-	IBOutlet NSWindow *customResolutionWindow;
+@interface LauncherAppDelegate : NSObject <NSApplicationDelegate> {
+  IBOutlet NSWindow* mainWindow;
 
-	IBOutlet NSTextField *_customWidth, *_customHeight;
+  IBOutlet NSWindow* customResolutionWindow;
 
-	IBOutlet NSTabView *_tabView;
-	NSTabViewItem *_editorTab;
+  IBOutlet NSTextField *_customWidth, *_customHeight;
 
-	IBOutlet NSObjectController *_labels;
-	IBOutlet NSObjectController *_selected;
-	
-	IBOutlet NSArrayController *_languages;
-	IBOutlet NSArrayController *_resolutions;
-	IBOutlet NSArrayController *_audiodevices;
+  IBOutlet NSTabView* _tabView;
+  NSTabViewItem*      _editorTab;
 
-	hpl::cConfigFile *_mainConfig;
-	cQualityChooser *mpQualityChooser;
-	cLanguageFile *_langFile;
-	NSDictionary *_settingsMap;
+  IBOutlet NSObjectController* _labels;
+  IBOutlet NSObjectController* _selected;
 
-	NSArray *_editorLaunchItems;
+  IBOutlet NSArrayController* _languages;
+  IBOutlet NSArrayController* _resolutions;
+  IBOutlet NSArrayController* _audiodevices;
 
-	hpl::cConfigFile* mvPresets[3];
+  hpl::cConfigFile* _mainConfig;
+  cQualityChooser*  mpQualityChooser;
+  cLanguageFile*    _langFile;
+  NSDictionary*     _settingsMap;
 
-	BOOL mbSettingPreset;
+  NSArray* _editorLaunchItems;
+
+  hpl::cConfigFile* mvPresets[3];
+
+  BOOL mbSettingPreset;
 }
 
-- (void)launchEditorButton:(NSButton *)sender;
+- (void)launchEditorButton:(NSButton*)sender;
 
-- (IBAction)openCustomStories:(NSButton *)sender;
-- (IBAction)openPDFButton:(NSButton *)sender;
+- (IBAction)openCustomStories:(NSButton*)sender;
+- (IBAction)openPDFButton:(NSButton*)sender;
 - (IBAction)launchButton:(id)sender;
 - (IBAction)advancedButton:(id)sender;
 - (IBAction)detectButton:(id)sender;

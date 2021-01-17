@@ -1,6 +1,6 @@
 /*
    AngelCode Scripting Library
-   Copyright (c) 2003-2018 Andreas Jonsson
+   Copyright (c) 2003-2009 Andreas Jonsson
 
    This software is provided 'as-is', without any express or implied
    warranty. In no event will the authors be held liable for any
@@ -51,43 +51,34 @@ BEGIN_AS_NAMESPACE
 class asCScriptFunction;
 class asCScriptEngine;
 
+// TODO: The context should be renamed to something that better describes it, e.g. asIVirtualMachine, asIExecuter, asIProcessor, asIScriptThread, or something like that
+
 class asCContext : public asIScriptContext
 {
 public:
-	// Memory management
-	int  AddRef() const;
-	int  Release() const;
+	// From asIScriptContext
+	int  AddRef();
+	int  Release();
 
-	// Miscellaneous
-	asIScriptEngine *GetEngine() const;
+	asIScriptEngine *GetEngine();
 
-	// Execution
-	int             Prepare(asIScriptFunction *func);
-	int             Unprepare();
-	int             Execute();
-	int             Abort();
-	int             Suspend();
-	asEContextState GetState() const;
-	int             PushState();
-	int             PopState();
-	bool            IsNested(asUINT *nestCount = 0) const;
+	asEContextState GetState();
 
-	// Object pointer for calling class methods
-	int SetObject(void *obj);
+	int  Prepare(int functionID);
+	int  Unprepare();
 
-	// Arguments
-	int   SetArgByte(asUINT arg, asBYTE value);
-	int   SetArgWord(asUINT arg, asWORD value);
-	int   SetArgDWord(asUINT arg, asDWORD value);
-	int   SetArgQWord(asUINT arg, asQWORD value);
-	int   SetArgFloat(asUINT arg, float value);
-	int   SetArgDouble(asUINT arg, double value);
-	int   SetArgAddress(asUINT arg, void *addr);
-	int   SetArgObject(asUINT arg, void *obj);
-	int   SetArgVarType(asUINT arg, void *ptr, int typeId);
+	int SetArgByte(asUINT arg, asBYTE value);
+	int SetArgWord(asUINT arg, asWORD value);
+	int SetArgDWord(asUINT arg, asDWORD value);
+	int SetArgQWord(asUINT arg, asQWORD value);
+	int SetArgFloat(asUINT arg, float value);
+	int SetArgDouble(asUINT arg, double value);
+	int SetArgAddress(asUINT arg, void *addr);
+	int SetArgObject(asUINT arg, void *obj);
 	void *GetAddressOfArg(asUINT arg);
 
-	// Return value
+	int SetObject(void *obj);
+
 	asBYTE  GetReturnByte();
 	asWORD  GetReturnWord();
 	asDWORD GetReturnDWord();
@@ -98,39 +89,47 @@ public:
 	void   *GetReturnObject();
 	void   *GetAddressOfReturnValue();
 
-	// Exception handling
-	int                SetException(const char *descr, bool allowCatch = true);
-	int                GetExceptionLineNumber(int *column, const char **sectionName);
-	asIScriptFunction *GetExceptionFunction();
-	const char *       GetExceptionString();
-	bool               WillExceptionBeCaught();
-	int                SetExceptionCallback(asSFuncPtr callback, void *obj, int callConv);
-	void               ClearExceptionCallback();
+	int  Execute();
+	int  Abort();
+	int  Suspend();
 
-	// Debugging
-	int                SetLineCallback(asSFuncPtr callback, void *obj, int callConv);
-	void               ClearLineCallback();
-	asUINT             GetCallstackSize() const;
-	asIScriptFunction *GetFunction(asUINT stackLevel);
-	int                GetLineNumber(asUINT stackLevel, int *column, const char **sectionName);
-	int                GetVarCount(asUINT stackLevel);
-	const char        *GetVarName(asUINT varIndex, asUINT stackLevel);
-	const char        *GetVarDeclaration(asUINT varIndex, asUINT stackLevel, bool includeNamespace);
-	int                GetVarTypeId(asUINT varIndex, asUINT stackLevel);
-	void              *GetAddressOfVar(asUINT varIndex, asUINT stackLevel);
-	bool               IsVarInScope(asUINT varIndex, asUINT stackLevel);
-	int                GetThisTypeId(asUINT stackLevel);
-    void              *GetThisPointer(asUINT stackLevel);
-	asIScriptFunction *GetSystemFunction();
+	int  GetCurrentLineNumber(int *column);
+	int  GetCurrentFunction();
 
-	// User data
-	void *SetUserData(void *data, asPWORD type);
-	void *GetUserData(asPWORD type) const;
+	int  SetException(const char *descr);
+	int  GetExceptionLineNumber(int *column);
+	int  GetExceptionFunction();
+	const char *GetExceptionString();
+
+	int  SetLineCallback(asSFuncPtr callback, void *obj, int callConv);
+	void ClearLineCallback();
+	int  SetExceptionCallback(asSFuncPtr callback, void *obj, int callConv);
+	void ClearExceptionCallback();
+
+	int GetCallstackSize();
+	int GetCallstackFunction(int index);
+	int GetCallstackLineNumber(int index, int *column);
+
+	int         GetVarCount(int stackLevel);
+	const char *GetVarName(int varIndex, int stackLevel);
+	const char *GetVarDeclaration(int varIndex, int stackLevel);
+	int         GetVarTypeId(int varIndex, int stackLevel);
+	void       *GetAddressOfVar(int varIndex, int stackLevel);
+	int         GetThisTypeId(int stackLevel);
+    void       *GetThisPointer(int stackLevel);
+
+	void *SetUserData(void *data);
+	void *GetUserData();
 
 public:
 	// Internal public functions
 	asCContext(asCScriptEngine *engine, bool holdRef);
 	virtual ~asCContext();
+
+#ifdef AS_DEPRECATED
+// Deprecated since 2009-12-08, 2.18.0
+	int  SetExecuteStringFunction(asCScriptFunction *func);
+#endif
 
 //protected:
 	friend class asCScriptEngine;
@@ -138,112 +137,73 @@ public:
 	void CallLineCallback();
 	void CallExceptionCallback();
 
-	int  CallGeneric(asCScriptFunction *func);
-#ifndef AS_NO_EXCEPTIONS
-	void HandleAppException();
-#endif
+	int  CallGeneric(int funcID, void *objectPointer);
+
 	void DetachEngine();
 
 	void ExecuteNext();
-	void CleanStack(bool catchException = false);
-	bool CleanStackFrame(bool catchException = false);
-	void CleanArgsOnStack();
+	void CleanStack();
+	void CleanStackFrame();
 	void CleanReturnObject();
-	void DetermineLiveObjects(asCArray<int> &liveObjects, asUINT stackLevel);
 
-	int  PushCallState();
+	void PushCallState();
 	void PopCallState();
 	void CallScriptFunction(asCScriptFunction *func);
 	void CallInterfaceMethod(asCScriptFunction *func);
-	void PrepareScriptFunction();
 
-	bool ReserveStackSpace(asUINT size);
-
-	void SetInternalException(const char *descr, bool allowCatch = true);
-	bool FindExceptionTryCatch();
+	void SetInternalException(const char *descr);
 
 	// Must be protected for multiple accesses
-	mutable asCAtomic m_refCount;
+	asCAtomic refCount;
 
-	bool             m_holdEngineRef;
-	asCScriptEngine *m_engine;
+	bool holdEngineRef;
+	asCScriptEngine *engine;
 
-	asEContextState m_status;
-	bool            m_doSuspend;
-	bool            m_doAbort;
-	bool            m_externalSuspendRequest;
+	asEContextState status;
+	bool doSuspend;
+	bool doAbort;
+	bool externalSuspendRequest;
+	bool isCallingSystemFunction;
 
-	asCScriptFunction *m_currentFunction;
-	asCScriptFunction *m_callingSystemFunction;
+	asCScriptFunction *currentFunction;
+	bool isStackMemoryNotAllocated;
 
-	// The call stack holds program pointer, stack pointer, etc for caller functions
-	asCArray<size_t>    m_callStack;
+	asCArray<size_t> callStack;
+	asCArray<asDWORD *> stackBlocks;
+	int stackBlockSize;
+	int stackIndex;
 
-	// Dynamically growing local stack
-	asCArray<asDWORD *> m_stackBlocks;
-	asUINT              m_stackBlockSize;
-	asUINT              m_stackIndex;
-	asDWORD            *m_originalStackPointer;
+	bool inExceptionHandler;
+	asCString exceptionString;
+	int exceptionFunction;
+	int exceptionLine;
+	int exceptionColumn;
 
-	// Exception handling
-	bool      m_isStackMemoryNotAllocated;
-	bool      m_needToCleanupArgs;
-	bool      m_inExceptionHandler;
-	asCString m_exceptionString;
-	int       m_exceptionFunction;
-	int       m_exceptionSectionIdx;
-	int       m_exceptionLine;
-	int       m_exceptionColumn;
-	bool      m_exceptionWillBeCaught;
+	int returnValueSize;
+	int argumentsSize;
 
-	// The last prepared function, and some cached values related to it
-	asCScriptFunction *m_initialFunction;
-	int                m_returnValueSize;
-	int                m_argumentsSize;
+#ifdef AS_DEPRECATED
+// Deprecated since 2009-12-08, 2.18.0
+	// String function
+	asCScriptFunction *stringFunction;
+#endif
+
+	asCScriptFunction *initialFunction;
 
 	// callbacks
-	bool                       m_lineCallback;
-	asSSystemFunctionInterface m_lineCallbackFunc;
-	void *                     m_lineCallbackObj;
+	bool lineCallback;
+	asSSystemFunctionInterface lineCallbackFunc;
+	void *lineCallbackObj;
 
-	bool                       m_exceptionCallback;
-	asSSystemFunctionInterface m_exceptionCallbackFunc;
-	void *                     m_exceptionCallbackObj;
+	bool exceptionCallback;
+	asSSystemFunctionInterface exceptionCallbackFunc;
+	void *exceptionCallbackObj;
 
-	asCArray<asPWORD> m_userData;
+	void *userData;
 
 	// Registers available to JIT compiler functions
-	asSVMRegisters m_regs;
+	asSVMRegisters regs;
 };
-
-// TODO: Move these to as_utils.h
-int     as_powi(int base, int exponent, bool& isOverflow);
-asDWORD as_powu(asDWORD base, asDWORD exponent, bool& isOverflow);
-asINT64 as_powi64(asINT64 base, asINT64 exponent, bool& isOverflow);
-asQWORD as_powu64(asQWORD base, asQWORD exponent, bool& isOverflow);
-
-// Optional template version of powi if overflow detection is not used.
-#if 0
-template <class T>
-T as_powi(T base, T exponent)
-{
-	// Test for sign bit (huge number is OK)
-	if( exponent & (T(1)<<(sizeof(T)*8-1)) )
-		return 0;
-	else
-	{
-		int result = 1;
-		while( exponent )
-		{
-			if( exponent & 1 )
-				result *= base;
-			exponent >>= 1;
-			base *= base;
-		}
-		return result;
-	}
-}
-#endif
 
 END_AS_NAMESPACE
 

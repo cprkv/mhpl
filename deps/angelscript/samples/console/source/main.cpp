@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <math.h>
 #include <angelscript.h>
-#include "../../../add_on/scriptstdstring/scriptstdstring.h"
+#include "../../../add_on/scriptstring/scriptstring.h"
 #include "../../../add_on/scripthelper/scripthelper.h"
 
 using namespace std;
@@ -33,15 +33,25 @@ float          g_gravity;
 asUINT         p_health;
 asUINT         r_fov;
 bool           r_shadow;
-string         p_name = "player";
+CScriptString *p_name = 0;
 
 int main(int argc, char **argv)
 {
 	// Create the script engine
-	asIScriptEngine *engine = asCreateScriptEngine();
+	asIScriptEngine *engine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
 	if( engine == 0 )
 	{
 		cout << "Failed to create script engine." << endl;
+		return -1;
+	}
+
+	// Allocate a script string for the player name.
+	// We must do this because the script string type that we use is
+	// reference counted and cannot be declared as local or global variable.
+	p_name = new CScriptString("player");
+	if( p_name == 0 )
+	{
+		cout << "Failed to allocate script string." << endl;
 		return -1;
 	}
 
@@ -67,7 +77,7 @@ int main(int argc, char **argv)
 		// Trim unused characters
 		input.resize(strlen(input.c_str()));
 
-		size_t pos;
+		int pos;
 		if( (pos = input.find(" ")) != string::npos )
 		{
 			cmd = input.substr(0, pos);
@@ -102,8 +112,11 @@ int main(int argc, char **argv)
 			cout << "Unknown command." << endl;
 	}
 
-	// Shut down the engine
-	engine->ShutDownAndRelease();
+	// Release the engine
+	engine->Release();
+
+	// Release the script string
+	if( p_name ) p_name->Release();
 
 	return 0;
 }
@@ -135,7 +148,7 @@ void MessageCallback(const asSMessageInfo *msg, void *param)
 	else if( msg->type == asMSGTYPE_INFORMATION )
 		type = "INFO";
 
-	cout << msg->section << " (" << msg->row << ", " << msg->col << ") : " << type << " : " << msg->message << endl;
+	printf("%s (%d, %d) : %s : %s\n", msg->section, msg->row, msg->col, type, msg->message);
 }
 
 void ConfigureEngine(asIScriptEngine *engine)
@@ -148,14 +161,15 @@ void ConfigureEngine(asIScriptEngine *engine)
 	// Register the script string type
 	// Look at the implementation for this function for more information
 	// on how to register a custom string type, and other object types.
-	RegisterStdString(engine);
+	// The implementation is in "/add_on/scriptstring/scriptstring.cpp"
+	RegisterScriptString(engine);
 
 	// Register the global variables
 	r = engine->RegisterGlobalProperty("float g_gravity", &g_gravity); assert( r >= 0 );
 	r = engine->RegisterGlobalProperty("uint p_health", &p_health);    assert( r >= 0 );
 	r = engine->RegisterGlobalProperty("uint r_fov", &r_fov);          assert( r >= 0 );
 	r = engine->RegisterGlobalProperty("bool r_shadow", &r_shadow);    assert( r >= 0 );
-	r = engine->RegisterGlobalProperty("string p_name", &p_name);      assert( r >= 0 );
+	r = engine->RegisterGlobalProperty("string p_name", p_name);       assert( r >= 0 );
 
 	// Register some useful functions
 	r = engine->RegisterGlobalFunction("float sin(float)", asFUNCTION(sinf), asCALL_CDECL); assert( r >= 0 );
@@ -220,10 +234,10 @@ void DeleteVariable(asIScriptEngine *engine, string &arg)
 	}
 
 	// trim the string to find the variable name
-	size_t p1 = arg.find_first_not_of(" \n\r\t");
+	int p1 = arg.find_first_not_of(" \n\r\t");
 	if( p1 != string::npos )
 		arg = arg.substr(p1, -1);
-	size_t p2 = arg.find_last_not_of(" \n\r\t");
+	int p2 = arg.find_last_not_of(" \n\r\t");
 	if( p2 != string::npos )
 		arg = arg.substr(0, p2+1);
 
@@ -251,12 +265,10 @@ void AddFunction(asIScriptEngine *engine, string &arg)
 	else
 	{
 		// The script engine supports function overloads, but to simplify the 
-		// console we'll disallow multiple functions with the same name.
-		// We know the function was added, so if GetFunctionByName() fails it is
-		// because there already was another function with the same name.
-		if( mod->GetFunctionByName(func->GetName()) == 0 )
+		// console we'll disallow multiple functions with the same name
+		if( mod->GetFunctionIdByName(func->GetName()) == asMULTIPLE_FUNCTIONS )
 		{
-			mod->RemoveFunction(func);
+			mod->RemoveFunction(func->GetId());
 			cout << "Another function with that name already exists." << endl;
 		}
 		else
@@ -278,17 +290,17 @@ void DeleteFunction(asIScriptEngine *engine, string &arg)
 	}
 
 	// trim the string to find the variable name
-	size_t p1 = arg.find_first_not_of(" \n\r\t");
+	int p1 = arg.find_first_not_of(" \n\r\t");
 	if( p1 != string::npos )
 		arg = arg.substr(p1, -1);
-	size_t p2 = arg.find_last_not_of(" \n\r\t");
+	int p2 = arg.find_last_not_of(" \n\r\t");
 	if( p2 != string::npos )
 		arg = arg.substr(0, p2+1);
 
-	asIScriptFunction *func = mod->GetFunctionByName(arg.c_str());
-	if( func )
+	int id = mod->GetFunctionIdByName(arg.c_str());
+	if( id > 0 )
 	{
-		mod->RemoveFunction(func);
+		mod->RemoveFunction(id);
 		cout << "Function removed. " << endl;
 	}
 	else
@@ -305,12 +317,12 @@ void ListVariables(asIScriptEngine *engine)
 
 	// List the application registered variables
 	cout << "Application variables:" << endl;
-	for( n = 0; n < (asUINT)engine->GetGlobalPropertyCount(); n++ )
+	for( n = 0; n < engine->GetGlobalPropertyCount(); n++ )
 	{
 		const char *name;
 		int typeId;
 		bool isConst;
-		engine->GetGlobalPropertyByIndex(n, &name, 0, &typeId, &isConst);
+		engine->GetGlobalPropertyByIndex(n, &name, &typeId, &isConst);
 		string decl = isConst ? " const " : " ";
 		decl += engine->GetTypeDeclaration(typeId);
 		decl += " ";
@@ -324,7 +336,7 @@ void ListVariables(asIScriptEngine *engine)
 	{
 		cout << endl;
 		cout << "User variables:" << endl;
-		for( n = 0; n < (asUINT)mod->GetGlobalVarCount(); n++ )
+		for( n = 0; n < mod->GetGlobalVarCount(); n++ )
 		{
 			cout << " " << mod->GetGlobalVarDeclaration(n) << endl;
 		}
@@ -337,9 +349,10 @@ void ListFunctions(asIScriptEngine *engine)
 	
 	// List the application registered functions
 	cout << "Application functions:" << endl;
-	for( n = 0; n < (asUINT)engine->GetGlobalFunctionCount(); n++ )
+	for( n = 0; n < engine->GetGlobalFunctionCount(); n++ )
 	{
-		asIScriptFunction *func = engine->GetGlobalFunctionByIndex(n);
+		int id = engine->GetGlobalFunctionIdByIndex(n);
+		asIScriptFunction *func = engine->GetFunctionDescriptorById(id);
 
 		// Skip the functions that start with _ as these are not meant to be called explicitly by the user
 		if( func->GetName()[0] != '_' )
@@ -352,9 +365,9 @@ void ListFunctions(asIScriptEngine *engine)
 	{
 		cout << endl;
 		cout << "User functions:" << endl;
-		for( n = 0; n < (asUINT)mod->GetFunctionCount(); n++ )
+		for( n = 0; n < mod->GetFunctionCount(); n++ )
 		{
-			asIScriptFunction *func = mod->GetFunctionByIndex(n);
+			asIScriptFunction *func = mod->GetFunctionDescriptorByIndex(n);
 			cout << " " << func->GetDeclaration() << endl;
 		}
 	}

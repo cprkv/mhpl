@@ -30,90 +30,87 @@ class iLuxInteractData_RotateBase;
 
 //------------------------------------
 
-class iLuxPlayerState_InteractRotateBase_SaveData : public iLuxPlayerState_Interact_SaveData
-{
-	kSerializableClassInit(iLuxPlayerState_InteractRotateBase_SaveData)
-public:
-
+class iLuxPlayerState_InteractRotateBase_SaveData : public iLuxPlayerState_Interact_SaveData {
+  kSerializableClassInit(iLuxPlayerState_InteractRotateBase_SaveData) public:
 };
 //----------------------------------------------
 
-class iLuxPlayerState_InteractRotateBase : public iLuxPlayerState_Interact
-{
-typedef iLuxPlayerState_Interact super_class;
-public:	
-	iLuxPlayerState_InteractRotateBase(cLuxPlayer *apPlayer, eLuxPlayerState aState);
-	virtual ~iLuxPlayerState_InteractRotateBase();
+class iLuxPlayerState_InteractRotateBase : public iLuxPlayerState_Interact {
+  typedef iLuxPlayerState_Interact super_class;
 
-	void OnEnterState(eLuxPlayerState aPrevState);
-	void OnLeaveState(eLuxPlayerState aNewState);
+public:
+  iLuxPlayerState_InteractRotateBase(cLuxPlayer* apPlayer, eLuxPlayerState aState);
+  virtual ~iLuxPlayerState_InteractRotateBase();
 
-	void Update(float afTimeStep);
-	void PostUpdate(float afTimeStep);
+  void OnEnterState(eLuxPlayerState aPrevState);
+  void OnLeaveState(eLuxPlayerState aNewState);
 
-	bool OnDoAction(eLuxPlayerAction aAction,bool abPressed);
+  void Update(float afTimeStep);
+  void PostUpdate(float afTimeStep);
 
-	void OnScroll(float afAmount);
+  bool OnDoAction(eLuxPlayerAction aAction, bool abPressed);
 
-	bool OnMove(eCharDir aDir, float afMul);
+  void OnScroll(float afAmount);
 
-	bool OnAddYaw(float afAmount);
-	bool OnAddPitch(float afAmount);
+  bool OnMove(eCharDir aDir, float afMul);
 
-	bool OnRun(bool abPressed){ return true;}
-	bool OnJump(bool abPressed){ return false;}
+  bool OnAddYaw(float afAmount);
+  bool OnAddPitch(float afAmount);
 
-	cGuiGfxElement* GetCrosshair();
+  bool OnRun(bool abPressed) { return true; }
+  bool OnJump(bool abPressed) { return false; }
 
-	void OnSaveBody(iPhysicsBody *apBody, float &afMass, bool &abCollideCharacter){}
+  cGuiGfxElement* GetCrosshair();
 
-	float DrawDebug(cGuiSet *apSet,iFontData *apFont, float afStartY);
-	
-	virtual void RenderSolid(cRendererCallbackFunctions* apFunctions);
+  void OnSaveBody(iPhysicsBody* apBody, float& afMass, bool& abCollideCharacter) {}
 
-	/////////////////////////////////
-	//Save data stuff
-	virtual bool IsSaved(){ return false; }
-	
-	virtual void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
-	virtual void LoadFromSaveDataBeforeEnter(cLuxMap *apMap,iLuxPlayerState_SaveData* apSaveData);
-	virtual void LoadFromSaveDataAfterEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData);
+  float DrawDebug(cGuiSet* apSet, iFontData* apFont, float afStartY);
+
+  virtual void RenderSolid(cRendererCallbackFunctions* apFunctions);
+
+  /////////////////////////////////
+  //Save data stuff
+  virtual bool IsSaved() { return false; }
+
+  virtual void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
+  virtual void LoadFromSaveDataBeforeEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
+  virtual void LoadFromSaveDataAfterEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
 
 
 protected:
-	virtual void EnterRotateBase(eLuxPlayerState aPrevState){}
-	virtual void LeaveRotateBase(eLuxPlayerState aNewState){}
+  virtual void EnterRotateBase(eLuxPlayerState aPrevState) {}
+  virtual void LeaveRotateBase(eLuxPlayerState aNewState) {}
 
-	virtual float GetSpeedAdd(cCamera *apCam)=0;
-	virtual void OnThrow()=0;
+  virtual float GetSpeedAdd(cCamera* apCam) = 0;
+  virtual void  OnThrow()                   = 0;
 
-	void SetupForceAxes();
+  void SetupForceAxes();
 
-	iLuxInteractData_RotateBase *mpMoveBaseData;
+  iLuxInteractData_RotateBase* mpMoveBaseData;
 
-	iPhysicsJoint *mpCurrentJoint;
+  iPhysicsJoint* mpCurrentJoint;
 
-	float mfMoveToMouseAddFactor;
-	float mfMaxTorque;
+  float mfMoveToMouseAddFactor;
+  float mfMaxTorque;
 
-	bool mbHasGravity;
-	
-	float mfMaxDistance;
+  bool mbHasGravity;
 
-	cVector3f mvJointRight;
-	cVector3f mvJointForward;
-	
-	cVector3f mvForceAxis[2];
-	
-	cVector2f mvMouseAdd;
-	cVector2f mvLastMouseAdd;
-	
-	float mfRotSpeed;
-	
-	cPidController<cVector3f> mRotatePid;
+  float mfMaxDistance;
 
-	cVector3f mvCamDir[3];
-	float mfAxisCos[2];
+  cVector3f mvJointRight;
+  cVector3f mvJointForward;
+
+  cVector3f mvForceAxis[2];
+
+  cVector2f mvMouseAdd;
+  cVector2f mvLastMouseAdd;
+
+  float mfRotSpeed;
+
+  cPidController<cVector3f> mRotatePid;
+
+  cVector3f mvCamDir[3];
+  float     mfAxisCos[2];
 };
 
 //----------------------------------------------

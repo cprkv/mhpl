@@ -20,7 +20,7 @@
 #include "impl/ThreadSDL.h"
 
 #if USE_SDL2
-#include "SDL2/SDL.h"
+#include "SDL.h"
 #include <typeinfo>
 #else
 #include "SDL/SDL.h"

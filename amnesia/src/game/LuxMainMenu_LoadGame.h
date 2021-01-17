@@ -26,67 +26,67 @@
 
 //----------------------------------------------
 
-class cLuxMainMenu_LoadGame : public iLuxMainMenuWindow
-{
-	friend class cLuxInputMenuEntry;
+class cLuxMainMenu_LoadGame : public iLuxMainMenuWindow {
+  friend class cLuxInputMenuEntry;
+
 public:
-	cLuxMainMenu_LoadGame(cGuiSet *apGuiSet, cGuiSkin *apGuiSkin);
-	~cLuxMainMenu_LoadGame();
+  cLuxMainMenu_LoadGame(cGuiSet* apGuiSet, cGuiSkin* apGuiSkin);
+  ~cLuxMainMenu_LoadGame();
 
-	void CreateGui();
+  void CreateGui();
 
-	void ExitPressed();
+  void ExitPressed();
 
 private:
-	void OnSetActive(bool abX);
+  void OnSetActive(bool abX);
 
-	void PopulateSavedGameList();
+  void PopulateSavedGameList();
 
-	////////////////////////
-	// Properties
-	cVector2f mvWindowSize;
+  ////////////////////////
+  // Properties
+  cVector2f mvWindowSize;
 
-	tWStringVec mvSavedGameFileNames;
+  tWStringVec mvSavedGameFileNames;
 
-	////////////////////////
-	// Layout
-	cWidgetListBox* mpLBSavedGames;
-	cWidgetImage* mpISavedGameSnapShot;
-	iWidget *mpLoadButton;
+  ////////////////////////
+  // Layout
+  cWidgetListBox* mpLBSavedGames;
+  cWidgetImage*   mpISavedGameSnapShot;
+  iWidget*        mpLoadButton;
 
-	////////////////////////
-	// Callbacks
-	void LoadGame(int alIdx);
+  ////////////////////////
+  // Callbacks
+  void LoadGame(int alIdx);
 
-	bool WindowOnUpdate(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(WindowOnUpdate);
+  bool WindowOnUpdate(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(WindowOnUpdate);
 
-	bool PressOK(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressOK);
+  bool PressOK(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressOK);
 
-	bool PressCancel(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(PressCancel);
+  bool PressCancel(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(PressCancel);
 
-	bool UIPressList(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(UIPressList);
+  bool UIPressList(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(UIPressList);
 
-	bool UIPress(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(UIPress);
+  bool UIPress(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(UIPress);
 
-	bool UIPressCancel(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(UIPressCancel);
+  bool UIPressCancel(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(UIPressCancel);
 
-	bool LoadGameCallback(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(LoadGameCallback);
+  bool LoadGameCallback(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(LoadGameCallback);
 
-	bool ExitCallback(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ExitCallback);
+  bool ExitCallback(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ExitCallback);
 
-	bool LoadSelectionClickChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(LoadSelectionClickChange);
+  bool LoadSelectionClickChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(LoadSelectionClickChange);
 
-	bool LockLoadList(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(LockLoadList);
+  bool LockLoadList(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(LockLoadList);
 };
 
 //----------------------------------------------

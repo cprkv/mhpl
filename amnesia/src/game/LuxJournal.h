@@ -26,325 +26,320 @@
 
 //----------------------------------------
 
-enum eLuxJournalState
-{
-	eLuxJournalState_Main,
-	eLuxJournalState_Notes,
-	eLuxJournalState_Diaries,
-	eLuxJournalState_QuestLog,
-	eLuxJournalState_OpenNote,
-	eLuxJournalState_OpenDiary,
-	eLuxJournalState_OpenNarratedDiary,
+enum eLuxJournalState {
+  eLuxJournalState_Main,
+  eLuxJournalState_Notes,
+  eLuxJournalState_Diaries,
+  eLuxJournalState_QuestLog,
+  eLuxJournalState_OpenNote,
+  eLuxJournalState_OpenDiary,
+  eLuxJournalState_OpenNarratedDiary,
 
-	eLuxJournalState_LastEnum,
+  eLuxJournalState_LastEnum,
 };
 
 //----------------------------------------
 
-class cLuxDiaryContainer
-{
+class cLuxDiaryContainer {
 public:
-	~cLuxDiaryContainer();
+  ~cLuxDiaryContainer();
 
-	tString msType;
-	std::vector<cLuxDiary*> mvDiaries;
+  tString                 msType;
+  std::vector<cLuxDiary*> mvDiaries;
 };
 //----------------------------------------
 
-class cLuxNotePage
-{
+class cLuxNotePage {
 public:
-	tString msVoice;
-	tWStringVec mvRows;
+  tString     msVoice;
+  tWStringVec mvRows;
 };
 
 //----------------------------------------
 
-class iLuxJournalWidgetData
-{
+class iLuxJournalWidgetData {
 public:
-	iLuxJournalWidgetData(iWidget *apWidget) : mpWidget(apWidget) {}
-	virtual ~iLuxJournalWidgetData(){}
+  iLuxJournalWidgetData(iWidget* apWidget)
+      : mpWidget(apWidget) {}
+  virtual ~iLuxJournalWidgetData() {}
 
-	virtual void Update(float afTimeStep)=0;
+  virtual void Update(float afTimeStep) = 0;
 
-	iWidget *mpWidget;
-	void *mpExtraData;
+  iWidget* mpWidget;
+  void*    mpExtraData;
 };
 
 typedef std::list<iLuxJournalWidgetData*> tLuxJournalWidgetData;
-typedef tLuxJournalWidgetData::iterator tLuxJournalWidgetDataIt;
+typedef tLuxJournalWidgetData::iterator   tLuxJournalWidgetDataIt;
 
 //----------------------------------------
 
-class cLuxJournalTextData : public iLuxJournalWidgetData
-{
-public:	
-	cLuxJournalTextData(iWidget *apWidget, eLuxJournalState aType) : iLuxJournalWidgetData(apWidget), mType(aType), mfEffectfAlpha(0){}
+class cLuxJournalTextData : public iLuxJournalWidgetData {
+public:
+  cLuxJournalTextData(iWidget* apWidget, eLuxJournalState aType)
+      : iLuxJournalWidgetData(apWidget)
+      , mType(aType)
+      , mfEffectfAlpha(0) {}
 
-	void Update(float afTimeStep);
+  void Update(float afTimeStep);
 
-	eLuxJournalState mType;
-	float mfEffectfAlpha;
+  eLuxJournalState mType;
+  float            mfEffectfAlpha;
 };
 
 //----------------------------------------
 
 class cLuxJournal;
 
-class cLuxJournalStateData
-{
+class cLuxJournalStateData {
 public:
-	cLuxJournalStateData(cLuxJournal *apJournal, eLuxJournalState aState);
+  cLuxJournalStateData(cLuxJournal* apJournal, eLuxJournalState aState);
 
-	void Reset();
-	void OnEnter();
-	void DestroySessionWidgets();
-	void Update(float afTimeStep);
-	void OnDraw(float afFrameTime);
+  void Reset();
+  void OnEnter();
+  void DestroySessionWidgets();
+  void Update(float afTimeStep);
+  void OnDraw(float afFrameTime);
 
-	tWidgetList mlstSessionWidgets;
-	cWidgetDummy* mpRootWidget;
-	float mfAlpha;
+  tWidgetList   mlstSessionWidgets;
+  cWidgetDummy* mpRootWidget;
+  float         mfAlpha;
 
 private:
-	cLuxJournal *mpJournal;
-	eLuxJournalState mState;
+  cLuxJournal*     mpJournal;
+  eLuxJournalState mState;
 };
 
 //----------------------------------------
 
-class cLuxJournal_ListEntry
-{
+class cLuxJournal_ListEntry {
 public:
-	void AddWidget(iWidget *apWidget);
-	void SetVisible(bool abX);
+  void AddWidget(iWidget* apWidget);
+  void SetVisible(bool abX);
 
-	tWidgetList mlstWidgets;
+  tWidgetList mlstWidgets;
 };
 
-class cLuxJournal_ListPage
-{
+class cLuxJournal_ListPage {
 public:
-	void SetVisible(bool abX);
+  void SetVisible(bool abX);
 
-	std::vector<cLuxJournal_ListEntry> mvEntries;
+  std::vector<cLuxJournal_ListEntry> mvEntries;
 };
 
 //----------------------------------------
 
-class cLuxJournal : public iLuxUpdateable
-{
-friend class cLuxMusicHandler_SaveData;
-friend class cLuxJournalStateData;
-friend class cLuxJournal_SaveData;
-public:	
-	cLuxJournal();
-	~cLuxJournal();
-	
-	void OnClearFonts();
-	void LoadFonts();
+class cLuxJournal : public iLuxUpdateable {
+  friend class cLuxMusicHandler_SaveData;
+  friend class cLuxJournalStateData;
+  friend class cLuxJournal_SaveData;
 
-	void OnStart();
-	void Reset();
+public:
+  cLuxJournal();
+  ~cLuxJournal();
 
-	void OnGameStart();
+  void OnClearFonts();
+  void LoadFonts();
 
-	void Update(float afTimeStep);
+  void OnStart();
+  void Reset();
 
-	void OnEnterContainer(const tString& asOldContainer);
-	void OnLeaveContainer(const tString& asNewContainer);
+  void OnGameStart();
 
-	void OnDraw(float afFrameTime);
+  void Update(float afTimeStep);
 
-	cGuiSet* GetSet() { return mpGuiSet; }
+  void OnEnterContainer(const tString& asOldContainer);
+  void OnLeaveContainer(const tString& asNewContainer);
 
-	void ExitPressed(bool abInstantExit);
+  void OnDraw(float afFrameTime);
 
-	void Exit();
+  cGuiSet* GetSet() { return mpGuiSet; }
 
-	void SetForceInstantExit(bool abX){ mbForceInstantExit = abX;}
-	void SetOpenedFromInventory(bool abX){ mbOpenedFromInventory = abX;}
+  void ExitPressed(bool abInstantExit);
 
-    cLuxNote* AddNote(const tString& asNameAndTextEntry, const tString& asImage);
-	cLuxDiary* AddDiary(const tString& asNameAndTextEntry, const tString& asImage, int &alCurrentEntryIdx);
-	
-	bool AddQuestNote(const tString& asName, const tString& asNameAndTextEntry);
-	bool DisableQuestNote(const tString& asName);
-	cLuxQuestNote* GetQuestNote(const tString& asName);
+  void Exit();
 
-	void ChangeState(eLuxJournalState aState);
+  void SetForceInstantExit(bool abX) { mbForceInstantExit = abX; }
+  void SetOpenedFromInventory(bool abX) { mbOpenedFromInventory = abX; }
 
-	void OpenNote(cLuxNote *apNote, bool abNarration);
-	cLuxNote* GetNote(int alIdx){ return mvNotes[alIdx];}
+  cLuxNote*  AddNote(const tString& asNameAndTextEntry, const tString& asImage);
+  cLuxDiary* AddDiary(const tString& asNameAndTextEntry, const tString& asImage, int& alCurrentEntryIdx);
 
-	void OpenDiary(cLuxDiary *apDiary, bool abNarration);
-	void SetDiaryAsLastRead(cLuxDiary *apDiary);
+  bool           AddQuestNote(const tString& asName, const tString& asNameAndTextEntry);
+  bool           DisableQuestNote(const tString& asName);
+  cLuxQuestNote* GetQuestNote(const tString& asName);
 
-	void OpenLastReadText();
-	
+  void ChangeState(eLuxJournalState aState);
+
+  void      OpenNote(cLuxNote* apNote, bool abNarration);
+  cLuxNote* GetNote(int alIdx) { return mvNotes[alIdx]; }
+
+  void OpenDiary(cLuxDiary* apDiary, bool abNarration);
+  void SetDiaryAsLastRead(cLuxDiary* apDiary);
+
+  void OpenLastReadText();
+
 private:
-	cLuxDiaryContainer* CreateDiaryContainer(const tString& asType);
+  cLuxDiaryContainer* CreateDiaryContainer(const tString& asType);
 
-	void SetupLabel(cWidgetLabel *apLabel, const cVector2f& avSize, int alIdx, eLuxJournalState aState, iFontData *apFont=NULL, eFontAlign aFontAlign=eFontAlign_Center);
-	void SetupImage(cWidgetImage *apImage, int alIdx, eLuxJournalState aState);
-	void SetupNavigationWidgets(eLuxJournalState aState, int alListIndex, int alForwardIndex, int alBackwardIndex, cWidgetDummy *apRoot);
+  void SetupLabel(cWidgetLabel* apLabel, const cVector2f& avSize, int alIdx, eLuxJournalState aState, iFontData* apFont = NULL, eFontAlign aFontAlign = eFontAlign_Center);
+  void SetupImage(cWidgetImage* apImage, int alIdx, eLuxJournalState aState);
+  void SetupNavigationWidgets(eLuxJournalState aState, int alListIndex, int alForwardIndex, int alBackwardIndex, cWidgetDummy* apRoot);
 
-	void AddSessionWidget(eLuxJournalState aState, iWidget *apWidget);
-	void ResetSessionVars();
+  void AddSessionWidget(eLuxJournalState aState, iWidget* apWidget);
+  void ResetSessionVars();
 
-	void SetStateBackgroundGfx(const tString& asFile);
+  void SetStateBackgroundGfx(const tString& asFile);
 
-	void LoadText(const tWString &asName ,const tWString &asText);
-	void LoadNarrationText(const tWString &asName ,const tWString &asText);
-	void SetNotePage(int alPageNum);
-	
-	int GetNoteListIndex(eLuxJournalState aState);//Return values: 0=notes, 1=diaries, 2=quests
-	void SetNoteListPage(int alPageNum, eLuxJournalState aState);
+  void LoadText(const tWString& asName, const tWString& asText);
+  void LoadNarrationText(const tWString& asName, const tWString& asText);
+  void SetNotePage(int alPageNum);
 
-	void CreateGui();
-	void DestroyGui();
+  int  GetNoteListIndex(eLuxJournalState aState); //Return values: 0=notes, 1=diaries, 2=quests
+  void SetNoteListPage(int alPageNum, eLuxJournalState aState);
 
-	void CreateMainGui();
-	void CreateNotesGui();
-	void CreateDiariesGui();
-	void CreateQuestNotesGui();
-	void CreateOpenNoteGui();
+  void CreateGui();
+  void DestroyGui();
 
-	void CreateBackground();
-	void RenderBackgroundImage();
-	void CreateScreenTextures();
-	void DestroyBackground();
+  void CreateMainGui();
+  void CreateNotesGui();
+  void CreateDiariesGui();
+  void CreateQuestNotesGui();
+  void CreateOpenNoteGui();
 
-	///////////////////////
-	// Gui callbacks
-	bool MainMenuTextClick(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(MainMenuTextClick);
+  void CreateBackground();
+  void RenderBackgroundImage();
+  void CreateScreenTextures();
+  void DestroyBackground();
 
-	bool MainMenuUIButtonPress(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(MainMenuUIButtonPress);
+  ///////////////////////
+  // Gui callbacks
+  bool MainMenuTextClick(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(MainMenuTextClick);
 
-	bool MainMenuTextOnDraw(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(MainMenuTextOnDraw);
-	
-	bool ListTextOnDraw(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ListTextOnDraw);
+  bool MainMenuUIButtonPress(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(MainMenuUIButtonPress);
 
-	bool NoteTextClick(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(NoteTextClick);
+  bool MainMenuTextOnDraw(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(MainMenuTextOnDraw);
 
-	bool NoteBackClick(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(NoteBackClick);
+  bool ListTextOnDraw(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ListTextOnDraw);
 
-	bool UIListenerJournalPress(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(UIListenerJournalPress);
+  bool NoteTextClick(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(NoteTextClick);
 
-	bool DiaryTextClick(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(DiaryTextClick);
-	
-	bool ImageButtonOnDraw(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ImageButtonOnDraw);
+  bool NoteBackClick(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(NoteBackClick);
 
-	bool NoteArrowClick(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(NoteArrowClick);
+  bool UIListenerJournalPress(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(UIListenerJournalPress);
 
-	bool NoteClickFrameClick(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(NoteClickFrameClick);
+  bool DiaryTextClick(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(DiaryTextClick);
 
-	bool JournalItemUIButtonPress(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(JournalItemUIButtonPress);
+  bool ImageButtonOnDraw(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ImageButtonOnDraw);
 
-	bool UIListenerArrowPress(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(UIListenerArrowPress);
+  bool NoteArrowClick(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(NoteArrowClick);
 
-	bool UIListenerButtonPress(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(UIListenerButtonPress);
+  bool NoteClickFrameClick(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(NoteClickFrameClick);
 
-	bool NoteBackUIButtonPress(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(NoteBackUIButtonPress);
+  bool JournalItemUIButtonPress(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(JournalItemUIButtonPress);
 
-	//////////////
-	// Variables
-	bool mbActive;
-	float mfAlpha;
+  bool UIListenerArrowPress(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(UIListenerArrowPress);
 
-	bool mbForceInstantExit;
-	bool mbOpenedFromInventory;
+  bool UIListenerButtonPress(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(UIListenerButtonPress);
 
-	int mlLastReadTextCat; //Only used by diary
-	int mlLastReadTextEntry;
-	int mlLastReadTextType;	//0=note 1=diary
+  bool NoteBackUIButtonPress(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(NoteBackUIButtonPress);
 
-	std::vector<cLuxNote*> mvNotes;
-	std::vector<cLuxDiaryContainer*> mvDiaryContainers;
-	std::vector<cLuxQuestNote*> mvQuestNotes;
-	
-	cGuiGfxElement *mpStateBackgroundGfx;
+  //////////////
+  // Variables
+  bool  mbActive;
+  float mfAlpha;
 
-	float mfMouseOverPulse;
+  bool mbForceInstantExit;
+  bool mbOpenedFromInventory;
 
-	tWString msHeader;
-	std::vector<cLuxNotePage> mvPages;
-	int mlCurrentNotePage;
-	
-	cSoundEntry *mpVoiceEntry;
-	int mlVoiceEntryID;
+  int mlLastReadTextCat; //Only used by diary
+  int mlLastReadTextEntry;
+  int mlLastReadTextType; //0=note 1=diary
 
-	std::vector<cLuxJournal_ListPage> mvNoteListPages[3];//0=notes, 1=diaries, 2=quests
-	int mlCurrentNoteListPage[3];
+  std::vector<cLuxNote*>           mvNotes;
+  std::vector<cLuxDiaryContainer*> mvDiaryContainers;
+  std::vector<cLuxQuestNote*>      mvQuestNotes;
 
-	//////////////
-	// Data
-	cGui *mpGui;
-	cScene *mpScene;
-	cGraphics *mpGraphics;
+  cGuiGfxElement* mpStateBackgroundGfx;
 
-	cViewport *mpViewport;
-	cGuiSkin *mpGuiSkin;
-	cGuiSet *mpGuiSet;
+  float mfMouseOverPulse;
 
-	eLuxJournalState mCurrentState;
-	std::vector<cLuxJournalStateData*> mvStateData;
+  tWString                  msHeader;
+  std::vector<cLuxNotePage> mvPages;
+  int                       mlCurrentNotePage;
 
-	tLuxJournalWidgetData mlstSessionWidgetData;
+  cSoundEntry* mpVoiceEntry;
+  int          mlVoiceEntryID;
 
-	iWidget		 *mpWidgetDefaultNav[eLuxJournalState_LastEnum];
-	cWidgetImage *mpImageForward[eLuxJournalState_LastEnum];
-	iWidget		 *mpWidgetReturn[eLuxJournalState_LastEnum];
-	cWidgetImage *mpImageBackward[eLuxJournalState_LastEnum];
-	
-	iTexture *mpScreenTexture;
-	cGuiGfxElement *mpScreenGfx;
-	iTexture *mpScreenBgTexture;
-	cGuiGfxElement *mpScreenBgGfx;
+  std::vector<cLuxJournal_ListPage> mvNoteListPages[3]; //0=notes, 1=diaries, 2=quests
+  int                               mlCurrentNoteListPage[3];
 
-	cGuiGfxElement *mpWhiteGfx;
+  //////////////
+  // Data
+  cGui*      mpGui;
+  cScene*    mpScene;
+  cGraphics* mpGraphics;
 
-	iFontData *mpFontDefault;
-	iFontData *mpFontMenu;
+  cViewport* mpViewport;
+  cGuiSkin*  mpGuiSkin;
+  cGuiSet*   mpGuiSet;
 
-	iGpuProgram *mpEffectProgram;
+  eLuxJournalState                   mCurrentState;
+  std::vector<cLuxJournalStateData*> mvStateData;
 
-	cVector2f mvScreenSize;
-	cVector2f mvGuiSetCenterSize;//Size of the part that is inside a 4:3 ratio!
-	cVector2f mvGuiSetSize;
-	cVector2f mvGuiSetOffset;
-	cVector3f mvGuiSetStartPos;
+  tLuxJournalWidgetData mlstSessionWidgetData;
 
-	float mfNoteTextWidth;
-	int mlNoteMaxPageRows;
-	cVector2f mvNoteFontSize;
-	float mfNoteRowDist;
-	cVector2f mfNoteHeaderFontSize;
-	float mfNoteHeaderStartY;
-	float mfNoteTextStartY;
+  iWidget*      mpWidgetDefaultNav[eLuxJournalState_LastEnum];
+  cWidgetImage* mpImageForward[eLuxJournalState_LastEnum];
+  iWidget*      mpWidgetReturn[eLuxJournalState_LastEnum];
+  cWidgetImage* mpImageBackward[eLuxJournalState_LastEnum];
 
-	float mfNoteListHeaderY;
-	float mfMaxNoteListY;
+  iTexture*       mpScreenTexture;
+  cGuiGfxElement* mpScreenGfx;
+  iTexture*       mpScreenBgTexture;
+  cGuiGfxElement* mpScreenBgGfx;
 
-	float mfBackTextY;
-	cVector2f mvBackTextFontSize;
+  cGuiGfxElement* mpWhiteGfx;
 
+  iFontData* mpFontDefault;
+  iFontData* mpFontMenu;
+
+  iGpuProgram* mpEffectProgram;
+
+  cVector2f mvScreenSize;
+  cVector2f mvGuiSetCenterSize; //Size of the part that is inside a 4:3 ratio!
+  cVector2f mvGuiSetSize;
+  cVector2f mvGuiSetOffset;
+  cVector3f mvGuiSetStartPos;
+
+  float     mfNoteTextWidth;
+  int       mlNoteMaxPageRows;
+  cVector2f mvNoteFontSize;
+  float     mfNoteRowDist;
+  cVector2f mfNoteHeaderFontSize;
+  float     mfNoteHeaderStartY;
+  float     mfNoteTextStartY;
+
+  float mfNoteListHeaderY;
+  float mfMaxNoteListY;
+
+  float     mfBackTextY;
+  cVector2f mvBackTextFontSize;
 };
 
 //----------------------------------------------

@@ -31,121 +31,118 @@ class cLuxArea_Ladder;
 
 //------------------------------------
 
-class cLuxPlayerState_Ladder_SaveData : public iLuxPlayerState_SaveData
-{
-	kSerializableClassInit(cLuxPlayerState_Ladder_SaveData)
-public:
-	int mlState;
-	cVector3f mvStartPosition;
+class cLuxPlayerState_Ladder_SaveData : public iLuxPlayerState_SaveData {
+  kSerializableClassInit(cLuxPlayerState_Ladder_SaveData) public : int mlState;
+  cVector3f mvStartPosition;
 
-	int mlLadderID;
+  int mlLadderID;
 
-	float mfTimeCount;
+  float mfTimeCount;
 
-	cVector3f mvCharPosition;
+  cVector3f mvCharPosition;
 
-	cVector3f mvGoalPos;
-	cVector3f mvGoalRot;
+  cVector3f mvGoalPos;
+  cVector3f mvGoalRot;
 
-	cVector3f mvPosAdd;
-	cVector3f mvRotAdd;
+  cVector3f mvPosAdd;
+  cVector3f mvRotAdd;
 
-	float mfMoveMul;
+  float mfMoveMul;
 
-	float mfUpSpeed;
-	float mfDownSpeed;
+  float mfUpSpeed;
+  float mfDownSpeed;
 
-	float mfStepLength;
-	float mfStepCount;
-	bool mbPlayedSound;
+  float mfStepLength;
+  float mfStepCount;
+  bool  mbPlayedSound;
 
-	float mfPitchMaxLimit;
-	float mfPitchMinLimit;
+  float mfPitchMaxLimit;
+  float mfPitchMinLimit;
 
-	float mfLeaveAtTopCount;
+  float mfLeaveAtTopCount;
 
-	bool mbLanternDrawn;
+  bool mbLanternDrawn;
 };
 
 //----------------------------------------------
 
-class cLuxPlayerState_Ladder : public iLuxPlayerState
-{
-typedef iLuxPlayerState super_class;
-public:	
-	cLuxPlayerState_Ladder(cLuxPlayer *apPlayer);
-	virtual ~cLuxPlayerState_Ladder();
+class cLuxPlayerState_Ladder : public iLuxPlayerState {
+  typedef iLuxPlayerState super_class;
 
-	void OnEnterState(eLuxPlayerState aPrevState);
-	void OnLeaveState(eLuxPlayerState aNewState);
+public:
+  cLuxPlayerState_Ladder(cLuxPlayer* apPlayer);
+  virtual ~cLuxPlayerState_Ladder();
 
-	void Update(float afTimeStep);
-	void PostUpdate(float afTimeStep);
-	virtual void OnDraw(cGuiSet *apGuiSet ,float afFrameTime);
+  void OnEnterState(eLuxPlayerState aPrevState);
+  void OnLeaveState(eLuxPlayerState aNewState);
 
-	virtual cGuiGfxElement* GetCrosshair();
+  void         Update(float afTimeStep);
+  void         PostUpdate(float afTimeStep);
+  virtual void OnDraw(cGuiSet* apGuiSet, float afFrameTime);
 
-	bool OnMove(eCharDir aDir, float afMul);
+  virtual cGuiGfxElement* GetCrosshair();
 
-	bool OnAddYaw(float afAmount);
-	bool OnAddPitch(float afAmount);
+  bool OnMove(eCharDir aDir, float afMul);
 
-	bool OnRun(bool abPressed);
-	bool OnJump(bool abPressed);
-	bool OnCrouch(bool abPressed);
+  bool OnAddYaw(float afAmount);
+  bool OnAddPitch(float afAmount);
 
-	bool OnDoAction(eLuxPlayerAction aAction,bool abPressed);
-	
-	void OnSaveBody(iPhysicsBody *apBody, float &afMass, bool &abCollideCharacter){}
+  bool OnRun(bool abPressed);
+  bool OnJump(bool abPressed);
+  bool OnCrouch(bool abPressed);
 
-	float DrawDebug(cGuiSet *apSet,iFontData *apFont, float afStartY);
+  bool OnDoAction(eLuxPlayerAction aAction, bool abPressed);
 
-	bool AllowPlayerMenus(){ return false;}
+  void OnSaveBody(iPhysicsBody* apBody, float& afMass, bool& abCollideCharacter) {}
 
-	bool AllowLantern(){ return false;}
-	
-	/////////////////////////////////
-	//Save data stuff
-	virtual bool IsSaved(){ return true; }
-	iLuxPlayerState_SaveData* CreateSaveData();
+  float DrawDebug(cGuiSet* apSet, iFontData* apFont, float afStartY);
 
-	void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
-	void LoadFromSaveDataBeforeEnter(cLuxMap *apMap,iLuxPlayerState_SaveData* apSaveData);
-	void LoadFromSaveDataAfterEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData);
+  bool AllowPlayerMenus() { return false; }
+
+  bool AllowLantern() { return false; }
+
+  /////////////////////////////////
+  //Save data stuff
+  virtual bool              IsSaved() { return true; }
+  iLuxPlayerState_SaveData* CreateSaveData();
+
+  void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
+  void LoadFromSaveDataBeforeEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
+  void LoadFromSaveDataAfterEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
 
 private:
-	void SetupHeadTurnLimits();
-	void PlaySound(const tString &asType);
+  void SetupHeadTurnLimits();
+  void PlaySound(const tString& asType);
 
-	int mlState;
-	cLuxArea_Ladder* mpLadder;
-	cVector3f mvStartPosition;
+  int              mlState;
+  cLuxArea_Ladder* mpLadder;
+  cVector3f        mvStartPosition;
 
-	float mfTimeCount;
+  float mfTimeCount;
 
-	cVector3f mvCharPosition;
+  cVector3f mvCharPosition;
 
-	cVector3f mvGoalPos;
-	cVector3f mvGoalRot;
+  cVector3f mvGoalPos;
+  cVector3f mvGoalRot;
 
-	cVector3f mvPosAdd;
-	cVector3f mvRotAdd;
+  cVector3f mvPosAdd;
+  cVector3f mvRotAdd;
 
-	float mfMoveMul;
+  float mfMoveMul;
 
-	float mfUpSpeed;
-	float mfDownSpeed;
+  float mfUpSpeed;
+  float mfDownSpeed;
 
-	float mfStepLength;
-	float mfStepCount;
-	bool mbPlayedSound;
+  float mfStepLength;
+  float mfStepCount;
+  bool  mbPlayedSound;
 
-	float mfPitchMaxLimit;
-	float mfPitchMinLimit;
-	
-	float mfLeaveAtTopCount;
+  float mfPitchMaxLimit;
+  float mfPitchMinLimit;
 
-	bool mbLanternDrawn;
+  float mfLeaveAtTopCount;
+
+  bool mbLanternDrawn;
 };
 
 //----------------------------------------------

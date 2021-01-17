@@ -26,127 +26,123 @@
 
 //----------------------------------------------
 
-class cLuxCommentaryIcon_SaveData : public iLuxEntity_SaveData
-{
-	kSerializableClassInit(cLuxCommentaryIcon_SaveData)
-public:
-	virtual ~cLuxCommentaryIcon_SaveData();
+class cLuxCommentaryIcon_SaveData : public iLuxEntity_SaveData {
+  kSerializableClassInit(cLuxCommentaryIcon_SaveData) public : virtual ~cLuxCommentaryIcon_SaveData();
 
-	tString msFileName;
-	cMatrixf m_mtxOnLoadTransform;
-	cVector3f mvOnLoadScale;
+  tString   msFileName;
+  cMatrixf  m_mtxOnLoadTransform;
+  cVector3f mvOnLoadScale;
 
-	tString msTalker;
-	tString msTopic;
-	tString msSoundFile;
-	
-	iLuxEntity* CreateEntity(cLuxMap *apMap);
+  tString msTalker;
+  tString msTopic;
+  tString msSoundFile;
+
+  iLuxEntity* CreateEntity(cLuxMap* apMap);
 };
 
 //----------------------------------------------
 
-class cLuxCommentaryIcon : public iLuxEntity
-{
-typedef iLuxEntity super_class;
-friend class cLuxCommentaryIconLoader;
-public:	
-	cLuxCommentaryIcon(const tString &asName, int alID, cLuxMap *apMap);
-	virtual ~cLuxCommentaryIcon();
+class cLuxCommentaryIcon : public iLuxEntity {
+  typedef iLuxEntity super_class;
+  friend class cLuxCommentaryIconLoader;
 
-	//////////////////////
-	//General
-	void SetupAfterLoad(cWorld *apWorld);
+public:
+  cLuxCommentaryIcon(const tString& asName, int alID, cLuxMap* apMap);
+  virtual ~cLuxCommentaryIcon();
 
-	void OnUpdate(float afTimeStep);
+  //////////////////////
+  //General
+  void SetupAfterLoad(cWorld* apWorld);
 
-	virtual float OnInteractDebugDraw(cGuiSet *apSet,iFontData *apFont, float afStartY){return afStartY;}
+  void OnUpdate(float afTimeStep);
 
-	//////////////////////
-	//Actions
-	void GiveDamage(float afAmount, int alStrength){}
+  virtual float OnInteractDebugDraw(cGuiSet* apSet, iFontData* apFont, float afStartY) { return afStartY; }
 
-	bool CanInteract(iPhysicsBody *apBody){return true;}
-	bool OnInteract(iPhysicsBody *apBody, const cVector3f &avPos);
+  //////////////////////
+  //Actions
+  void GiveDamage(float afAmount, int alStrength) {}
 
-	eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody *apBody, const cVector3f &avPos){ return eLuxFocusCrosshair_Grab; }
-	virtual iEntity3D* GetAttachEntity(){ return mvBodies[0];}
+  bool CanInteract(iPhysicsBody* apBody) { return true; }
+  bool OnInteract(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	tWString GetFocusText();
+  eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody* apBody, const cVector3f& avPos) { return eLuxFocusCrosshair_Grab; }
+  virtual iEntity3D* GetAttachEntity() { return mvBodies[0]; }
 
-	//////////////////////
-	//Properies
-	void SetPlayingSound(bool abX);
-	bool GetPlayingSound(){ return mbPlayingSound;}
+  tWString GetFocusText();
 
-	//////////////////////
-	//Data
-	cMeshEntity * GetMeshEntity(){ return mpMeshEntity;}
-	virtual cMeshEntity* GetEffectMeshEntity(){ return mpMeshEntity;}
+  //////////////////////
+  //Properies
+  void SetPlayingSound(bool abX);
+  bool GetPlayingSound() { return mbPlayingSound; }
 
-	int GetBodyNum(){ return (int)mvBodies.size();}
-	iPhysicsBody* GetBody(int alIdx){ return mvBodies[alIdx];}
-	
-	iPhysicsBody* GetMainBody(){ return mvBodies[0];}
+  //////////////////////
+  //Data
+  cMeshEntity*         GetMeshEntity() { return mpMeshEntity; }
+  virtual cMeshEntity* GetEffectMeshEntity() { return mpMeshEntity; }
 
-	//////////////////////
-	//Connection callbacks
-	void OnConnectionStateChange(iLuxEntity *apEntity, int alState){}
-		
-	//////////////////////
-	//Save data stuff
-	iLuxEntity_SaveData* CreateSaveData();
-	virtual void SaveToSaveData(iLuxEntity_SaveData* apSaveData);
-	virtual void LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
-	virtual void SetupSaveData(iLuxEntity_SaveData *apSaveData);
+  int           GetBodyNum() { return (int) mvBodies.size(); }
+  iPhysicsBody* GetBody(int alIdx) { return mvBodies[alIdx]; }
+
+  iPhysicsBody* GetMainBody() { return mvBodies[0]; }
+
+  //////////////////////
+  //Connection callbacks
+  void OnConnectionStateChange(iLuxEntity* apEntity, int alState) {}
+
+  //////////////////////
+  //Save data stuff
+  iLuxEntity_SaveData* CreateSaveData();
+  virtual void         SaveToSaveData(iLuxEntity_SaveData* apSaveData);
+  virtual void         LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
+  virtual void         SetupSaveData(iLuxEntity_SaveData* apSaveData);
 
 protected:
-	void OnSetActive(bool abX);
+  void OnSetActive(bool abX);
 
-	void LoadCommentaryFile(const tString& asFile);
+  void LoadCommentaryFile(const tString& asFile);
 
-	//////////////
-	//Variables
-	tString msTalker;
-	tString msTopic;
-	tString msSoundFile;
+  //////////////
+  //Variables
+  tString msTalker;
+  tString msTopic;
+  tString msSoundFile;
 
-	bool mbPlayingSound;
-	cVector3f mvRotAngle;
+  bool      mbPlayingSound;
+  cVector3f mvRotAngle;
 
-	////////////////
-	//Data
-	cMeshEntity *mpMeshEntity;
-	std::vector<iLight*> mvLights;
-	std::vector<cParticleSystem*> mvParticleSystems;
-	std::vector<cBillboard*> mvBillboards;
+  ////////////////
+  //Data
+  cMeshEntity*                  mpMeshEntity;
+  std::vector<iLight*>          mvLights;
+  std::vector<cParticleSystem*> mvParticleSystems;
+  std::vector<cBillboard*>      mvBillboards;
 
-	std::vector<iPhysicsBody*> mvBodies;
+  std::vector<iPhysicsBody*> mvBodies;
 
-	std::vector<cMatrixf> mvSubMeshMatrix;
+  std::vector<cMatrixf> mvSubMeshMatrix;
 
-	tString msRotateSubMesh;
-	
+  tString msRotateSubMesh;
 
-	//////////////
-	//Save specific
-	tString msFileName;
-	cMatrixf m_mtxOnLoadTransform;
-	cVector3f mvOnLoadScale;
+
+  //////////////
+  //Save specific
+  tString   msFileName;
+  cMatrixf  m_mtxOnLoadTransform;
+  cVector3f mvOnLoadScale;
 };
 
 //----------------------------------------------
 
-class cLuxCommentaryIconLoader : public cEntityLoader_Object
-{
+class cLuxCommentaryIconLoader : public cEntityLoader_Object {
 public:
-	cLuxCommentaryIconLoader(const tString& asName);
-	virtual ~cLuxCommentaryIconLoader(){}
+  cLuxCommentaryIconLoader(const tString& asName);
+  virtual ~cLuxCommentaryIconLoader() {}
 
-	void BeforeLoad(cXmlElement *apRootElem, const cMatrixf &a_mtxTransform,cWorld *apWorld, cResourceVarsObject *apInstanceVars);
-	void AfterLoad(cXmlElement *apRootElem, const cMatrixf &a_mtxTransform,cWorld *apWorld, cResourceVarsObject *apInstanceVars);
-	
+  void BeforeLoad(cXmlElement* apRootElem, const cMatrixf& a_mtxTransform, cWorld* apWorld, cResourceVarsObject* apInstanceVars);
+  void AfterLoad(cXmlElement* apRootElem, const cMatrixf& a_mtxTransform, cWorld* apWorld, cResourceVarsObject* apInstanceVars);
+
 protected:
-	float mfDefaultMaxFocusDistance;
+  float mfDefaultMaxFocusDistance;
 };
 
 //----------------------------------------------

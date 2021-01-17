@@ -26,169 +26,162 @@
 
 //----------------------------------------------
 
-class cLuxProp_SwingDoor_SaveData : public iLuxProp_SaveData
-{
-	kSerializableClassInit(cLuxProp_SwingDoor_SaveData)
-public:
-	bool mbLocked;
-	bool mbBroken;
-	bool mbClosed;
+class cLuxProp_SwingDoor_SaveData : public iLuxProp_SaveData {
+  kSerializableClassInit(cLuxProp_SwingDoor_SaveData) public : bool mbLocked;
+  bool mbBroken;
+  bool mbClosed;
 
-	int mlBrokenEntityID;
+  int mlBrokenEntityID;
 
-	bool mbDisableBreakable;
-	bool mbDisableAutoClose;
+  bool mbDisableBreakable;
+  bool mbDisableAutoClose;
 
-	int mlCurrentMeshEntity;
+  int mlCurrentMeshEntity;
 
 
-    cEngineMeshEntity_SaveData mDamageMesh1;	
-	cEngineMeshEntity_SaveData mDamageMesh2;
+  cEngineMeshEntity_SaveData mDamageMesh1;
+  cEngineMeshEntity_SaveData mDamageMesh2;
 };
 
 //----------------------------------------------
 
-class cLuxSwingDoorJointData
-{
+class cLuxSwingDoorJointData {
 public:
-	iPhysicsJointHinge *mpHingeJoint;
-	iPhysicsBody *mpChildBody;
+  iPhysicsJointHinge* mpHingeJoint;
+  iPhysicsBody*       mpChildBody;
 
-    float mfMaxAngle;
+  float mfMaxAngle;
 };
 
 
 //----------------------------------------------
 
 
-class cLuxProp_SwingDoor : public iLuxProp
-{
-typedef iLuxProp super_class;
-friend class cLuxPropLoader_SwingDoor;
-public:	
-	cLuxProp_SwingDoor(const tString &asName, int alID, cLuxMap *apMap);
-	virtual ~cLuxProp_SwingDoor();
+class cLuxProp_SwingDoor : public iLuxProp {
+  typedef iLuxProp super_class;
+  friend class cLuxPropLoader_SwingDoor;
 
-	//////////////////////
-	//Genera
-	bool CanInteract(iPhysicsBody *apBody);
-	bool OnInteract(iPhysicsBody *apBody, const cVector3f &avPos);
-	
-	void OnSetupAfterLoad(cWorld *apWorld);
+public:
+  cLuxProp_SwingDoor(const tString& asName, int alID, cLuxMap* apMap);
+  virtual ~cLuxProp_SwingDoor();
 
-	void OnResetProperties();
+  //////////////////////
+  //Genera
+  bool CanInteract(iPhysicsBody* apBody);
+  bool OnInteract(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	void UpdatePropSpecific(float afTimeStep);
-	
-	void BeforePropDestruction();
+  void OnSetupAfterLoad(cWorld* apWorld);
 
-	eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody *apBody, const cVector3f &avPos);
+  void OnResetProperties();
 
-	void ImplementedOnSetActive(bool abX);
+  void UpdatePropSpecific(float afTimeStep);
 
-	void OnHealthChange();
-	void OnDamage(float afAmount, int alStrength);
+  void BeforePropDestruction();
 
-	//////////////////////
-	//Properties
-	iLuxInteractData_RotateBase* GetMoveBaseData(){ return &mSwingDoorData;}
-	
-	void SetClosed(bool abClosed, bool abEffects);
-	bool GetClosed(){ return mbClosed;}
+  eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	/**
+  void ImplementedOnSetActive(bool abX);
+
+  void OnHealthChange();
+  void OnDamage(float afAmount, int alStrength);
+
+  //////////////////////
+  //Properties
+  iLuxInteractData_RotateBase* GetMoveBaseData() { return &mSwingDoorData; }
+
+  void SetClosed(bool abClosed, bool abEffects);
+  bool GetClosed() { return mbClosed; }
+
+  /**
 	 * -1=closed 0=between 1=open
 	 */
-	int GetDoorState();
+  int GetDoorState();
 
-	void SetLocked(bool abLocked, bool abEffects);
-	bool GetLocked(){ return mbLocked;}
+  void SetLocked(bool abLocked, bool abEffects);
+  bool GetLocked() { return mbLocked; }
 
-	void SetDisableAutoClose(bool abX){ mbDisableAutoClose=abX;}
-	bool GetDisableAutoClose(){ return mbDisableAutoClose;}
+  void SetDisableAutoClose(bool abX) { mbDisableAutoClose = abX; }
+  bool GetDisableAutoClose() { return mbDisableAutoClose; }
 
-	void SetCurrentDamageLevel(int alX);
+  void SetCurrentDamageLevel(int alX);
 
-	cMeshEntity* GetEffectMeshEntity();
+  cMeshEntity* GetEffectMeshEntity();
 
-	bool IsBroken(){ return mbBroken;}
+  bool IsBroken() { return mbBroken; }
 
-	//////////////////////
-	//Connection callbacks
-	void OnConnectionStateChange(iLuxEntity *apEntity, int alState);
+  //////////////////////
+  //Connection callbacks
+  void OnConnectionStateChange(iLuxEntity* apEntity, int alState);
 
 
-	//////////////////////
-	//Save data stuff
-	iLuxEntity_SaveData* CreateSaveData();
-	void SaveToSaveData(iLuxEntity_SaveData* apSaveData);
-	void LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
-	void SetupSaveData(iLuxEntity_SaveData *apSaveData);
+  //////////////////////
+  //Save data stuff
+  iLuxEntity_SaveData* CreateSaveData();
+  void                 SaveToSaveData(iLuxEntity_SaveData* apSaveData);
+  void                 LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
+  void                 SetupSaveData(iLuxEntity_SaveData* apSaveData);
 
 private:
-	void SetupDoorPhysics(float afOpenAmount);
+  void SetupDoorPhysics(float afOpenAmount);
 
-	cLuxSwingDoorJointData* GetJointDataFromBody(iPhysicsBody *apBody);
-	cLuxSwingDoorJointData* GetJointDataFromJoint(iPhysicsJoint *apJoint);
+  cLuxSwingDoorJointData* GetJointDataFromBody(iPhysicsBody* apBody);
+  cLuxSwingDoorJointData* GetJointDataFromJoint(iPhysicsJoint* apJoint);
 
-	//////////////////////
-	// Data
-	std::vector<cLuxSwingDoorJointData> mvJointData;
+  //////////////////////
+  // Data
+  std::vector<cLuxSwingDoorJointData> mvJointData;
 
-	cLuxInteractData_SwingDoor mSwingDoorData;
+  cLuxInteractData_SwingDoor mSwingDoorData;
 
-	bool mbCanInteractWithStaticBody;
-	tString msCloseOnSound;
-	tString msCloseOffSound;
-	tString msLockOnSound;
-	tString msLockOffSound;
-	tString msInteractLockedSound;
-	
-	bool mbDisableBreakable;
-	bool mbBreakable;
+  bool    mbCanInteractWithStaticBody;
+  tString msCloseOnSound;
+  tString msCloseOffSound;
+  tString msLockOnSound;
+  tString msLockOffSound;
+  tString msInteractLockedSound;
 
-	tString msDamageMesh[2];
-	tString msBrokenEntity;
+  bool mbDisableBreakable;
+  bool mbBreakable;
 
-	tString msDamageSound;
-	tString msDamagePS;
+  tString msDamageMesh[2];
+  tString msBrokenEntity;
 
-	tString msBreakSound;
-	tString msBreakPS;
-	float mfBreakImpulse;
+  tString msDamageSound;
+  tString msDamagePS;
 
-	float mfHealthDamage[2];
+  tString msBreakSound;
+  tString msBreakPS;
+  float   mfBreakImpulse;
 
-	cMeshEntity* mpDamageMeshEntity[3];
+  float mfHealthDamage[2];
 
-	//////////////////////
-	// Variables
-	bool mbLocked;
-	bool mbClosed;
+  cMeshEntity* mpDamageMeshEntity[3];
 
-	int mlBrokenEntityID;
+  //////////////////////
+  // Variables
+  bool mbLocked;
+  bool mbClosed;
 
-	bool mbDisableAutoClose;
+  int mlBrokenEntityID;
 
-	int mlCurrentMeshEntity;
-	bool mbBroken;
+  bool mbDisableAutoClose;
 
-	float mfInteractSoundCount;
+  int  mlCurrentMeshEntity;
+  bool mbBroken;
 
-
+  float mfInteractSoundCount;
 };
 
 //----------------------------------------------
 
-class cLuxPropLoader_SwingDoor : public iLuxPropLoader
-{
+class cLuxPropLoader_SwingDoor : public iLuxPropLoader {
 public:
-	cLuxPropLoader_SwingDoor(const tString& asName);
-	virtual ~cLuxPropLoader_SwingDoor(){}
+  cLuxPropLoader_SwingDoor(const tString& asName);
+  virtual ~cLuxPropLoader_SwingDoor() {}
 
-	iLuxProp *CreateProp(const tString& asName, int alID, cLuxMap *apMap);
-	void LoadVariables(iLuxProp *apProp, cXmlElement *apRootElem);
-	void LoadInstanceVariables(iLuxProp *apProp, cResourceVarsObject *apInstanceVars);
+  iLuxProp* CreateProp(const tString& asName, int alID, cLuxMap* apMap);
+  void      LoadVariables(iLuxProp* apProp, cXmlElement* apRootElem);
+  void      LoadInstanceVariables(iLuxProp* apProp, cResourceVarsObject* apInstanceVars);
 
 private:
 };

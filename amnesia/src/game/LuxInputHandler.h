@@ -27,41 +27,47 @@
 
 //----------------------------------------------
 
-class cLuxAction
-{	
+class cLuxAction {
 public:
-	cLuxAction() : msName(""){}
-	cLuxAction(const tString& asName, 
-			   int alId, 
-			   bool abConfigurable, 
-			   eLuxActionCategory aCat) : msName(asName), mlId(alId), mbConfigurable(abConfigurable), mCat(aCat){}
+  cLuxAction()
+      : msName("") {}
+  cLuxAction(const tString&     asName,
+             int                alId,
+             bool               abConfigurable,
+             eLuxActionCategory aCat)
+      : msName(asName)
+      , mlId(alId)
+      , mbConfigurable(abConfigurable)
+      , mCat(aCat) {}
 
-	tString msName;
-	int mlId;
-	bool mbConfigurable;
-	eLuxActionCategory mCat;
+  tString            msName;
+  int                mlId;
+  bool               mbConfigurable;
+  eLuxActionCategory mCat;
 };
 
 typedef std::vector<cLuxAction*> tLuxActionVec;
-typedef tLuxActionVec::iterator tLuxActionVecIt;
+typedef tLuxActionVec::iterator  tLuxActionVecIt;
 
 //----------------------------------------------
 
-class cLuxInput
-{
+class cLuxInput {
 public:
-	cLuxInput() : msInputType(""){}
-	cLuxInput(const tString& asInputType, int alValue, int alActionId) : 
-				msInputType(asInputType), mlValue(alValue), mlActionId(alActionId){}
+  cLuxInput()
+      : msInputType("") {}
+  cLuxInput(const tString& asInputType, int alValue, int alActionId)
+      : msInputType(asInputType)
+      , mlValue(alValue)
+      , mlActionId(alActionId) {}
 
-	
-    tString msInputType;
-	int mlValue;
-	int mlActionId;
+
+  tString msInputType;
+  int     mlValue;
+  int     mlActionId;
 };
 
 typedef std::vector<cLuxInput*> tLuxInputVec;
-typedef tLuxInputVec::iterator	tLuxInputVecIt;
+typedef tLuxInputVec::iterator  tLuxInputVecIt;
 
 //----------------------------------------------
 
@@ -70,120 +76,119 @@ class cLuxPlayer;
 //----------------------------------------------
 
 
-class cLuxInputHandler : public iLuxUpdateable
-{
-public:	
-	cLuxInputHandler();
-	~cLuxInputHandler();
+class cLuxInputHandler : public iLuxUpdateable {
+public:
+  cLuxInputHandler();
+  ~cLuxInputHandler();
 
-	void LoadUserConfig();
-	void SaveUserConfig();
-	
-	void OnStart();
-	void Update(float afTimeStep);
-	void Reset();
-	void OnPostRender(float afFrameTime);
+  void LoadUserConfig();
+  void SaveUserConfig();
 
-	tWString GetInputName(const tString& asActionName);
+  void OnStart();
+  void Update(float afTimeStep);
+  void Reset();
+  void OnPostRender(float afFrameTime);
 
-	void ChangeState(eLuxInputState aState);
-	eLuxInputState GetState(){ return mState; }
+  tWString GetInputName(const tString& asActionName);
 
-	bool GetInvertMouse(){ return mbInvertMouse;}
-	void SetInvertMouse(bool abX) { mbInvertMouse = abX; }
+  void           ChangeState(eLuxInputState aState);
+  eLuxInputState GetState() { return mState; }
 
-	bool GetSmoothMouse() { return mbSmoothMouse; }
-	void SetSmoothMouse(bool abX) { mbSmoothMouse = abX; }
+  bool GetInvertMouse() { return mbInvertMouse; }
+  void SetInvertMouse(bool abX) { mbInvertMouse = abX; }
 
-	float GetMouseSensitivity() { return mfMouseSensitivity; }
-	void SetMouseSensitivity(float afX);
+  bool GetSmoothMouse() { return mbSmoothMouse; }
+  void SetSmoothMouse(bool abX) { mbSmoothMouse = abX; }
+
+  float GetMouseSensitivity() { return mfMouseSensitivity; }
+  void  SetMouseSensitivity(float afX);
 
 #ifdef USE_GAMEPAD
-	bool GetInvertGamepadLook() { return mbGamepadLookInvert; }
-	void SetInvertGamepadLook(bool abX) { mbGamepadLookInvert = abX; }
+  bool GetInvertGamepadLook() { return mbGamepadLookInvert; }
+  void SetInvertGamepadLook(bool abX) { mbGamepadLookInvert = abX; }
 
-	float GetGamepadLookSensitivity() { return mfGamepadLookSensitivity; }
-	void SetGamepadLookSensitivity(float afX);
+  float GetGamepadLookSensitivity() { return mfGamepadLookSensitivity; }
+  void  SetGamepadLookSensitivity(float afX);
 
-	iGamepad* GetGamepad() { return mpPad; }
+  iGamepad* GetGamepad() { return mpPad; }
 #endif
 
-	cLuxAction*   GetActionByName(const tString& asName);
-	cLuxAction*	  GetActionById(int alId);
-	tLuxActionVec GetActionsByCategory(eLuxActionCategory aCat);
+  cLuxAction*   GetActionByName(const tString& asName);
+  cLuxAction*   GetActionById(int alId);
+  tLuxActionVec GetActionsByCategory(eLuxActionCategory aCat);
 
-	tLuxInputVec GetDefaultInputsByActionId(int alId);
+  tLuxInputVec GetDefaultInputsByActionId(int alId);
 
-	void ResetSmoothMousePos();
-	cVector2f GetSmoothMousePos(const cVector2f& avRelPosMouse);
+  void      ResetSmoothMousePos();
+  cVector2f GetSmoothMousePos(const cVector2f& avRelPosMouse);
 
 #ifdef USE_GAMEPAD
-	bool IsGamepadPresent();
+  bool IsGamepadPresent();
 
-	void AppDeviceWasPlugged();
-	void AppDeviceWasRemoved();
+  void AppDeviceWasPlugged();
+  void AppDeviceWasRemoved();
 #endif
 
 private:
-	void UpdateGlobalInput();
-	bool UpdateGamepadUIInput();
-	
-	void UpdateGameInput();
-	void UpdateGamePlayerInput();
-	void UpdateGameMessageInput();
-	void UpdateGameEffectInput();
-	
-	void UpdatePreMenuInput();
-	void UpdateMainMenuInput();
-	void UpdateInventoryInput();
-	void UpdateJournalInput();
-	void UpdateDebugInput();
-	void UpdateCreditsInput();
-	void UpdateDemoEndInput();
-	void UpdateLoadScreenInput();
+  void UpdateGlobalInput();
+  bool UpdateGamepadUIInput();
 
-	bool CurrentStateSendsInputToGui();
+  void UpdateGameInput();
+  void UpdateGamePlayerInput();
+  void UpdateGameMessageInput();
+  void UpdateGameEffectInput();
 
-	void CreateActions();
+  void UpdatePreMenuInput();
+  void UpdateMainMenuInput();
+  void UpdateInventoryInput();
+  void UpdateJournalInput();
+  void UpdateDebugInput();
+  void UpdateCreditsInput();
+  void UpdateDemoEndInput();
+  void UpdateLoadScreenInput();
 
-	void CreateSubAction(cAction *apAction,const tStringVec& avType, int alValue);
+  bool CurrentStateSendsInputToGui();
 
-	tStringVec GetInputValueStrings(const tString& asX);
+  void CreateActions();
 
-	bool CreateSubActionFromInputString(cAction* apAction, const tString& asInputString);
+  void CreateSubAction(cAction* apAction, const tStringVec& avType, int alValue);
 
-	bool ShowMouseOnMouseInput();
+  tStringVec GetInputValueStrings(const tString& asX);
+
+  bool CreateSubActionFromInputString(cAction* apAction, const tString& asInputString);
+
+  bool ShowMouseOnMouseInput();
 
 #ifdef USE_GAMEPAD
-	void SetUpGamepad();
+  void SetUpGamepad();
 #endif
 
-	cGraphics *mpGraphics;
-	cInput *mpInput;
+  cGraphics* mpGraphics;
+  cInput*    mpInput;
 
-	cLuxPlayer *mpPlayer;
+  cLuxPlayer* mpPlayer;
 
-	eLuxInputState mState;
+  eLuxInputState mState;
 
-	bool mbSmoothMouse;
-	bool mbInvertMouse;
+  bool mbSmoothMouse;
+  bool mbInvertMouse;
 
-	double mfMouseActiveAt;
+  double mfMouseActiveAt;
 
-	float mfMouseSensitivity;
+  float mfMouseSensitivity;
 
-	int mlMaxSmoothMousePos;
-	float mfPrevSmoothMousePosMul;
-	tVector2fList mlstSmoothMousePos;
+  int           mlMaxSmoothMousePos;
+  float         mfPrevSmoothMousePosMul;
+  tVector2fList mlstSmoothMousePos;
 
-	cVector2l mvLastAbsMousePos;
+  cVector2l mvLastAbsMousePos;
 
 #ifdef USE_GAMEPAD
-	float mfGamepadWalkSensitivity;
-	float mfGamepadLookSensitivity;
-	bool mbGamepadLookInvert;
-	iGamepad* mpPad;
-	bool mbGamepadUIInput;
+  float     mfGamepadWalkSensitivity;
+  float     mfGamepadLookSensitivity;
+  bool      mbGamepadLookInvert;
+  iGamepad* mpPad;
+  bool      mbGamepadUIInput;
 #endif
 };
 

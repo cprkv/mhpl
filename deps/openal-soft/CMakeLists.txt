@@ -1174,9 +1174,17 @@ IF(LIBTYPE STREQUAL "STATIC")
     ENDFOREACH()
 ENDIF()
 
+if(APPLE)
+    set(CONFIG_PREFIX apple)
+elseif(UNIX)
+    set(CONFIG_PREFIX linux)
+else()
+    set(CONFIG_PREFIX win32)
+endif()
+
 # End configuration
 CONFIGURE_FILE(
-    "${OpenAL_SOURCE_DIR}/config.h.in"
+    "${OpenAL_SOURCE_DIR}/config-${CONFIG_PREFIX}.h.in"
     "${OpenAL_BINARY_DIR}/config.h")
 CONFIGURE_FILE(
     "${OpenAL_SOURCE_DIR}/openal.pc.in"

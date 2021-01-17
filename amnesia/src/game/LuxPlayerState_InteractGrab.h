@@ -32,105 +32,100 @@ class cLuxInteractData_Grab;
 
 //----------------------------------------------
 
-class cGrabbedBodyProperties
-{
+class cGrabbedBodyProperties {
 public:
-	iPhysicsBody *mpBody;
-	bool mbHasGravity;
-	bool mbCollideCharacter;
-	float mfMass;
+  iPhysicsBody* mpBody;
+  bool          mbHasGravity;
+  bool          mbCollideCharacter;
+  float         mfMass;
 };
 
-class cGrabbedSubMeshProperties
-{
+class cGrabbedSubMeshProperties {
 public:
-	cMaterial *mpCustomTransMaterial;
+  cMaterial* mpCustomTransMaterial;
 };
 
 //------------------------------------
 
-class cLuxPlayerState_InteractGrab_SaveData : public iLuxPlayerState_Interact_SaveData
-{
-	kSerializableClassInit(cLuxPlayerState_InteractGrab_SaveData)
-public:
-	cMatrixf m_mtxBodyRotation;
-	cVector3f mvLocalBodyOffset;
-	float mfDepth;
-	float mfMaxDistance;
+class cLuxPlayerState_InteractGrab_SaveData : public iLuxPlayerState_Interact_SaveData {
+  kSerializableClassInit(cLuxPlayerState_InteractGrab_SaveData) public : cMatrixf m_mtxBodyRotation;
+  cVector3f mvLocalBodyOffset;
+  float     mfDepth;
+  float     mfMaxDistance;
 };
 
 //------------------------------------
 
 
-class cLuxPlayerState_InteractGrab : public iLuxPlayerState_Interact
-{
-typedef iLuxPlayerState_Interact super_class;
-public:	
-	cLuxPlayerState_InteractGrab(cLuxPlayer *apPlayer);
-	virtual ~cLuxPlayerState_InteractGrab();
+class cLuxPlayerState_InteractGrab : public iLuxPlayerState_Interact {
+  typedef iLuxPlayerState_Interact super_class;
 
-	void OnEnterState(eLuxPlayerState aPrevState);
-	void OnLeaveState(eLuxPlayerState aNewState);
+public:
+  cLuxPlayerState_InteractGrab(cLuxPlayer* apPlayer);
+  virtual ~cLuxPlayerState_InteractGrab();
 
-	void Update(float afTimeStep);
-	void PostUpdate(float afTimeStep);
+  void OnEnterState(eLuxPlayerState aPrevState);
+  void OnLeaveState(eLuxPlayerState aNewState);
 
-	bool OnDoAction(eLuxPlayerAction aAction,bool abPressed);
+  void Update(float afTimeStep);
+  void PostUpdate(float afTimeStep);
 
-	void OnScroll(float afAmount);
+  bool OnDoAction(eLuxPlayerAction aAction, bool abPressed);
 
-	bool OnAddYaw(float afAmount);
-	bool OnAddPitch(float afAmount);
+  void OnScroll(float afAmount);
 
-	cGuiGfxElement* GetCrosshair();
+  bool OnAddYaw(float afAmount);
+  bool OnAddPitch(float afAmount);
 
-	void OnSaveBody(iPhysicsBody *apBody, float &afMass, bool &abCollideCharacter);
-	bool AllowBuoyancy(iPhysicsBody *apBody);
+  cGuiGfxElement* GetCrosshair();
 
-	float DrawDebug(cGuiSet *apSet,iFontData *apFont, float afStartY);
-	
-	void RenderSolid(cRendererCallbackFunctions* apFunctions);
+  void OnSaveBody(iPhysicsBody* apBody, float& afMass, bool& abCollideCharacter);
+  bool AllowBuoyancy(iPhysicsBody* apBody);
 
-	/////////////////////////////////
-	//Save data stuff
-	virtual bool IsSaved(){ return true; }
-	iLuxPlayerState_SaveData* CreateSaveData();
+  float DrawDebug(cGuiSet* apSet, iFontData* apFont, float afStartY);
 
-	void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
-	void LoadFromSaveDataBeforeEnter(cLuxMap *apMap,iLuxPlayerState_SaveData* apSaveData);
-	void LoadFromSaveDataAfterEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData);
+  void RenderSolid(cRendererCallbackFunctions* apFunctions);
+
+  /////////////////////////////////
+  //Save data stuff
+  virtual bool              IsSaved() { return true; }
+  iLuxPlayerState_SaveData* CreateSaveData();
+
+  void SaveToSaveData(iLuxPlayerState_SaveData* apSaveData);
+  void LoadFromSaveDataBeforeEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
+  void LoadFromSaveDataAfterEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData);
 
 protected:
-	void SaveBodyProperties(iPhysicsBody *apBody);
-	bool BodyIsAdded(iPhysicsBody *apBody);
+  void SaveBodyProperties(iPhysicsBody* apBody);
+  bool BodyIsAdded(iPhysicsBody* apBody);
 
-	cLuxInteractData_Grab *mpGrabData;
+  cLuxInteractData_Grab* mpGrabData;
 
-	float mfMaxForce;
-	float mfMaxTorque;
-	float mfMaxAngularSpeed;
+  float mfMaxForce;
+  float mfMaxTorque;
+  float mfMaxAngularSpeed;
 
-	float mfMinSlowPlayerMass;
-	float mfMaxSlowPlayerMass;
-	float mfMinSlowPlayerMul;
+  float mfMinSlowPlayerMass;
+  float mfMaxSlowPlayerMass;
+  float mfMinSlowPlayerMul;
 
-	float mfMaxLeaveAngularSpeed;
-	float mfMaxLeaveLinearSpeed;
-	
-	std::vector<cGrabbedBodyProperties> mvBodyProperties;
-	std::vector<cGrabbedSubMeshProperties> mvSubMeshProperties;
+  float mfMaxLeaveAngularSpeed;
+  float mfMaxLeaveLinearSpeed;
 
-	bool mbCustomMaterialsSetup;
+  std::vector<cGrabbedBodyProperties>    mvBodyProperties;
+  std::vector<cGrabbedSubMeshProperties> mvSubMeshProperties;
 
-	cVector3f mvLocalBodyOffset;
-	cMatrixf m_mtxBodyRotation;
+  bool mbCustomMaterialsSetup;
 
-	cPidController<cVector3f> mForcePid;
-	cPidController<cVector3f> mSpeedTorquePid;
+  cVector3f mvLocalBodyOffset;
+  cMatrixf  m_mtxBodyRotation;
 
-	float mfDepth;
-	float mfMaxDistance;
-	float mfMassSum;
+  cPidController<cVector3f> mForcePid;
+  cPidController<cVector3f> mSpeedTorquePid;
+
+  float mfDepth;
+  float mfMaxDistance;
+  float mfMassSum;
 };
 
 //----------------------------------------------

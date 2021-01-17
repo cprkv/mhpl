@@ -26,115 +26,111 @@
 
 //----------------------------------------------
 
-class cLuxProp_MoveObject_SaveData : public iLuxProp_SaveData
-{
-	kSerializableClassInit(cLuxProp_MoveObject_SaveData)
-public:
-	cVector3f mvAngularOffsetPos;
-	bool mbUseAngularLocalOffset;
+class cLuxProp_MoveObject_SaveData : public iLuxProp_SaveData {
+  kSerializableClassInit(cLuxProp_MoveObject_SaveData) public : cVector3f mvAngularOffsetPos;
+  bool mbUseAngularLocalOffset;
 
-	bool mbAutoMoveReachedGoal;
+  bool mbAutoMoveReachedGoal;
 };
 
 //----------------------------------------------
 
-class cLuxProp_MoveObject : public iLuxProp
-{
-typedef iLuxProp super_class;
-friend class cLuxPropLoader_MoveObject;
-public:	
-	cLuxProp_MoveObject(const tString &asName, int alID, cLuxMap *apMap);
-	virtual ~cLuxProp_MoveObject();
+class cLuxProp_MoveObject : public iLuxProp {
+  typedef iLuxProp super_class;
+  friend class cLuxPropLoader_MoveObject;
 
-	//////////////////////
-	//Genera
-	bool CanInteract(iPhysicsBody *apBody);
-	bool OnInteract(iPhysicsBody *apBody, const cVector3f &avPos);
-	
-	void OnSetupAfterLoad(cWorld *apWorld);
+public:
+  cLuxProp_MoveObject(const tString& asName, int alID, cLuxMap* apMap);
+  virtual ~cLuxProp_MoveObject();
 
-	void OnResetProperties();
+  //////////////////////
+  //Genera
+  bool CanInteract(iPhysicsBody* apBody);
+  bool OnInteract(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	void UpdatePropSpecific(float afTimeStep);
-	
-	void BeforePropDestruction();
+  void OnSetupAfterLoad(cWorld* apWorld);
 
-	eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody *apBody, const cVector3f &avPos);
+  void OnResetProperties();
 
-	//////////////////////
-	//Actions
-	void MoveToState(float afState, float afAcc, float afMaxSpeed, float afSlowdownDist, bool abResetSpeed);
-	void MoveToState(float afState);
+  void UpdatePropSpecific(float afTimeStep);
 
-	//////////////////////
-	//Properties
-	void SetAngularOffsetPos(const cVector3f& avWorldPos);
+  void BeforePropDestruction();
 
-	const cMatrixf& GetClosedTransform(){ return m_mtxClosedTransform;}
-	const cMatrixf& GetOpenTransform(){ return m_mtxOpenTransform;}
-	
-	float GetMoveState();
-		
-	//////////////////////
-	//Connection callbacks
-	void OnConnectionStateChange(iLuxEntity *apEntity, int alState);
+  eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	//////////////////////
-	//Save data stuff
-	iLuxEntity_SaveData* CreateSaveData();
-	void SaveToSaveData(iLuxEntity_SaveData* apSaveData);
-	void LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
-	void SetupSaveData(iLuxEntity_SaveData *apSaveData);
+  //////////////////////
+  //Actions
+  void MoveToState(float afState, float afAcc, float afMaxSpeed, float afSlowdownDist, bool abResetSpeed);
+  void MoveToState(float afState);
+
+  //////////////////////
+  //Properties
+  void SetAngularOffsetPos(const cVector3f& avWorldPos);
+
+  const cMatrixf& GetClosedTransform() { return m_mtxClosedTransform; }
+  const cMatrixf& GetOpenTransform() { return m_mtxOpenTransform; }
+
+  float GetMoveState();
+
+  //////////////////////
+  //Connection callbacks
+  void OnConnectionStateChange(iLuxEntity* apEntity, int alState);
+
+  //////////////////////
+  //Save data stuff
+  iLuxEntity_SaveData* CreateSaveData();
+  void                 SaveToSaveData(iLuxEntity_SaveData* apSaveData);
+  void                 LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
+  void                 SetupSaveData(iLuxEntity_SaveData* apSaveData);
 
 private:
-	void UpdateAutoMove(float afTimeStep);
+  void UpdateAutoMove(float afTimeStep);
 
-	void OnStartMove();
-	void CalculateOpenRotateMatrix();
-	
-	//Vars
-	cVector3f mvAngularOffsetPos;
-	bool mbUseAngularLocalOffset;
-	bool mbAutoMoveReachedGoal;
+  void OnStartMove();
+  void CalculateOpenRotateMatrix();
 
-	tString msAngularOffsetArea;
+  //Vars
+  cVector3f mvAngularOffsetPos;
+  bool      mbUseAngularLocalOffset;
+  bool      mbAutoMoveReachedGoal;
 
-	//Data
-	eLuxMoveObjectType mMoveObjectType;
+  tString msAngularOffsetArea;
 
-	float mfOpenAmount;
-	eLuxAxis mMoveAxis;
+  //Data
+  eLuxMoveObjectType mMoveObjectType;
 
-	float mfOpenAcc;
-	float mfOpenSpeed;
-	
-	float mfCloseAcc;
-	float mfCloseSpeed;
-	
-	bool mbAutoMove;
-	float mfAutoMoveStateGoal;
-	float mfAutoMoveAcc;
-	float mfAutoMoveSpeed;
-	float mfAutoMoveSlowdownDist;
+  float    mfOpenAmount;
+  eLuxAxis mMoveAxis;
 
-	cMatrixf m_mtxClosedTransform;
-	cMatrixf m_mtxOpenTransform;
+  float mfOpenAcc;
+  float mfOpenSpeed;
+
+  float mfCloseAcc;
+  float mfCloseSpeed;
+
+  bool  mbAutoMove;
+  float mfAutoMoveStateGoal;
+  float mfAutoMoveAcc;
+  float mfAutoMoveSpeed;
+  float mfAutoMoveSlowdownDist;
+
+  cMatrixf m_mtxClosedTransform;
+  cMatrixf m_mtxOpenTransform;
 };
 
 //----------------------------------------------
 
-class cLuxPropLoader_MoveObject : public iLuxPropLoader
-{
+class cLuxPropLoader_MoveObject : public iLuxPropLoader {
 public:
-	cLuxPropLoader_MoveObject(const tString& asName);
-	virtual ~cLuxPropLoader_MoveObject(){}
+  cLuxPropLoader_MoveObject(const tString& asName);
+  virtual ~cLuxPropLoader_MoveObject() {}
 
-	iLuxProp *CreateProp(const tString& asName, int alID, cLuxMap *apMap);
-	void LoadVariables(iLuxProp *apProp, cXmlElement *apRootElem);
-	void LoadInstanceVariables(iLuxProp *apProp, cResourceVarsObject *apInstanceVars);
+  iLuxProp* CreateProp(const tString& asName, int alID, cLuxMap* apMap);
+  void      LoadVariables(iLuxProp* apProp, cXmlElement* apRootElem);
+  void      LoadInstanceVariables(iLuxProp* apProp, cResourceVarsObject* apInstanceVars);
 
 private:
-	eLuxMoveObjectType ToMoveObjectType(const tString& asType);
+  eLuxMoveObjectType ToMoveObjectType(const tString& asType);
 };
 
 //----------------------------------------------

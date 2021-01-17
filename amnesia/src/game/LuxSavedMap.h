@@ -32,58 +32,55 @@ class cLuxMap;
 
 //----------------------------------------------
 
-class cLuxSavedMap : public iSerializable
-{
-	kSerializableClassInit(cLuxSavedMap)
-public:	
-	cLuxSavedMap();
-	~cLuxSavedMap();
+class cLuxSavedMap : public iSerializable {
+  kSerializableClassInit(cLuxSavedMap) public : cLuxSavedMap();
+  ~cLuxSavedMap();
 
-	void FromMap(cLuxMap *apMap);
-	void ToMap(cLuxMap *apMap);
+  void FromMap(cLuxMap* apMap);
+  void ToMap(cLuxMap* apMap);
 
-	tString msFileName;
+  tString msFileName;
 
-	tString msDisplayNameEntry;
+  tString msDisplayNameEntry;
 
-	tString msLanternLitCallback;
+  tString msLanternLitCallback;
 
-	int mlNumberOfQuests;
-	int mlTotalCompletionAmount;
-	int mlCurrentCompletionAmount;
+  int mlNumberOfQuests;
+  int mlTotalCompletionAmount;
+  int mlCurrentCompletionAmount;
 
-	bool mbSkyBoxActive;
-	tString msSkyboxTexture;
-	cColor mSkyBoxColor;
+  bool    mbSkyBoxActive;
+  tString msSkyboxTexture;
+  cColor  mSkyBoxColor;
 
-	bool mbFogActive;
-	bool mbFogCulling;
-	float mfFogStart;
-	float mfFogEnd;
-	float mfFogFalloffExp;
-	cColor mFogColor;
+  bool   mbFogActive;
+  bool   mbFogCulling;
+  float  mfFogStart;
+  float  mfFogEnd;
+  float  mfFogFalloffExp;
+  cColor mFogColor;
 
-	tString msCheckPointName;
-	tString msCheckPointStartPos;
-	tString msCheckPointCallback;
-	int mlCheckPointCount;
-	tString msCheckPointMusic;
-	int mlCheckPointMusicPrio;
-	bool mbCheckPointMusicResume;
-	float mfCheckPointMusicVolume;
-	
-	cContainerList<cEngineRope_SaveData> mlstRopes;
-	cContainerList<cEngineLight_SaveData> mlstLights;
-	cContainerList<cEngineSound_SaveData> mlstSounds;
-	cContainerList<cEnginePS_SaveData> mlstPS;
+  tString msCheckPointName;
+  tString msCheckPointStartPos;
+  tString msCheckPointCallback;
+  int     mlCheckPointCount;
+  tString msCheckPointMusic;
+  int     mlCheckPointMusicPrio;
+  bool    mbCheckPointMusicResume;
+  float   mfCheckPointMusicVolume;
 
-	cContainerList<iLuxEntity_SaveData*> mlstEntities;
+  cContainerList<cEngineRope_SaveData>  mlstRopes;
+  cContainerList<cEngineLight_SaveData> mlstLights;
+  cContainerList<cEngineSound_SaveData> mlstSounds;
+  cContainerList<cEnginePS_SaveData>    mlstPS;
 
-	cContainerList<cLuxEventTimer> mlstTimers;
+  cContainerList<iLuxEntity_SaveData*> mlstEntities;
 
-	cContainerList<cLuxScriptVar> mlstVars;
+  cContainerList<cLuxEventTimer> mlstTimers;
 
-	cContainerVec<cLuxUseItemCallback> mvUseItemCallbacks;
+  cContainerList<cLuxScriptVar> mlstVars;
+
+  cContainerVec<cLuxUseItemCallback> mvUseItemCallbacks;
 
 private:
 };

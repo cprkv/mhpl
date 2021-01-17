@@ -15,6 +15,6 @@
   - added `set(OGG_LIBRARIES ogg)` before `add_subdirectory(lib)`
 - libogg: 1.3.2
   - removed `if(BUILD_TESTING)...endif()`
-- angelscript: 2.33.0
-  - make include directories public
+- angelscript: 2.19.2
+  - created cmakelists from newer version
 - CgToolkit: 3.1 - April 2012 (3.1.0013)

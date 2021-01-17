@@ -26,73 +26,71 @@
 
 //----------------------------------------------
 
-class cLuxSoundExtraData
-{
+class cLuxSoundExtraData {
 public:
-	float mfMinDistance;
-	float mfMaxDistance;
-	float mfVolume;
-	cSoundEntry *mpSoundEntry;
+  float        mfMinDistance;
+  float        mfMaxDistance;
+  float        mfVolume;
+  cSoundEntry* mpSoundEntry;
 };
 
 //-------------------------------------
 
-class cLuxModelCache
-{
+class cLuxModelCache {
 public:
-	cLuxModelCache();
-	~cLuxModelCache();
+  cLuxModelCache();
+  ~cLuxModelCache();
 
-	void Create();
-	void Destroy();
+  void Create();
+  void Destroy();
 
 private:
-	std::list<cMesh*> mlstMeshCache;
-	std::list<cAnimation*> mlstAnimationCache;
-	std::list<iTexture*> mlstTextureCache;
+  std::list<cMesh*>      mlstMeshCache;
+  std::list<cAnimation*> mlstAnimationCache;
+  std::list<iTexture*>   mlstTextureCache;
 };
 
 //-------------------------------------
 
-class cLuxHelpFuncs : public iLuxUpdateable
-{
-public:	
-	cLuxHelpFuncs();
-	~cLuxHelpFuncs();
+class cLuxHelpFuncs : public iLuxUpdateable {
+public:
+  cLuxHelpFuncs();
+  ~cLuxHelpFuncs();
 
-	void LoadFonts();
+  void LoadFonts();
 
-		
-	bool PlayGuiSoundData(	const tString& asName, eSoundEntryType aDestType, float afVolMul=1.0f,
-							eSoundEntityType aSoundType= eSoundEntityType_Main, bool abSkipPreviousRandom=true,
-							cLuxSoundExtraData *apOutputData= NULL);
 
-	void DrawSetToScreen(bool abClearScreen=true, const cColor& aCol = cColor(0,0), cGuiSet* apSet=NULL);
-	
-	void CleanupData();
+  bool PlayGuiSoundData(const tString& asName, eSoundEntryType aDestType, float afVolMul = 1.0f,
+                        eSoundEntityType aSoundType = eSoundEntityType_Main, bool abSkipPreviousRandom = true,
+                        cLuxSoundExtraData* apOutputData = NULL);
 
-	tWString ParseString(const tWString& asInput);
+  void DrawSetToScreen(bool abClearScreen = true, const cColor& aCol = cColor(0, 0), cGuiSet* apSet = NULL);
 
-	float GetStringDuration(const tWString& asStr);
+  void CleanupData();
 
-	/**
+  tWString ParseString(const tWString& asInput);
+
+  float GetStringDuration(const tWString& asStr);
+
+  /**
 	 * To be used in journal and inventory, renders the screen without icons and such.
 	 */
-	void RenderBackgroundScreen(bool abDrawFullHUD);
+  void RenderBackgroundScreen(bool abDrawFullHUD);
 
 
-	cGuiSet* GetSet(){ return mpSet;}
+  cGuiSet* GetSet() { return mpSet; }
+
 private:
-	tWString ParseStringCommand(const tWString& asCommand);
+  tWString ParseStringCommand(const tWString& asCommand);
 
-	cGuiSet *mpSet;
-	iLowLevelGraphics *mpLowLevelGfx;
+  cGuiSet*           mpSet;
+  iLowLevelGraphics* mpLowLevelGfx;
 
-	iFontData *mpFontDefault;
+  iFontData* mpFontDefault;
 
-	float mfTextDuration_StartTime;
-	float mfTextDuration_MinTime;
-	float mfTextDuration_CharTime;
+  float mfTextDuration_StartTime;
+  float mfTextDuration_MinTime;
+  float mfTextDuration_CharTime;
 };
 
 //----------------------------------------------

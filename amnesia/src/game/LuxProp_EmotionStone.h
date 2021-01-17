@@ -26,87 +26,83 @@
 
 //----------------------------------------------
 
-class cLuxProp_EmotionStone_SaveData : public iLuxProp_SaveData
-{
-	kSerializableClassInit(cLuxProp_EmotionStone_SaveData)
-public:
-	tString msDescCat;
-	tString msDescEntry;
+class cLuxProp_EmotionStone_SaveData : public iLuxProp_SaveData {
+  kSerializableClassInit(cLuxProp_EmotionStone_SaveData) public : tString msDescCat;
+  tString msDescEntry;
 
-	tString msTextCat;
-	tString msTextEntry;
+  tString msTextCat;
+  tString msTextEntry;
 
-	tString msSound;
+  tString msSound;
 };
 
 //----------------------------------------------
 
 
-class cLuxProp_EmotionStone : public iLuxProp
-{
-typedef iLuxProp super_class;
-friend class cLuxPropLoader_EmotionStone;
-public:	
-	cLuxProp_EmotionStone(const tString &asName, int alID, cLuxMap *apMap);
-	virtual ~cLuxProp_EmotionStone();
+class cLuxProp_EmotionStone : public iLuxProp {
+  typedef iLuxProp super_class;
+  friend class cLuxPropLoader_EmotionStone;
 
-	//////////////////////
-	//General
-	bool CanInteract(iPhysicsBody *apBody);
-	bool OnInteract(iPhysicsBody *apBody, const cVector3f &avPos);
-	
-	void OnSetupAfterLoad(cWorld *apWorld);
+public:
+  cLuxProp_EmotionStone(const tString& asName, int alID, cLuxMap* apMap);
+  virtual ~cLuxProp_EmotionStone();
 
-	void OnResetProperties();
+  //////////////////////
+  //General
+  bool CanInteract(iPhysicsBody* apBody);
+  bool OnInteract(iPhysicsBody* apBody, const cVector3f& avPos);
 
-	void UpdatePropSpecific(float afTimeStep);
-	
-	void BeforePropDestruction();
+  void OnSetupAfterLoad(cWorld* apWorld);
 
-	eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody *apBody, const cVector3f &avPos);
-	tWString GetFocusText();
+  void OnResetProperties();
 
-	//////////////////////
-	//Properties
-	
-	//////////////////////
-	//Connection callbacks
-	void OnConnectionStateChange(iLuxEntity *apEntity, int alState);
+  void UpdatePropSpecific(float afTimeStep);
+
+  void BeforePropDestruction();
+
+  eLuxFocusCrosshair GetFocusCrosshair(iPhysicsBody* apBody, const cVector3f& avPos);
+  tWString           GetFocusText();
+
+  //////////////////////
+  //Properties
+
+  //////////////////////
+  //Connection callbacks
+  void OnConnectionStateChange(iLuxEntity* apEntity, int alState);
 
 
-	//////////////////////
-	//Save data stuff
-	iLuxEntity_SaveData* CreateSaveData();
-	void SaveToSaveData(iLuxEntity_SaveData* apSaveData);
-	void LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
-	void SetupSaveData(iLuxEntity_SaveData *apSaveData);
+  //////////////////////
+  //Save data stuff
+  iLuxEntity_SaveData* CreateSaveData();
+  void                 SaveToSaveData(iLuxEntity_SaveData* apSaveData);
+  void                 LoadFromSaveData(iLuxEntity_SaveData* apSaveData);
+  void                 SetupSaveData(iLuxEntity_SaveData* apSaveData);
 
 private:
-	//////////////////////
-	// Data
-		
-	//////////////////////
-	// Variables
-	tString msDescCat;
-	tString msDescEntry;
+  //////////////////////
+  // Data
 
-	tString msTextCat;
-	tString msTextEntry;
+  //////////////////////
+  // Variables
+  tString msDescCat;
+  tString msDescEntry;
 
-	tString msSound;
+  tString msTextCat;
+  tString msTextEntry;
+
+  tString msSound;
 };
 
 //----------------------------------------------
 
-class cLuxPropLoader_EmotionStone : public iLuxPropLoader
-{
+class cLuxPropLoader_EmotionStone : public iLuxPropLoader {
 public:
-	cLuxPropLoader_EmotionStone(const tString& asName);
-	virtual ~cLuxPropLoader_EmotionStone(){}
+  cLuxPropLoader_EmotionStone(const tString& asName);
+  virtual ~cLuxPropLoader_EmotionStone() {}
 
-	iLuxProp *CreateProp(const tString& asName, int alID, cLuxMap *apMap);
-	void LoadVariables(iLuxProp *apProp, cXmlElement *apRootElem);
-	void LoadInstanceVariables(iLuxProp *apProp, cResourceVarsObject *apInstanceVars);
+  iLuxProp* CreateProp(const tString& asName, int alID, cLuxMap* apMap);
+  void      LoadVariables(iLuxProp* apProp, cXmlElement* apRootElem);
+  void      LoadInstanceVariables(iLuxProp* apProp, cResourceVarsObject* apInstanceVars);
 
 private:
 };

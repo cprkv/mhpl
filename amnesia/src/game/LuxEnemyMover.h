@@ -31,95 +31,94 @@ class cLuxEnemy_ManPig;
 
 //----------------------------------------------
 
-enum eLuxEnemyMoveState
-{
-	eLuxEnemyMoveState_Backward,
-	eLuxEnemyMoveState_Stopped,
-	eLuxEnemyMoveState_Walking,
-	eLuxEnemyMoveState_Running,
+enum eLuxEnemyMoveState {
+  eLuxEnemyMoveState_Backward,
+  eLuxEnemyMoveState_Stopped,
+  eLuxEnemyMoveState_Walking,
+  eLuxEnemyMoveState_Running,
 
-	eLuxEnemyMoveState_LastEnum
+  eLuxEnemyMoveState_LastEnum
 };
 
 //----------------------------------------------
 
-class cLuxEnemyMover
-{
-friend class cLuxEnemyMover_SaveData;
-friend class iLuxEnemy;
-friend class cLuxEnemy_ManPig;
-public:	
-	cLuxEnemyMover(iLuxEnemy *apEnemy, iCharacterBody *apCharBody);
-	virtual ~cLuxEnemyMover();
+class cLuxEnemyMover {
+  friend class cLuxEnemyMover_SaveData;
+  friend class iLuxEnemy;
+  friend class cLuxEnemy_ManPig;
 
-	//////////////////////
-	//General
-	void SetupAfterLoad(cWorld *apWorld);
+public:
+  cLuxEnemyMover(iLuxEnemy* apEnemy, iCharacterBody* apCharBody);
+  virtual ~cLuxEnemyMover();
 
-	void OnUpdate(float afTimeStep);
+  //////////////////////
+  //General
+  void SetupAfterLoad(cWorld* apWorld);
 
-	//////////////////////
-	//Actions
-	void MoveToPos(const cVector3f& avFeetPos);
+  void OnUpdate(float afTimeStep);
 
-	void TurnToPos(const cVector3f& avFeetPos);
-	void TurnToAngle(float afAngle);
+  //////////////////////
+  //Actions
+  void MoveToPos(const cVector3f& avFeetPos);
 
-	void UseMoveStateAnimations();
-	
-	//////////////////////
-	//Properties
+  void TurnToPos(const cVector3f& avFeetPos);
+  void TurnToAngle(float afAngle);
 
-	//This is used by enemy when caclulting final max speed.
-	float CalculateSpeedMul(float afTimeStep);
+  void UseMoveStateAnimations();
 
-	//This get the speed along the movement direction (so it does not accound for falling speeds, climbing, etc
-	float GetMoveSpeed();
+  //////////////////////
+  //Properties
 
-	//This gets speed / wanted_speed
-	float GetWantedSpeedAmount();
+  //This is used by enemy when caclulting final max speed.
+  float CalculateSpeedMul(float afTimeStep);
 
-	void SetOverideMoveState(bool abX){ mbOverideMoveState = abX;}
-	bool GetOverideMoveState(){ return mbOverideMoveState;}
+  //This get the speed along the movement direction (so it does not accound for falling speeds, climbing, etc
+  float GetMoveSpeed();
 
-	float GetStuckCounter(){ return mfStuckCounter; }
-	float GetMaxStuckCounter(){ return mfMaxStuckCounter; }
-	bool GetStuckCounterIsAtMax(){ return mfStuckCounter >= mfMaxStuckCounter;}
-	void ResetStuckCounter(){ mfStuckCounter =0; }
+  //This gets speed / wanted_speed
+  float GetWantedSpeedAmount();
 
-	
-	//////////////////////
-	//Data
-	
-	//////////////////////
-	//Save data stuff
-	
+  void SetOverideMoveState(bool abX) { mbOverideMoveState = abX; }
+  bool GetOverideMoveState() { return mbOverideMoveState; }
+
+  float GetStuckCounter() { return mfStuckCounter; }
+  float GetMaxStuckCounter() { return mfMaxStuckCounter; }
+  bool  GetStuckCounterIsAtMax() { return mfStuckCounter >= mfMaxStuckCounter; }
+  void  ResetStuckCounter() { mfStuckCounter = 0; }
+
+
+  //////////////////////
+  //Data
+
+  //////////////////////
+  //Save data stuff
+
 private:
-	void UpdateStuckCounter(float afTimeStep);	
-	void UpdateTurning(float afTimeStep);
-	void UpdateMoveAnimation(float afTimeStep);
-	void UpdateStepEffects(float afTimeStep);
+  void UpdateStuckCounter(float afTimeStep);
+  void UpdateTurning(float afTimeStep);
+  void UpdateMoveAnimation(float afTimeStep);
+  void UpdateStepEffects(float afTimeStep);
 
-	///////////////////
-	// Data
-	iLuxEnemy *mpEnemy;
-	iCharacterBody *mpCharBody;
+  ///////////////////
+  // Data
+  iLuxEnemy*      mpEnemy;
+  iCharacterBody* mpCharBody;
 
-	float mfStuckLimit;
-	float mfMaxStuckCounter;
+  float mfStuckLimit;
+  float mfMaxStuckCounter;
 
 
-	///////////////////
-	// Variables
-	bool mbTurning;
-	float mfTurnGoalAngle;
-	float mfTurnSpeed;
-	float mfTurnBreakAcc;
+  ///////////////////
+  // Variables
+  bool  mbTurning;
+  float mfTurnGoalAngle;
+  float mfTurnSpeed;
+  float mfTurnBreakAcc;
 
-	float mfStuckCounter;
+  float mfStuckCounter;
 
-	eLuxEnemyMoveState mMoveState;
-	bool mbOverideMoveState;
+  eLuxEnemyMoveState mMoveState;
+  bool               mbOverideMoveState;
 };
 
 //----------------------------------------------

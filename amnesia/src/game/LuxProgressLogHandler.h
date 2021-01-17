@@ -26,31 +26,30 @@
 
 //----------------------------------------
 
-class cLuxProgressLogHandler : public iLuxUpdateable
-{
-public:	
-	cLuxProgressLogHandler();
-	~cLuxProgressLogHandler();
+class cLuxProgressLogHandler : public iLuxUpdateable {
+public:
+  cLuxProgressLogHandler();
+  ~cLuxProgressLogHandler();
 
-	void LoadUserConfig();
-	void SaveUserConfig();
-	
-	void OnStart();
-	void Update(float afTimeStep);
-	void Reset();
+  void LoadUserConfig();
+  void SaveUserConfig();
 
-	void CreateAndResetLogFile();
+  void OnStart();
+  void Update(float afTimeStep);
+  void Reset();
 
-	void AddLog(eLuxProgressLogLevel aLevel, const tString& asMessage);
-	
+  void CreateAndResetLogFile();
+
+  void AddLog(eLuxProgressLogLevel aLevel, const tString& asMessage);
+
 private:
-	tString LevelToString(eLuxProgressLogLevel aLevel);
+  tString LevelToString(eLuxProgressLogLevel aLevel);
 
-	int mlCounter;
-	int mlFileNameCount;
-	bool mbActive;
+  int  mlCounter;
+  int  mlFileNameCount;
+  bool mbActive;
 
-	FILE *mpFile;
+  FILE* mpFile;
 };
 
 //----------------------------------------------

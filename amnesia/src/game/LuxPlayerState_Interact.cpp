@@ -30,17 +30,16 @@
 
 //-----------------------------------------------------------------------
 
-iLuxPlayerState_Interact::iLuxPlayerState_Interact(cLuxPlayer *apPlayer, eLuxPlayerState aType) : iLuxPlayerState(apPlayer, aType)
-{
-	mpCurrentBody = NULL;
-	mpCurrentProp = NULL;
-	mvCurrentFocusPos = 0;
+iLuxPlayerState_Interact::iLuxPlayerState_Interact(cLuxPlayer* apPlayer, eLuxPlayerState aType)
+    : iLuxPlayerState(apPlayer, aType) {
+  mpCurrentBody     = NULL;
+  mpCurrentProp     = NULL;
+  mvCurrentFocusPos = 0;
 }
 
 //-----------------------------------------------------------------------
 
-iLuxPlayerState_Interact::~iLuxPlayerState_Interact()
-{
+iLuxPlayerState_Interact::~iLuxPlayerState_Interact() {
 }
 
 //-----------------------------------------------------------------------
@@ -51,31 +50,25 @@ iLuxPlayerState_Interact::~iLuxPlayerState_Interact()
 
 //-----------------------------------------------------------------------
 
-void iLuxPlayerState_Interact::OnDestroyEntity(iLuxEntity *apEntity)
-{
-	iLuxEntity *pCurrentEntity = mpCurrentProp;
-	if(pCurrentEntity == apEntity)
-	{
-		gpBase->mpPlayer->ChangeState(mPreviousState);
-	}
+void iLuxPlayerState_Interact::OnDestroyEntity(iLuxEntity* apEntity) {
+  iLuxEntity* pCurrentEntity = mpCurrentProp;
+  if (pCurrentEntity == apEntity) {
+    gpBase->mpPlayer->ChangeState(mPreviousState);
+  }
 }
 
-void iLuxPlayerState_Interact::OnAttachBodyToStickyArea(iPhysicsBody *apBody)
-{
-	bool bBodyInProp = false;
-	for(int i=0; i<mpCurrentProp->GetBodyNum(); ++i)
-	{
-		if(mpCurrentProp->GetBody(i) == apBody) 
-		{
-			bBodyInProp = true;
-			break;
-		}
-	}
+void iLuxPlayerState_Interact::OnAttachBodyToStickyArea(iPhysicsBody* apBody) {
+  bool bBodyInProp = false;
+  for (int i = 0; i < mpCurrentProp->GetBodyNum(); ++i) {
+    if (mpCurrentProp->GetBody(i) == apBody) {
+      bBodyInProp = true;
+      break;
+    }
+  }
 
-    if(bBodyInProp)
-	{
-		mpPlayer->ChangeState(mPreviousState);
-	}
+  if (bBodyInProp) {
+    mpPlayer->ChangeState(mPreviousState);
+  }
 }
 
 //-----------------------------------------------------------------------
@@ -87,20 +80,18 @@ void iLuxPlayerState_Interact::OnAttachBodyToStickyArea(iPhysicsBody *apBody)
 
 //-----------------------------------------------------------------------
 
-void iLuxPlayerState_Interact::SetupInteractVars()
-{
-	mpCurrentProp = cLuxPlayerStateVars::mpInteractProp;
-	mpCurrentBody = cLuxPlayerStateVars::mpInteractBody;
-	mvCurrentFocusPos = cLuxPlayerStateVars::mvInteractPos;
+void iLuxPlayerState_Interact::SetupInteractVars() {
+  mpCurrentProp     = cLuxPlayerStateVars::mpInteractProp;
+  mpCurrentBody     = cLuxPlayerStateVars::mpInteractBody;
+  mvCurrentFocusPos = cLuxPlayerStateVars::mvInteractPos;
 
-	mpCurrentProp->SetIsInteractedWith(true);
-}	
+  mpCurrentProp->SetIsInteractedWith(true);
+}
 
 //-----------------------------------------------------------------------
 
-void iLuxPlayerState_Interact::ResetInteractVars()
-{
-	mpCurrentProp->SetIsInteractedWith(false);
+void iLuxPlayerState_Interact::ResetInteractVars() {
+  mpCurrentProp->SetIsInteractedWith(false);
 }
 
 //-----------------------------------------------------------------------
@@ -112,80 +103,64 @@ void iLuxPlayerState_Interact::ResetInteractVars()
 //-----------------------------------------------------------------------
 
 kBeginSerializeVirtual(iLuxPlayerState_Interact_SaveData, iLuxPlayerState_SaveData)
-kSerializeVar(mlCurrentPropId, eSerializeType_Int32)
-kSerializeVar(mlCurrentBodyId, eSerializeType_Int32)
-kSerializeVar(mvCurrentFocusPos, eSerializeType_Vector3f)
-kEndSerialize()
+    kSerializeVar(mlCurrentPropId, eSerializeType_Int32)
+        kSerializeVar(mlCurrentBodyId, eSerializeType_Int32)
+            kSerializeVar(mvCurrentFocusPos, eSerializeType_Vector3f)
+                kEndSerialize()
 
-//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
 
-void iLuxPlayerState_Interact::SaveToSaveData(iLuxPlayerState_SaveData* apSaveData)
-{
-	///////////////////////
-	// Init
-	super_class::SaveToSaveData(apSaveData);
-	iLuxPlayerState_Interact_SaveData *pData = static_cast<iLuxPlayerState_Interact_SaveData*>(apSaveData);
+    void iLuxPlayerState_Interact::SaveToSaveData(iLuxPlayerState_SaveData* apSaveData) {
+  ///////////////////////
+  // Init
+  super_class::SaveToSaveData(apSaveData);
+  iLuxPlayerState_Interact_SaveData* pData = static_cast<iLuxPlayerState_Interact_SaveData*>(apSaveData);
 
-	if(mpCurrentProp && mpCurrentBody)
-	{
-		pData->mlCurrentBodyId = mpCurrentBody->GetUniqueID();
-		pData->mlCurrentPropId = mpCurrentProp->GetID();
-	}
-	else
-	{
-		pData->mlCurrentPropId = -1;
-		pData->mlCurrentBodyId = -1;
-	}
-	kCopyToVar(pData, mvCurrentFocusPos);
+  if (mpCurrentProp && mpCurrentBody) {
+    pData->mlCurrentBodyId = mpCurrentBody->GetUniqueID();
+    pData->mlCurrentPropId = mpCurrentProp->GetID();
+  } else {
+    pData->mlCurrentPropId = -1;
+    pData->mlCurrentBodyId = -1;
+  }
+  kCopyToVar(pData, mvCurrentFocusPos);
 }
 
 //-----------------------------------------------------------------------
 
-void iLuxPlayerState_Interact::LoadFromSaveDataBeforeEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData)
-{
-	///////////////////////
-	// Init
-	super_class::LoadFromSaveDataBeforeEnter(apMap,apSaveData);
-	iLuxPlayerState_Interact_SaveData *pData = static_cast<iLuxPlayerState_Interact_SaveData*>(apSaveData);
-	
-	//////////////////////
-	//Setup interaction vars
-	iPhysicsBody* pFoucsBody=NULL;
-	iLuxEntity *pEntity = apMap->GetEntityByID(pData->mlCurrentPropId);
-	if(pEntity && pEntity->GetEntityType() == eLuxEntityType_Prop)
-	{
-		iLuxProp *pProp = static_cast<iLuxProp*>(pEntity);
-		pFoucsBody = pProp->GetBodyFromID(pData->mlCurrentBodyId);
-		if(pFoucsBody==NULL)
-		{
-			Error("Could not load body with id %d in prop '%s'\n", pData->mlCurrentBodyId, mpCurrentProp->GetName().c_str());
-		}
-	}
-	else
-	{
-		Error("Could not find prop with id %d\n", pData->mlCurrentPropId);
-	}
+void iLuxPlayerState_Interact::LoadFromSaveDataBeforeEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData) {
+  ///////////////////////
+  // Init
+  super_class::LoadFromSaveDataBeforeEnter(apMap, apSaveData);
+  iLuxPlayerState_Interact_SaveData* pData = static_cast<iLuxPlayerState_Interact_SaveData*>(apSaveData);
 
-	if(pFoucsBody)
-	{
-		//TODO: Add pos here!
-		cLuxPlayerStateVars::SetupInteraction(pFoucsBody, mvCurrentFocusPos);
-	}
+  //////////////////////
+  //Setup interaction vars
+  iPhysicsBody* pFoucsBody = NULL;
+  iLuxEntity*   pEntity    = apMap->GetEntityByID(pData->mlCurrentPropId);
+  if (pEntity && pEntity->GetEntityType() == eLuxEntityType_Prop) {
+    iLuxProp* pProp = static_cast<iLuxProp*>(pEntity);
+    pFoucsBody      = pProp->GetBodyFromID(pData->mlCurrentBodyId);
+    if (pFoucsBody == NULL) {
+      Error("Could not load body with id %d in prop '%s'\n", pData->mlCurrentBodyId, mpCurrentProp->GetName().c_str());
+    }
+  } else {
+    Error("Could not find prop with id %d\n", pData->mlCurrentPropId);
+  }
+
+  if (pFoucsBody) {
+    //TODO: Add pos here!
+    cLuxPlayerStateVars::SetupInteraction(pFoucsBody, mvCurrentFocusPos);
+  }
 }
 
 //-----------------------------------------------------------------------
 
-void iLuxPlayerState_Interact::LoadFromSaveDataAfterEnter(cLuxMap *apMap, iLuxPlayerState_SaveData* apSaveData)
-{
-	///////////////////////
-	// Init
-	super_class::LoadFromSaveDataAfterEnter(apMap,apSaveData);
-	iLuxPlayerState_Interact_SaveData *pData = static_cast<iLuxPlayerState_Interact_SaveData*>(apSaveData);
-
+void iLuxPlayerState_Interact::LoadFromSaveDataAfterEnter(cLuxMap* apMap, iLuxPlayerState_SaveData* apSaveData) {
+  ///////////////////////
+  // Init
+  super_class::LoadFromSaveDataAfterEnter(apMap, apSaveData);
+  iLuxPlayerState_Interact_SaveData* pData = static_cast<iLuxPlayerState_Interact_SaveData*>(apSaveData);
 }
 
 //-----------------------------------------------------------------------
-
-
-
-

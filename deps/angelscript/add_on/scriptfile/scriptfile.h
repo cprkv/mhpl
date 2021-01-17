@@ -4,6 +4,8 @@
 // This class encapsulates a FILE pointer in a reference counted class for
 // use within AngelScript.
 //
+// It requires the CScriptString add-on to work.
+//
 
 #ifndef SCRIPTFILE_H
 #define SCRIPTFILE_H
@@ -27,61 +29,48 @@
 // Declaration
 //
 
-#ifndef ANGELSCRIPT_H 
-// Avoid having to inform include path if header is already include before
 #include <angelscript.h>
-#endif
-
 #include <string>
 #include <stdio.h>
 
 BEGIN_AS_NAMESPACE
 
+class CScriptString;
+
 class CScriptFile
 {
 public:
-	CScriptFile();
+    CScriptFile();
 
-	void AddRef() const;
-	void Release() const;
+    void AddRef() const;
+    void Release() const;
 
 	// TODO: Implement the "r+", "w+" and "a+" modes
 	// mode = "r" -> open the file for reading
 	//        "w" -> open the file for writing (overwrites existing file)
 	//        "a" -> open the file for appending
-	int  Open(const std::string &filename, const std::string &mode);
-	int  Close();
-	int  GetSize() const;
+    int  Open(const std::string &filename, const std::string &mode);
+    int  Close();
+    int  GetSize() const;
 	bool IsEOF() const;
 
-	// Reading
-	std::string ReadString(unsigned int length);
-	std::string ReadLine();
-	asINT64     ReadInt(asUINT bytes);
-	asQWORD     ReadUInt(asUINT bytes);
-	float       ReadFloat();
-	double      ReadDouble();
+    // Reading
+    int ReadString(unsigned int length, std::string &str);
+	int ReadLine(std::string &str);
 
-	// Writing
-	int WriteString(const std::string &str);
-	int WriteInt(asINT64 v, asUINT bytes);
-	int WriteUInt(asQWORD v, asUINT bytes);
-	int WriteFloat(float v);
-	int WriteDouble(double v);
+    // Writing
+    int WriteString(const std::string &str);
 
-	// Cursor
+    // Cursor
 	int GetPos() const;
-	int SetPos(int pos);
-	int MovePos(int delta);
-
-	// Big-endian = most significant byte first
-	bool mostSignificantByteFirst;
+    int SetPos(int pos);
+    int MovePos(int delta);
 
 protected:
-	~CScriptFile();
+    ~CScriptFile();
 
-	mutable int refCount;
-	FILE       *file;
+    mutable int refCount;
+    FILE       *file;
 };
 
 // This function will determine the configuration of the engine
