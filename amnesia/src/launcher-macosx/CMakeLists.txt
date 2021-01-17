@@ -65,7 +65,6 @@ add_executable(Launcher MACOSX_BUNDLE
     TabBackground.h
     TabBackground.m
     main.m
-    Launcher_Prefix.pch
     ${RESOURCE_FILES}
     ${BACKGROUND_FILE}
 )
