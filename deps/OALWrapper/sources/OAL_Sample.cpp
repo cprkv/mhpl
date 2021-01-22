@@ -21,7 +21,6 @@
 #include "OALWrapper/OAL_Source.h"
 
 
-
 //------------------------------------------------------------------
 
 ///////////////////////////////////////////////////////////
@@ -31,38 +30,34 @@
 
 //------------------------------------------------------------------
 
-cOAL_Sample::cOAL_Sample() : iOAL_AudioData(eOAL_AudioDataType_Sample,1)
-{
+cOAL_Sample::cOAL_Sample()
+    : iOAL_AudioData(eOAL_AudioDataType_Sample, 1) {
 }
 
 //------------------------------------------------------------------
 
-cOAL_Sample::~cOAL_Sample() 
-{
-	if(mlstBoundSources.empty()==false)
-	{
-		tSourceListIt it;
-		for(it=mlstBoundSources.begin(); it!=mlstBoundSources.end(); ++it)
-		{
-			cOAL_Source* pSource = *it;
-			pSource->Stop(false);
-		}
-		mlstBoundSources.clear();
-	}
-}		
+cOAL_Sample::~cOAL_Sample() {
+  if (mlstBoundSources.empty() == false) {
+    tSourceListIt it;
+    for (it = mlstBoundSources.begin(); it != mlstBoundSources.end(); ++it) {
+      cOAL_Source* pSource = *it;
+      pSource->Stop(false);
+    }
+    mlstBoundSources.clear();
+  }
+}
 
 //------------------------------------------------------------------
 
 ///////////////////////////////////////////////////////////
-//	
+//
 //
 ///////////////////////////////////////////////////////////
 
 //------------------------------------------------------------------
 
-ALuint* cOAL_Sample::GetOALBufferPointer()
-{
-	 return mvBuffers[0]->GetObjectIDPointer();
+ALuint* cOAL_Sample::GetOALBufferPointer() {
+  return mvBuffers[0]->GetObjectIDPointer();
 }
 
 

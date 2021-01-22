@@ -18,23 +18,23 @@
 
 #include "OAL_Types.h"
 
-cOAL_Sample*	OAL_Sample_Load		( const std::string &asFilename, eOAL_SampleFormat format = eOAL_SampleFormat_Detect );
-cOAL_Sample*	OAL_Sample_Load		( const std::wstring &asFilename, eOAL_SampleFormat format = eOAL_SampleFormat_Detect );
-cOAL_Sample*	OAL_Sample_LoadFromBuffer ( const void* apBuffer, size_t aSize, eOAL_SampleFormat format = eOAL_SampleFormat_Detect );
-void			OAL_Sample_Unload	( cOAL_Sample* apSample );
+cOAL_Sample* OAL_Sample_Load(const std::string& asFilename, eOAL_SampleFormat format = eOAL_SampleFormat_Detect);
+cOAL_Sample* OAL_Sample_Load(const std::wstring& asFilename, eOAL_SampleFormat format = eOAL_SampleFormat_Detect);
+cOAL_Sample* OAL_Sample_LoadFromBuffer(const void* apBuffer, size_t aSize, eOAL_SampleFormat format = eOAL_SampleFormat_Detect);
+void         OAL_Sample_Unload(cOAL_Sample* apSample);
 
 
-cOAL_Stream*	OAL_Stream_Load		( const std::string &asFilename, eOAL_SampleFormat format = eOAL_SampleFormat_Detect );
-cOAL_Stream*	OAL_Stream_Load		( const std::wstring &asFilename, eOAL_SampleFormat format = eOAL_SampleFormat_Detect );
-cOAL_Stream*	OAL_Stream_LoadFromBuffer ( const void* apBuffer, size_t aSize, eOAL_SampleFormat format = eOAL_SampleFormat_Detect );
-cOAL_Stream*	OAL_Stream_LoadCustom ( const tStreamCallbacks& aCallback, const tStreamInfo& aInfo, void* apData );
-void			OAL_Stream_Unload	( cOAL_Stream* apStream );
+cOAL_Stream* OAL_Stream_Load(const std::string& asFilename, eOAL_SampleFormat format = eOAL_SampleFormat_Detect);
+cOAL_Stream* OAL_Stream_Load(const std::wstring& asFilename, eOAL_SampleFormat format = eOAL_SampleFormat_Detect);
+cOAL_Stream* OAL_Stream_LoadFromBuffer(const void* apBuffer, size_t aSize, eOAL_SampleFormat format = eOAL_SampleFormat_Detect);
+cOAL_Stream* OAL_Stream_LoadCustom(const tStreamCallbacks& aCallback, const tStreamInfo& aInfo, void* apData);
+void         OAL_Stream_Unload(cOAL_Stream* apStream);
 
-void OAL_Sample_SetLoop ( cOAL_Sample* apSample, bool abLoop );
-void OAL_Stream_SetLoop ( cOAL_Stream* apStream, bool abLoop );
+void OAL_Sample_SetLoop(cOAL_Sample* apSample, bool abLoop);
+void OAL_Stream_SetLoop(cOAL_Stream* apStream, bool abLoop);
 
-int OAL_Sample_GetChannels (cOAL_Sample* apSample);
-int OAL_Stream_GetChannels (cOAL_Stream* apStream);
+int OAL_Sample_GetChannels(cOAL_Sample* apSample);
+int OAL_Stream_GetChannels(cOAL_Stream* apStream);
 
 
-#endif	// _OAL_PLAYBACK_H
+#endif // _OAL_PLAYBACK_H

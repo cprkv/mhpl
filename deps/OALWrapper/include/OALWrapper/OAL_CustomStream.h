@@ -21,27 +21,26 @@
 
 //------------------------------------------------------------------------
 
-class cOAL_CustomStream : public cOAL_Stream
-{
+class cOAL_CustomStream : public cOAL_Stream {
 public:
-	cOAL_CustomStream(const tStreamCallbacks& aCallbacks, const tStreamInfo& aInfo, void *apData);
-	~cOAL_CustomStream();
+  cOAL_CustomStream(const tStreamCallbacks& aCallbacks, const tStreamInfo& aInfo, void* apData);
+  ~cOAL_CustomStream();
 
-	void Seek(float afWhere, bool abForceRebuffer);
+  void Seek(float afWhere, bool abForceRebuffer);
 
 protected:
-	bool CreateFromFile(const std::wstring &asFileName) { return false; };
-	bool CreateFromBuffer(const void *apBuffer, size_t aSize) { return false; };
-	void Destroy();
+  bool CreateFromFile(const std::wstring& asFileName) { return false; };
+  bool CreateFromBuffer(const void* apBuffer, size_t aSize) { return false; };
+  void Destroy();
 
-	bool Stream(cOAL_Buffer* apDestBuffer);
-	double GetTime();
+  bool   Stream(cOAL_Buffer* apDestBuffer);
+  double GetTime();
 
-	const tStreamCallbacks mCallbacks;
-	const tStreamInfo mInfo;
-	void* mpData;
+  const tStreamCallbacks mCallbacks;
+  const tStreamInfo      mInfo;
+  void*                  mpData;
 };
 
 //------------------------------------------------------------------------
 
-#endif	// _OAL_CUSTOMSTREAM_H
+#endif // _OAL_CUSTOMSTREAM_H

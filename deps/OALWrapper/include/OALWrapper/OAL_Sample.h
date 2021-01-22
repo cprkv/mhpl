@@ -21,35 +21,35 @@
 #include "OAL_Source.h"
 #include "OAL_AudioData.h"
 
-class cOAL_Sample : public iOAL_AudioData
-{
+class cOAL_Sample : public iOAL_AudioData {
 public:
-	
-	cOAL_Sample();
-	virtual ~cOAL_Sample();
+  cOAL_Sample();
+  virtual ~cOAL_Sample();
 
-	void Destroy(){}
+  void Destroy() {}
 
-	void AddBoundSource(cOAL_Source* apSource) { if(apSource) mlstBoundSources.push_back(apSource); }
-	void RemoveBoundSource(cOAL_Source* apSource) { if(apSource) mlstBoundSources.remove(apSource); }
+  void AddBoundSource(cOAL_Source* apSource) {
+    if (apSource) mlstBoundSources.push_back(apSource);
+  }
+  void RemoveBoundSource(cOAL_Source* apSource) {
+    if (apSource) mlstBoundSources.remove(apSource);
+  }
 
-	void Update(){}
+  void Update() {}
 
-	ALuint* GetOALBufferPointer();
+  ALuint* GetOALBufferPointer();
 
-	double GetProcessedBuffersTime() { return 0; }
+  double GetProcessedBuffersTime() { return 0; }
 
-	bool HasBufferUnderrun() { return false; }
-	bool NeedsRebuffering()  { return false; }
+  bool HasBufferUnderrun() { return false; }
+  bool NeedsRebuffering() { return false; }
 
-	//void LogMsg("",eOAL_LogVerbose aVerboseLevelReq, eOAL_LogMsg aeMessageType, const char* asMessage, ...);
+  //void LogMsg("",eOAL_LogVerbose aVerboseLevelReq, eOAL_LogMsg aeMessageType, const char* asMessage, ...);
 
-	//string	GetDebugInfo();
+  //string	GetDebugInfo();
 protected:
-	tSourceList mlstBoundSources;
+  tSourceList mlstBoundSources;
 };
 
 
-
-
-#endif	// _OAL_SAMPLE_H
+#endif // _OAL_SAMPLE_H

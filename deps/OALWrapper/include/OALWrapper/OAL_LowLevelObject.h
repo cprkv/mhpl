@@ -18,41 +18,37 @@
 
 #include "OAL_LoggerObject.h"
 
-class iOAL_LowLevelObject : public iOAL_LoggerObject
-{
+class iOAL_LowLevelObject : public iOAL_LoggerObject {
 public:
+  iOAL_LowLevelObject(const std::string& asObjType) {}
+  ~iOAL_LowLevelObject() {}
 
-	iOAL_LowLevelObject(const std::string& asObjType) {}
-	~iOAL_LowLevelObject() {}
+  ////////////////////////////////////////////
+  // Creation / destruction of OpenAL Objects
 
-	////////////////////////////////////////////
-	// Creation / destruction of OpenAL Objects
+  virtual bool CreateLowLevelID(void)  = 0;
+  virtual bool DestroyLowLevelID(void) = 0;
 
-	virtual bool CreateLowLevelID(void) = 0;
-	virtual bool DestroyLowLevelID(void) = 0;
+  ////////////////////////////////////////////
+  // Methods for helping in the reinitialization process (not implemented)
+  virtual void SaveObjectState(void)    = 0;
+  virtual void RestoreObjectState(void) = 0;
 
-	////////////////////////////////////////////
-	// Methods for helping in the reinitialization process (not implemented)
-	virtual void SaveObjectState(void) = 0;
-	virtual void RestoreObjectState(void) = 0;
+  ////////////////////////////////////////////
+  // Method for checking if object is valid
+  virtual bool IsValidObject() = 0;
 
-	////////////////////////////////////////////
-	// Method for checking if object is valid
-	virtual bool IsValidObject() = 0;
+  ////////////////////////////////////////////
+  // Method for returning the low level ID
+  ALuint  GetObjectID() { return mlObjectId; }
+  ALuint* GetObjectIDPointer() { return &mlObjectId; }
 
-	////////////////////////////////////////////
-	// Method for returning the low level ID
-	ALuint GetObjectID() { return mlObjectId; }
-	ALuint* GetObjectIDPointer() { return &mlObjectId; }
-
-	bool GetStatus() { return mbStatus; }
+  bool GetStatus() { return mbStatus; }
 
 protected:
-	ALuint mlObjectId;
-	bool mbStatus;
+  ALuint mlObjectId;
+  bool   mbStatus;
 };
 
 
 #endif
-
-

@@ -23,26 +23,26 @@
 
 //------------------------------------------------------------------------
 
-class cOAL_OggStream : public cOAL_Stream
-{
+class cOAL_OggStream : public cOAL_Stream {
 public:
-	cOAL_OggStream();
-	~cOAL_OggStream();
-	
-	void Seek(float afWhere, bool abForceRebuffer);
+  cOAL_OggStream();
+  ~cOAL_OggStream();
+
+  void Seek(float afWhere, bool abForceRebuffer);
+
 protected:
-	bool CreateFromFile(const std::wstring &asFileName);
-	bool CreateFromBuffer(const void *apBuffer, size_t aSize);
-	void Destroy();
+  bool CreateFromFile(const std::wstring& asFileName);
+  bool CreateFromBuffer(const void* apBuffer, size_t aSize);
+  void Destroy();
 
-	bool Stream(cOAL_Buffer* apDestBuffer);
-	double GetTime();
+  bool   Stream(cOAL_Buffer* apDestBuffer);
+  double GetTime();
 
-	OggVorbis_File movStreamHandle;
-	int mlCurrent_section;
-	bool mbIsValidHandle;
+  OggVorbis_File movStreamHandle;
+  int            mlCurrent_section;
+  bool           mbIsValidHandle;
 };
 
 //------------------------------------------------------------------------
 
-#endif	// _OAL_SAMPLE_H
+#endif // _OAL_SAMPLE_H

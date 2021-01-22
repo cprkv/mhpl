@@ -27,7 +27,6 @@ class cOAL_SourceManager;
 #include "OAL_Filter.h"
 
 
-
 #define OAL_SEND_DIRECT 0x10000000h
 #define OAL_SEND_AUX0 1
 #define OAL_SEND_AUX1 2
@@ -35,166 +34,168 @@ class cOAL_SourceManager;
 #define OAL_SEND_AUX3 8
 
 
-typedef enum
-{
-	eOAL_SourceParam_Gain,
-	eOAL_SourceParam_Pitch,
-	eOAL_SourceParam_Position,
-	eOAL_SourceParam_PositionRelative,
-	eOAL_SourceParam_Velocity,
-	eOAL_SourceParam_Buffer,
-	eOAL_SourceParam_Default
+typedef enum {
+  eOAL_SourceParam_Gain,
+  eOAL_SourceParam_Pitch,
+  eOAL_SourceParam_Position,
+  eOAL_SourceParam_PositionRelative,
+  eOAL_SourceParam_Velocity,
+  eOAL_SourceParam_Buffer,
+  eOAL_SourceParam_Default
 } eOAL_SourceParam;
 
 
-class cOAL_SourceSend
-{
+class cOAL_SourceSend {
 public:
-	cOAL_SourceSend(): mpSlot(NULL), mpFilter(NULL)
-	{}
-	~cOAL_SourceSend(){}
+  cOAL_SourceSend()
+      : mpSlot(NULL)
+      , mpFilter(NULL) {}
+  ~cOAL_SourceSend() {}
 
-	ALuint				GetSlot() { if (mpSlot) return mpSlot->GetObjectID(); return AL_EFFECTSLOT_NULL; }
-	ALuint				GetFilter() { if (mpFilter) return mpFilter->GetObjectID(); return AL_FILTER_NULL; }
+  ALuint GetSlot() {
+    if (mpSlot) return mpSlot->GetObjectID();
+    return AL_EFFECTSLOT_NULL;
+  }
+  ALuint GetFilter() {
+    if (mpFilter) return mpFilter->GetObjectID();
+    return AL_FILTER_NULL;
+  }
 
-	inline void			SetSlot(cOAL_EffectSlot* apSlot) { mpSlot = apSlot; }
-	inline void			SetFilter(cOAL_Filter* apFilter) { mpFilter = apFilter; }
+  inline void SetSlot(cOAL_EffectSlot* apSlot) { mpSlot = apSlot; }
+  inline void SetFilter(cOAL_Filter* apFilter) { mpFilter = apFilter; }
 
 private:
-	cOAL_EffectSlot*	mpSlot;
-	cOAL_Filter*		mpFilter;
+  cOAL_EffectSlot* mpSlot;
+  cOAL_Filter*     mpFilter;
 };
 
 
-class cOAL_Source : public iOAL_LowLevelObject
-{
+class cOAL_Source : public iOAL_LowLevelObject {
 public:
-	cOAL_Source(cOAL_SourceManager *apSourceManager, int alId, int alSends);
+  cOAL_Source(cOAL_SourceManager* apSourceManager, int alId, int alSends);
 
-	~cOAL_Source();
+  ~cOAL_Source();
 
-	//////////////////////////////////////
-	// iOAL_LowLevelObject impl.
+  //////////////////////////////////////
+  // iOAL_LowLevelObject impl.
 
-	bool CreateLowLevelID();
-	bool DestroyLowLevelID();
+  bool CreateLowLevelID();
+  bool DestroyLowLevelID();
 
-	void SaveObjectState(){}
-	void RestoreObjectState(){}
+  void SaveObjectState() {}
+  void RestoreObjectState() {}
 
-	bool IsValidObject() ;
+  bool IsValidObject();
 
-	//////////////////////////////////////
-	// Threading stuff
-	void Lock();
-	void Unlock();
+  //////////////////////////////////////
+  // Threading stuff
+  void Lock();
+  void Unlock();
 
-	/////////////////////////////////////
-	// Playback management
-	int		BindData	( cOAL_Sample* apSample );
-	int		BindData	( cOAL_Stream* apStream );
-	void	Play ();
-	void	Stop (bool abRemove = true); 
-	void	Pause ( bool abPaused );
+  /////////////////////////////////////
+  // Playback management
+  int  BindData(cOAL_Sample* apSample);
+  int  BindData(cOAL_Stream* apStream);
+  void Play();
+  void Stop(bool abRemove = true);
+  void Pause(bool abPaused);
 
-	////////////////////////////////////
-	// Attribute modifiers
-	void SetGain(float afGain);
-	void SetPitch(float afPitch);
-	void SetPosition(const float* apPos);
-    void SetPositionRelative(bool abRelative);
-	void SetVelocity(const float* apVel);
-	void SetLoop(bool abLoop);
-    void SetMinMaxDistance(const float afMin, const float afMax);
+  ////////////////////////////////////
+  // Attribute modifiers
+  void SetGain(float afGain);
+  void SetPitch(float afPitch);
+  void SetPosition(const float* apPos);
+  void SetPositionRelative(bool abRelative);
+  void SetVelocity(const float* apVel);
+  void SetLoop(bool abLoop);
+  void SetMinMaxDistance(const float afMin, const float afMax);
 
-	void SetElapsedTime(double afTime);
+  void SetElapsedTime(double afTime);
 
-	void SetPriority(const ALuint alX);
-	
-	inline float GetGain() { return mfGain; }
-	inline float GetPitch() { return mfPitch; }
+  void SetPriority(const ALuint alX);
+
+  inline float GetGain() { return mfGain; }
+  inline float GetPitch() { return mfPitch; }
 
 
-	///////////////////////////////////
-	// Methods for retrieving information
-	inline const int GetId()							{ return mlId; }
-	inline const ALuint	GetPriority ()					{ return mlPriority; }
-	eOAL_SourceStatus GetSourceStatus();
-	eOAL_AudioDataType GetSourceType();
-	int GetProcessedBuffers();
-	int GetQueuedBuffers();
-	double GetElapsedTime();
-	double GetTotalTime();
+  ///////////////////////////////////
+  // Methods for retrieving information
+  inline const int    GetId() { return mlId; }
+  inline const ALuint GetPriority() { return mlPriority; }
+  eOAL_SourceStatus   GetSourceStatus();
+  eOAL_AudioDataType  GetSourceType();
+  int                 GetProcessedBuffers();
+  int                 GetQueuedBuffers();
+  double              GetElapsedTime();
+  double              GetTotalTime();
 
-	inline unsigned int	GetRefCount() { return mlRefCount; }
+  inline unsigned int GetRefCount() { return mlRefCount; }
 
-	// EFX related methods
+  // EFX related methods
 
-	void SetDirectFilter(cOAL_Filter* apFilter);
-	void SetAuxSend(int alSendId, cOAL_EffectSlot* apSlot, cOAL_Filter* apFilter);
-	void SetAuxSendSlot(int alSendId, cOAL_EffectSlot* apSlot );
-	void SetAuxSendFilter(int alSendId, cOAL_Filter* apFilter );
+  void SetDirectFilter(cOAL_Filter* apFilter);
+  void SetAuxSend(int alSendId, cOAL_EffectSlot* apSlot, cOAL_Filter* apFilter);
+  void SetAuxSendSlot(int alSendId, cOAL_EffectSlot* apSlot);
+  void SetAuxSendFilter(int alSendId, cOAL_Filter* apFilter);
 
-	// Built in filter methods
-	void SetFilterType ( eOALFilterType aeType );
-	void SetFilterGain ( float afGain );
-	void SetFilterGainHF ( float afGainHF );
-	void SetFilterGainLF ( float afGainLF );
-	void SetFilterEnabled ( bool abEnabled, int alFlags );
+  // Built in filter methods
+  void SetFilterType(eOALFilterType aeType);
+  void SetFilterGain(float afGain);
+  void SetFilterGainHF(float afGainHF);
+  void SetFilterGainLF(float afGainLF);
+  void SetFilterEnabled(bool abEnabled, int alFlags);
 
-	void UpdateFiltering(unsigned int alSends);
-	void UpdateFiltering();
+  void UpdateFiltering(unsigned int alSends);
+  void UpdateFiltering();
 
-	// Misc methods
-	void Update();
+  // Misc methods
+  void Update();
 
-	// Special 
-	void IncRefCount();
-	// Logging 
-	//void LogMsg("",eOAL_LogVerbose aeVerboseLevelReq, eOAL_LogMsg aeMessageType, const char* asMessage, ...);
+  // Special
+  void IncRefCount();
+  // Logging
+  //void LogMsg("",eOAL_LogVerbose aeVerboseLevelReq, eOAL_LogMsg aeMessageType, const char* asMessage, ...);
 
 
 private:
-	friend class cOAL_Stream;
+  friend class cOAL_Stream;
 
-	int mlId;
-	unsigned int mlPriority;
-	unsigned int mlRefCount;
+  int          mlId;
+  unsigned int mlPriority;
+  unsigned int mlRefCount;
 
-	SDL_mutex*	mpSourceMutex;
+  SDL_mutex* mpSourceMutex;
 
-	cOAL_SourceManager* mpSourceManager;
-	
-	iOAL_AudioData*	mpAudioData;
+  cOAL_SourceManager* mpSourceManager;
 
-	bool mbLoop;
-	bool mbPlaying;
-	bool mbPaused;
-	
-	bool mbNeedsReset;
+  iOAL_AudioData* mpAudioData;
 
-	float mfGain;
-	float mfPitch;
-	float mvPos[3];
-	float mvVel[3];
-    bool mbRelativePosition;
+  bool mbLoop;
+  bool mbPlaying;
+  bool mbPaused;
 
-	std::vector<cOAL_SourceSend*> mvSends;
-	
-	cOAL_Filter*	mpFilter;
-	cOAL_Filter*	mpDirectFilter;
+  bool mbNeedsReset;
 
-	void Queue(cOAL_Buffer* apBuffer);
-	cOAL_Buffer* Unqueue();
+  float mfGain;
+  float mfPitch;
+  float mvPos[3];
+  float mvVel[3];
+  bool  mbRelativePosition;
 
-	void LowLevelPlay();
-	void LowLevelPause();
-	void LowLevelStop();
-	bool LowLevelSet(eOAL_SourceParam aeParam);
-	void LowLevelSetMuted( bool abX );
+  std::vector<cOAL_SourceSend*> mvSends;
 
-	int GetPackedHandle(int alRef, int alId);
+  cOAL_Filter* mpFilter;
+  cOAL_Filter* mpDirectFilter;
+
+  void         Queue(cOAL_Buffer* apBuffer);
+  cOAL_Buffer* Unqueue();
+
+  void LowLevelPlay();
+  void LowLevelPause();
+  void LowLevelStop();
+  bool LowLevelSet(eOAL_SourceParam aeParam);
+  void LowLevelSetMuted(bool abX);
+
+  int GetPackedHandle(int alRef, int alId);
 };
 #endif
-
-

@@ -27,7 +27,7 @@ set(OALW_SOURCES
   sources/OAL_Types.cpp)
 
 add_library(OALWrapper STATIC ${OALW_SOURCES})
-target_link_libraries(OALWrapper vorbisfile vorbis ogg OpenAL SDL2-static)
+target_link_libraries(OALWrapper PUBLIC vorbisfile vorbis ogg SDL2-static OpenAL)
 target_include_directories(OALWrapper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_executable(OALWSimpleTest tests/Simple/main.cpp)

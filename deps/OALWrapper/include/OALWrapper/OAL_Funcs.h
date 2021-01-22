@@ -25,7 +25,7 @@
 #include "OAL_Init.h"
 
 ////////////////////////////////////////////
-// Playback and Source Management Funcs 
+// Playback and Source Management Funcs
 ////////////////////////////////////////////
 
 #include "OAL_Playback.h"

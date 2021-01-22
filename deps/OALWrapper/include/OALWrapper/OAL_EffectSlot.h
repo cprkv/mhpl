@@ -13,50 +13,42 @@
 
 class cOAL_EFXManager;
 
-class cOAL_EffectSlot : public iOAL_LowLevelObject
-{
+class cOAL_EffectSlot : public iOAL_LowLevelObject {
 public:
-	cOAL_EffectSlot ( cOAL_EFXManager* apEFXManager, int alId );
-	~cOAL_EffectSlot();
+  cOAL_EffectSlot(cOAL_EFXManager* apEFXManager, int alId);
+  ~cOAL_EffectSlot();
 
-	bool CreateLowLevelID();
-	bool DestroyLowLevelID();
+  bool CreateLowLevelID();
+  bool DestroyLowLevelID();
 
-	void SaveObjectState(){}
-	void RestoreObjectState(){}
+  void SaveObjectState() {}
+  void RestoreObjectState() {}
 
-	bool IsValidObject();
+  bool IsValidObject();
 
-	bool AttachEffect ( cOAL_Effect* apEffect );
-	inline bool IsFree() { return (mpEffect == NULL); }
+  bool        AttachEffect(cOAL_Effect* apEffect);
+  inline bool IsFree() { return (mpEffect == NULL); }
 
-	void SetGain ( float afGain );
-	inline float GetGain () { return mfGain; }
+  void         SetGain(float afGain);
+  inline float GetGain() { return mfGain; }
 
-	void SetAutoAdjust (bool abAuto);
-	bool GetAutoAdjust () { return mbAutoAdjust; }
+  void SetAutoAdjust(bool abAuto);
+  bool GetAutoAdjust() { return mbAutoAdjust; }
 
-	void Update();
-	void Reset();
+  void Update();
+  void Reset();
 
-	void Lock();
-	void Unlock();
+  void Lock();
+  void Unlock();
 
 private:
-	int mlId;
-	cOAL_Effect* mpEffect;
-	float mfGain;
-	bool mbAutoAdjust;
-	cOAL_EFXManager* mpEFXManager;
+  int              mlId;
+  cOAL_Effect*     mpEffect;
+  float            mfGain;
+  bool             mbAutoAdjust;
+  cOAL_EFXManager* mpEFXManager;
 
-	SDL_mutex*		mpMutex;
-    
+  SDL_mutex* mpMutex;
 };
 
-#endif	// _OAL_EFFECTSLOT_H
-
-
-
-
-
-
+#endif // _OAL_EFFECTSLOT_H

@@ -21,14 +21,14 @@
 
 //-----------------------------------------------------------
 
-class cOAL_WAVSample : public cOAL_Sample
-{
-public:	
-	bool CreateFromFile(const std::wstring& asFilename);
-	bool CreateFromBuffer(const void *apBuffer, size_t aSize);
+class cOAL_WAVSample : public cOAL_Sample {
+public:
+  bool CreateFromFile(const std::wstring& asFilename);
+  bool CreateFromBuffer(const void* apBuffer, size_t aSize);
+
 protected:
 };
 
 //-----------------------------------------------------------
 
-#endif	// _OAL_SAMPLE_H
+#endif // _OAL_SAMPLE_H

@@ -18,30 +18,29 @@ class iOAL_AudioData;
 
 //----------------------------------------------------------------
 
-class cOAL_Buffer : public iOAL_LowLevelObject
-{
+class cOAL_Buffer : public iOAL_LowLevelObject {
 public:
-	cOAL_Buffer(iOAL_AudioData* apParent);
-	~cOAL_Buffer();
+  cOAL_Buffer(iOAL_AudioData* apParent);
+  ~cOAL_Buffer();
 
-	////////////////////////////////////
-	// iOAL_LowLevelObject impl
-	bool CreateLowLevelID();
-	bool DestroyLowLevelID();
+  ////////////////////////////////////
+  // iOAL_LowLevelObject impl
+  bool CreateLowLevelID();
+  bool DestroyLowLevelID();
 
-	void SaveObjectState(){}
-	void RestoreObjectState(){}
+  void SaveObjectState() {}
+  void RestoreObjectState() {}
 
-	bool IsValidObject();
+  bool IsValidObject();
 
-    bool Feed(ALvoid* apPCMData, int alDataSize, double afStartTime=0.0);
-	double GetStartTime() { return mfStartTime; }
-	double GetBufferTime() { return mfBufferTime; }
+  bool   Feed(ALvoid* apPCMData, int alDataSize, double afStartTime = 0.0);
+  double GetStartTime() { return mfStartTime; }
+  double GetBufferTime() { return mfBufferTime; }
 
 protected:
-	iOAL_AudioData* mpParent;
-	double mfStartTime;
-	double mfBufferTime;
+  iOAL_AudioData* mpParent;
+  double          mfStartTime;
+  double          mfBufferTime;
 };
 
 #endif // _OAL_BUFFER_H

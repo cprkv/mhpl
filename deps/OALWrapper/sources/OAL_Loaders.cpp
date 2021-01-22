@@ -31,27 +31,24 @@ extern cOAL_Device* gpDevice;
 
 //------------------------------------------------------------------------
 
-cOAL_Sample* OAL_Sample_Load(const string &asFilename, eOAL_SampleFormat format)
-{
-	if (gpDevice == NULL) return NULL;
+cOAL_Sample* OAL_Sample_Load(const string& asFilename, eOAL_SampleFormat format) {
+  if (gpDevice == NULL) return NULL;
 
-	return gpDevice->LoadSample(asFilename, format);
+  return gpDevice->LoadSample(asFilename, format);
 }
 
 //------------------------------------------------------------------------
 
-cOAL_Sample* OAL_Sample_Load(const wstring& asFilename, eOAL_SampleFormat format)
-{
-	if(gpDevice==NULL) return NULL;
+cOAL_Sample* OAL_Sample_Load(const wstring& asFilename, eOAL_SampleFormat format) {
+  if (gpDevice == NULL) return NULL;
 
-	return gpDevice->LoadSample(asFilename, format);
+  return gpDevice->LoadSample(asFilename, format);
 }
 
-cOAL_Sample* OAL_Sample_LoadFromBuffer(const void* apBuffer, size_t aSize, eOAL_SampleFormat format)
-{
-	if(gpDevice==NULL) return NULL;
+cOAL_Sample* OAL_Sample_LoadFromBuffer(const void* apBuffer, size_t aSize, eOAL_SampleFormat format) {
+  if (gpDevice == NULL) return NULL;
 
-	return gpDevice->LoadSampleFromBuffer(apBuffer, aSize, format);
+  return gpDevice->LoadSampleFromBuffer(apBuffer, aSize, format);
 }
 //------------------------------------------------------------------------
 
@@ -62,53 +59,10 @@ cOAL_Sample* OAL_Sample_LoadFromBuffer(const void* apBuffer, size_t aSize, eOAL_
 
 //------------------------------------------------------------------------
 
-void OAL_Sample_Unload(cOAL_Sample* apSample)
-{
-	if (gpDevice == NULL) return;
+void OAL_Sample_Unload(cOAL_Sample* apSample) {
+  if (gpDevice == NULL) return;
 
-	gpDevice->UnloadSample(apSample);
-}
-
-//------------------------------------------------------------------------
-
-///////////////////////////////////////////////////////////
-//
-//
-///////////////////////////////////////////////////////////
-
-//------------------------------------------------------------------------
-
-cOAL_Stream* OAL_Stream_Load(const string &asFilename, eOAL_SampleFormat format)
-{
-	if (gpDevice == NULL) return NULL;
-
-	return gpDevice->LoadStream(asFilename, format);
-}
-
-//------------------------------------------------------------------------
-
-cOAL_Stream* OAL_Stream_Load(const wstring& asFilename, eOAL_SampleFormat fomat)
-{
-	if(gpDevice==NULL) return NULL;
-	
-	return gpDevice->LoadStream(asFilename, fomat);
-}
-
-//------------------------------------------------------------------------
-
-cOAL_Stream* OAL_Stream_LoadFromBuffer(const void* apBuffer, size_t aSize, eOAL_SampleFormat format)
-{
-	if(gpDevice==NULL) return NULL;
-
-	return gpDevice->LoadStreamFromBuffer(apBuffer, aSize, format);
-}
-
-//------------------------------------------------------------------------
-
-cOAL_Stream*	OAL_Stream_LoadCustom ( const tStreamCallbacks& aCallback, const tStreamInfo& aInfo, void* apData )
-{
-	if(gpDevice==NULL) return NULL;
-	return gpDevice->LoadCustomStream(aCallback, aInfo, apData);
+  gpDevice->UnloadSample(apSample);
 }
 
 //------------------------------------------------------------------------
@@ -120,55 +74,87 @@ cOAL_Stream*	OAL_Stream_LoadCustom ( const tStreamCallbacks& aCallback, const tS
 
 //------------------------------------------------------------------------
 
-void OAL_Stream_Unload(cOAL_Stream* apStream)
-{
-	if (gpDevice == NULL) return;
-	gpDevice->UnloadStream(apStream);
+cOAL_Stream* OAL_Stream_Load(const string& asFilename, eOAL_SampleFormat format) {
+  if (gpDevice == NULL) return NULL;
+
+  return gpDevice->LoadStream(asFilename, format);
 }
 
 //------------------------------------------------------------------------
 
-void OAL_Sample_SetLoop(cOAL_Sample* apSample, bool abLoop)
-{
-	if (gpDevice == NULL) return;
+cOAL_Stream* OAL_Stream_Load(const wstring& asFilename, eOAL_SampleFormat fomat) {
+  if (gpDevice == NULL) return NULL;
 
-	if (apSample) 
-		apSample->SetLoop(abLoop);
+  return gpDevice->LoadStream(asFilename, fomat);
 }
 
 //------------------------------------------------------------------------
 
-void OAL_Stream_SetLoop(cOAL_Stream* apStream, bool abLoop)
-{
-	if (gpDevice == NULL) return;
+cOAL_Stream* OAL_Stream_LoadFromBuffer(const void* apBuffer, size_t aSize, eOAL_SampleFormat format) {
+  if (gpDevice == NULL) return NULL;
 
-	if (apStream) 
-		apStream->SetLoop(abLoop);
+  return gpDevice->LoadStreamFromBuffer(apBuffer, aSize, format);
 }
 
 //------------------------------------------------------------------------
 
-int	OAL_Sample_GetChannels(cOAL_Sample* apSample)
-{
-	if (gpDevice == NULL) return 0;
-
-	if (apSample != NULL)
-		return (apSample->GetChannels());
-
-	return 0;
+cOAL_Stream* OAL_Stream_LoadCustom(const tStreamCallbacks& aCallback, const tStreamInfo& aInfo, void* apData) {
+  if (gpDevice == NULL) return NULL;
+  return gpDevice->LoadCustomStream(aCallback, aInfo, apData);
 }
 
 //------------------------------------------------------------------------
 
-int	OAL_Stream_GetChannels(cOAL_Stream* apStream)
-{
-	if (gpDevice == NULL) return 0;
+///////////////////////////////////////////////////////////
+//
+//
+///////////////////////////////////////////////////////////
 
-	if (apStream != NULL)
-		return (apStream->GetChannels());
+//------------------------------------------------------------------------
 
-	return 0;
+void OAL_Stream_Unload(cOAL_Stream* apStream) {
+  if (gpDevice == NULL) return;
+  gpDevice->UnloadStream(apStream);
 }
 
 //------------------------------------------------------------------------
 
+void OAL_Sample_SetLoop(cOAL_Sample* apSample, bool abLoop) {
+  if (gpDevice == NULL) return;
+
+  if (apSample)
+    apSample->SetLoop(abLoop);
+}
+
+//------------------------------------------------------------------------
+
+void OAL_Stream_SetLoop(cOAL_Stream* apStream, bool abLoop) {
+  if (gpDevice == NULL) return;
+
+  if (apStream)
+    apStream->SetLoop(abLoop);
+}
+
+//------------------------------------------------------------------------
+
+int OAL_Sample_GetChannels(cOAL_Sample* apSample) {
+  if (gpDevice == NULL) return 0;
+
+  if (apSample != NULL)
+    return (apSample->GetChannels());
+
+  return 0;
+}
+
+//------------------------------------------------------------------------
+
+int OAL_Stream_GetChannels(cOAL_Stream* apStream) {
+  if (gpDevice == NULL) return 0;
+
+  if (apStream != NULL)
+    return (apStream->GetChannels());
+
+  return 0;
+}
+
+//------------------------------------------------------------------------

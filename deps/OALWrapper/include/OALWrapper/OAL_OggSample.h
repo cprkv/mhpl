@@ -22,16 +22,16 @@
 
 struct OggVorbis_File;
 
-class cOAL_OggSample : public cOAL_Sample
-{
+class cOAL_OggSample : public cOAL_Sample {
 public:
-	bool CreateFromFile(const std::wstring& asFilename);
-	bool CreateFromBuffer(const void *apBuffer, size_t aSize);
+  bool CreateFromFile(const std::wstring& asFilename);
+  bool CreateFromBuffer(const void* apBuffer, size_t aSize);
+
 protected:
 private:
-	bool LoadOgg(OggVorbis_File& ovFileHandle);
+  bool LoadOgg(OggVorbis_File& ovFileHandle);
 };
 
 //-------------------------------------------------------------------------------
 
-#endif	// _OAL_SAMPLE_H
+#endif // _OAL_SAMPLE_H
