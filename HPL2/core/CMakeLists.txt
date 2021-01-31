@@ -15,9 +15,7 @@ endif()
 
 set(DEP_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/lib/${BIN_LIBROOT}")
 set(DEP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/include")
-find_path(PREBUILT_PLATFORM_ROOT .
-    PATHS "${DEP_LIB_DIR}"
-    NO_DEFAULT_PATH)
+find_path(PREBUILT_PLATFORM_ROOT . PATHS "${DEP_LIB_DIR}" NO_DEFAULT_PATH)
 set(DEP_LIB_DIR ${DEP_LIB_DIR} PARENT_SCOPE)
 set(DEP_INCLUDE_DIR ${DEP_INCLUDE_DIR} PARENT_SCOPE)
 mark_as_advanced(PREBUILT_PLATFORM_ROOT)
@@ -46,8 +44,8 @@ set(HPL2_INCLUDES PUBLIC include PUBLIC ../dependencies/include)
 
 IF(LINUX)
     add_library(binreloc STATIC ../dependencies/sources/binreloc/binreloc.c)
+    target_include_directories(binreloc PUBLIC ../dependencies/sources/binreloc/)
     set_target_properties(binreloc PROPERTIES COMPILE_DEFINITIONS "ENABLE_BINRELOC")
-    list(APPEND HPL2_INCLUDES ../dependencies/sources/binreloc/)
 ENDIF()
 
 # common shared source
@@ -141,13 +139,13 @@ IF(APPLE)
     LIST(APPEND impl_sources
         sources/impl/PlatformMacOSX.mm
         sources/impl/PlatformUnix.cpp
-        sources/impl/PlatformSDL.cpp    )
+        sources/impl/PlatformSDL.cpp)
     IF(NOT USE_SDL2)
         LIST(APPEND impl_sources
             SDLMain.m
             SDLMain.h)
     ENDIF()
-ELSEIF(LINUX)
+ELSEIF(UNIX)
     LIST(APPEND impl_sources
         sources/impl/PlatformUnix.cpp
         sources/impl/PlatformSDL.cpp)
@@ -198,13 +196,13 @@ add_library(HPL2 STATIC ${common_sources} ${version_sources} ${impl_sources})
 target_include_directories(HPL2 ${HPL2_INCLUDES})
 target_compile_definitions(HPL2 ${HPL2_DEFINES})
 
-if(LINUX)
-    set(PLATFORM_LIBS binreloc pthread dl z)
-elseif(APPLE)
+if(APPLE)
     FIND_LIBRARY(SC_LIBRARY SystemConfiguration)
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
     mark_as_advanced(COCOA_LIBRARY THEORA_LIBRARY SC_LIBRARY)
-    set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY} z)
+    set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY} z fltk)
+elseif(UNIX)
+    set(PLATFORM_LIBS binreloc pthread dl z fltk)
 endif()
 
 target_link_libraries(HPL2 PUBLIC

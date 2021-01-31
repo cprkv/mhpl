@@ -1,13 +1,11 @@
 #### setup options
-#option(FULL_WARNINGS "Enable full warnings" OFF)
-#option(FORCE32 "Force a 32bit compile on 64bit" OFF)
 #
 ## this adds the build directory to the include path automatically
 #set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #
-#if("${CMAKE_SYSTEM}" MATCHES "Linux")
-#    set(LINUX ON)
-#endif()
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+    set(LINUX ON)
+endif()
 #
 #if(FORCE32)
 #    if(LINUX)

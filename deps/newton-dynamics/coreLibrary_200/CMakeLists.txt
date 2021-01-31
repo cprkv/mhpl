@@ -44,6 +44,7 @@ set(SOURCES
     source/physics/dgBody.cpp
     source/physics/dgMeshEffect.cpp
     source/physics/dgMeshEffect2.cpp
+    source/physics/dgMeshEffect3.cpp
     source/physics/dgMeshEffectSolidTree.cpp
     source/physics/dgCollisionConvex.cpp
     source/physics/dgBallConstraint.cpp
