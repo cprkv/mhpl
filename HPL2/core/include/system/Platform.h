@@ -26,129 +26,127 @@
 
 namespace hpl {
 
-	class iTimer;
-	class iThread;
-	class iThreadClass;
-	class iMutex;
+  class iTimer;
+  class iThread;
+  class iThreadClass;
+  class iMutex;
 
-	//-----------------------------------------
+  //-----------------------------------------
 
-    struct VideoComp : public std::binary_function<cVideoMode, cVideoMode, bool> {
-        bool operator() (const cVideoMode& aVM1, const cVideoMode& aVM2) const;
-    };
+  struct VideoComp {
+    bool operator()(const cVideoMode& aVM1, const cVideoMode& aVM2) const;
+  };
 
-	//-----------------------------------------
+  //-----------------------------------------
 
-	class cPlatform
-	{
-	public:
+  class cPlatform {
+  public:
+    //////////////////////////////////////////////////////
+    ////////// FILE HANDLING /////////////////////////////
+    //////////////////////////////////////////////////////
 
-		//////////////////////////////////////////////////////
-		////////// FILE HANDLING /////////////////////////////
-		//////////////////////////////////////////////////////
+    static unsigned long GetFileSize(const tWString& asFileName);
+    static bool          CopyFileToBuffer(const tWString& asFileName, void* apBuffer, unsigned long alSize);
 
-		static unsigned long GetFileSize(const tWString& asFileName);
-		static bool CopyFileToBuffer(const tWString& asFileName, void *apBuffer, unsigned long alSize);
+    static bool     FileExists(const tWString& asFileName);
+    static void     RemoveFile(const tWString& asFileName);
+    static bool     CloneFile(const tWString& asSrcFileName, const tWString& asDestFileName, bool abFailIfExists);
+    static bool     CreateFolder(const tWString& asPath);
+    static bool     RemoveFolder(const tWString& asPath, bool abDeleteAllFiles, bool abDeleteAllSubFolders);
+    static bool     FolderExists(const tWString& asPath);
+    static tWString GetFullFilePath(const tWString& asFilePath);
+    static FILE*    OpenFile(const tWString& asFileName, const tWString asMode);
 
-		static bool FileExists(const tWString& asFileName);
-		static void RemoveFile(const tWString& asFileName);
-		static bool CloneFile(const tWString& asSrcFileName,const tWString& asDestFileName,	bool abFailIfExists);
-		static bool CreateFolder(const tWString& asPath);
-		static bool RemoveFolder(const tWString& asPath, bool abDeleteAllFiles, bool abDeleteAllSubFolders);
-		static bool FolderExists(const tWString& asPath);
-		static tWString GetFullFilePath(const tWString& asFilePath);
-		static FILE *OpenFile(const tWString& asFileName, const tWString asMode);
-		
-		static cDate FileModifiedDate(const tWString& asFilePath);
-		static cDate FileCreationDate(const tWString& asFilePath);
+    static cDate FileModifiedDate(const tWString& asFilePath);
+    static cDate FileCreationDate(const tWString& asFilePath);
 
-		/**
+    /**
 		* Returns a list of files in a dir
 		* \param &alstStrings list where the files are saved
 		* \param asDir Directory
 		* \param asMask Mask to be used, for example "*.*" to search for all kinds of files.
 		* \param abAddHidden If hidden files should be added
 		*/
-		static void FindFilesInDir(tWStringList &alstStrings, const tWString& asDir, const tWString& asMask, bool abAddHidden=false);
+    static void FindFilesInDir(tWStringList& alstStrings, const tWString& asDir, const tWString& asMask, bool abAddHidden = false);
 
-		/**
+    /**
 		* Returns a list of folders in a dir
 		* \param &alstStrings list where the folders are saved
 		* \param asDir Directory
 		* \param abAddHidden If hidden folders should be added
 		* \param abAddUpFolder If the ".." folder should be added
 		*/
-		static void FindFoldersInDir(tWStringList &alstStrings, const tWString& asDir, bool abAddHidden, bool abAddUpFolder=false);
+    static void FindFoldersInDir(tWStringList& alstStrings, const tWString& asDir, bool abAddHidden, bool abAddUpFolder = false);
 
 
-        static tString GetDataDir();
-		static tWString GetWorkingDir();
-		
+    static tString  GetDataDir();
+    static tWString GetWorkingDir();
 
-		//////////////////////////////////////////////////////
-		////////// APPLICATION ///////////////////////////////
-		//////////////////////////////////////////////////////
 
-		static unsigned long GetApplicationTime();
-		static void Sleep (unsigned int alMilliSecs);
+    //////////////////////////////////////////////////////
+    ////////// APPLICATION ///////////////////////////////
+    //////////////////////////////////////////////////////
 
-		//////////////////////////////////////////////////////
-		////////// DIALOG ////////////////////////////////////
-		//////////////////////////////////////////////////////
-		
-		static void CreateMessageBox( eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, ...);
-		static void CreateMessageBox( const wchar_t* asCaption, const wchar_t* fmt, ...);
-		static void CreateMessageBox( const wchar_t* asCaption, const wchar_t *fmt, va_list ap);
-		static void CreateMessageBox( eMsgBoxType eType, const wchar_t* asCaption, const wchar_t *fmt, va_list ap);
+    static unsigned long GetApplicationTime();
+    static void          Sleep(unsigned int alMilliSecs);
 
-		
-		//////////////////////////////////////////////////////
-		////////// SYSTEM DATA //////////////////////////////
-		//////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    ////////// DIALOG ////////////////////////////////////
+    //////////////////////////////////////////////////////
 
-		static ePlatform GetPlatform();
-		static const tString& GetPlatformName() { return msName; }
+    static void CreateMessageBox(eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, ...);
+    static void CreateMessageBox(const wchar_t* asCaption, const wchar_t* fmt, ...);
+    static void CreateMessageBox(const wchar_t* asCaption, const wchar_t* fmt, va_list ap);
+    static void CreateMessageBox(eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, va_list ap);
 
-		static iTimer * CreateTimer();
-		
-		static cDate GetDate();
 
-		static void CopyTextToClipboard(const tWString &asText);
-		static tWString LoadTextFromClipboard();
+    //////////////////////////////////////////////////////
+    ////////// SYSTEM DATA //////////////////////////////
+    //////////////////////////////////////////////////////
 
-		static tWString GetSystemSpecialPath(eSystemPath aPathType);
+    static ePlatform      GetPlatform();
+    static const tString& GetPlatformName() { return msName; }
 
-		static unsigned long GetSystemAvailableDrives();
+    static iTimer* CreateTimer();
 
-		static void GetAvailableVideoModes(tVideoModeVec& avDestVidModes, int alMinBpp=-1, int alMinRefreshRate=-1);
-		
-		static tWString GetDisplayName(int alDisplay);
+    static cDate GetDate();
 
-		static void GetDisplayResolution(int alDisplay, int& alHorizontal, int& alVertical);
+    static void     CopyTextToClipboard(const tWString& asText);
+    static tWString LoadTextFromClipboard();
 
-		//////////////////////////////////////////////////////
-		////////// SYSTEM COMMANDS ///////////////////////////
-		//////////////////////////////////////////////////////
-		
-		static void OpenBrowserWindow ( const tWString& asURL );
+    static tWString GetSystemSpecialPath(eSystemPath aPathType);
 
-		static bool RunProgram( const tWString& asPath, const tWString& asParams );
+    static unsigned long GetSystemAvailableDrives();
 
-		static bool OpenFileOnShell(const tWString& asPath);
+    static void GetAvailableVideoModes(tVideoModeVec& avDestVidModes, int alMinBpp = -1, int alMinRefreshRate = -1);
 
-		//////////////////////////////////////////////////////
-		////////// THREADING /////////////////////////////////
-		//////////////////////////////////////////////////////
+    static tWString GetDisplayName(int alDisplay);
 
-		static iThread* CreateThread(iThreadClass* apThreadClass);
+    static void GetDisplayResolution(int alDisplay, int& alHorizontal, int& alVertical);
 
-		static iMutex* CreateMutEx(); // If you name this method CreateMutex strange stuff will happen :S
-	
-	private:
-        static void CreateMessageBoxBase(eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, va_list ap);
+    //////////////////////////////////////////////////////
+    ////////// SYSTEM COMMANDS ///////////////////////////
+    //////////////////////////////////////////////////////
 
-        static tString msName;
-	};
+    static void OpenBrowserWindow(const tWString& asURL);
 
-};
+    static bool RunProgram(const tWString& asPath, const tWString& asParams);
+
+    static bool OpenFileOnShell(const tWString& asPath);
+
+    //////////////////////////////////////////////////////
+    ////////// THREADING /////////////////////////////////
+    //////////////////////////////////////////////////////
+
+    static iThread* CreateThread(iThreadClass* apThreadClass);
+
+    static iMutex* CreateMutEx(); // If you name this method CreateMutex strange stuff will happen :S
+
+  private:
+    static void CreateMessageBoxBase(eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, va_list ap);
+
+    static tString msName;
+  };
+
+};     // namespace hpl
 #endif // HPL_PLATFORM_H

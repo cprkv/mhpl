@@ -160,7 +160,7 @@ IF(APPLE)
 ELSEIF(LINUX)
     SET(BUILDID_SUFFIX Linux)
 ELSE()
-    message(FATAL_ERROR "Unknown platform")
+    SET(BUILDID_SUFFIX Windows)
 ENDIF()
 SET(BUILDID_SUFFIX ${BUILDID_SUFFIX} CACHE STRING "Build ID Suffix")
 
@@ -189,18 +189,7 @@ source_group("OpenAL Specific" REGULAR_EXPRESSION "\\/impl\\/.*OpenAL.+")
 source_group("Win32" REGULAR_EXPRESSION "\\/impl\\/.+Win32.+")
 source_group("Platform" REGULAR_EXPRESSION "\\/impl\\/Platform.+")
 
-# setup libs
-# TODO
-
-FindPrebuiltLibrary(NEWTON_LIBRARY Newton)
-#FindPrebuiltLibrary(ANGELSCRIPT_LIBRARY angelscript)
-# FindPrebuiltLibrary(FBX_LIBRARY fbxsdk-2012.2-static)
-FindPrebuiltLibrary(GLEW_LIBRARY GLEW)
-FindPrebuiltLibrary(THEORA_LIBRARY theora)
-FindPrebuiltLibrary(DEVIL_LIBRARY IL)
-
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
-mark_as_advanced(NEWTON_LIBRARY GLEW_LIBRARY THEORA_LIBRARY DEVIL_LIBRARY) #FBX_LIBRARY
 
 # setup HPL2 compile target
 
@@ -210,25 +199,25 @@ target_include_directories(HPL2 ${HPL2_INCLUDES})
 target_compile_definitions(HPL2 ${HPL2_DEFINES})
 
 if(LINUX)
-    set(PLATFORM_LIBS binreloc pthread dl)
+    set(PLATFORM_LIBS binreloc pthread dl z)
 elseif(APPLE)
     FIND_LIBRARY(SC_LIBRARY SystemConfiguration)
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
     mark_as_advanced(COCOA_LIBRARY THEORA_LIBRARY SC_LIBRARY)
-    set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY})
+    set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY} z)
 endif()
 
 target_link_libraries(HPL2 PUBLIC
     OALWrapper
     SDL2-static
     angelscript
-    ${NEWTON_LIBRARY}
-    ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
-    ${GLEW_LIBRARY}
-    ${THEORA_LIBRARY}
-    ${DEVIL_LIBRARY}
-    z
+    newton-core
+    glew_s
+    theora
+    zlibstatic
+    IL
     #${FBX_LIBRARY}
+    ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
     ${PLATFORM_LIBS})
 
 set_target_properties(HPL2 PROPERTIES

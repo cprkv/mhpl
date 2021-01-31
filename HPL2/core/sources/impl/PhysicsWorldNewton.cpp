@@ -50,10 +50,9 @@ namespace hpl {
 
   cPhysicsWorldNewton::cPhysicsWorldNewton()
       : iPhysicsWorld() {
-    //mpNewtonWorld = NewtonCreate();
-    mpNewtonWorld = NewtonCreate(NULL, NULL);
+    mpNewtonWorld = NewtonCreate();
 
-    if (mpNewtonWorld == NULL) {
+    if (mpNewtonWorld == nullptr) {
       Warning("Couldn't create newton world!\n");
     }
 
@@ -68,7 +67,7 @@ namespace hpl {
     /////////////////////////////////
     //Create default material.
     int                             lDefaultMatId = 0; //NewtonMaterialGetDefaultGroupID(mpNewtonWorld);
-    cPhysicsMaterialNewton*         pMaterial     = hplNew(cPhysicsMaterialNewton, ("Default", this, lDefaultMatId));
+    auto*                           pMaterial     = hplNew(cPhysicsMaterialNewton, ("Default", this, lDefaultMatId));
     tPhysicsMaterialMap::value_type Val("Default", pMaterial);
     m_mapMaterials.insert(Val);
     pMaterial->UpdateMaterials();
@@ -112,9 +111,8 @@ namespace hpl {
     //lUpdate++;
     //cPhysicsBodyNewton::SetUseCallback(true);
 
-    tPhysicsBodyListIt it = mlstBodies.begin();
-    for (; it != mlstBodies.end(); ++it) {
-      cPhysicsBodyNewton* pBody = static_cast<cPhysicsBodyNewton*>(*it);
+    for (auto& mlstBodie : mlstBodies) {
+      auto* pBody = dynamic_cast<cPhysicsBodyNewton*>(mlstBodie);
       pBody->ClearForces();
     }
   }
@@ -199,7 +197,7 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   iCollideShape* cPhysicsWorldNewton::CreateNullShape() {
-    iCollideShape* pShape = hplNew(cCollideShapeNewton, (eCollideShapeType_Null, 0, NULL,
+    iCollideShape* pShape = hplNew(cCollideShapeNewton, (eCollideShapeType_Null, 0, nullptr,
                                                          mpNewtonWorld, this));
     mlstShapes.push_back(pShape);
 
@@ -355,39 +353,32 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   static std::vector<iPhysicsBody*>* gpBodyVec;
-  static void                        AddNewtonBodyToVector(const NewtonBody* apNewtonBody) //, void* userData)
-  {
-    cPhysicsBodyNewton* pBody = (cPhysicsBodyNewton*) NewtonBodyGetUserData(apNewtonBody);
+
+  static void AddNewtonBodyToVector(const NewtonBody* const apNewtonBody, void* const userData) {
+    auto* pBody = (cPhysicsBodyNewton*) NewtonBodyGetUserData(apNewtonBody);
     gpBodyVec->push_back(pBody);
   }
 
   void cPhysicsWorldNewton::GetBodiesInBV(cBoundingVolume* apBV, std::vector<iPhysicsBody*>* apBodyVec) {
     gpBodyVec = apBodyVec;
-
-    //NewtonWorldForEachBodyInAABBDo(mpNewtonWorld,apBV->GetMin().v, apBV->GetMax().v,AddNewtonBodyToVector, NULL);
-    NewtonWorldForEachBodyInAABBDo(mpNewtonWorld, apBV->GetMin().v, apBV->GetMax().v, AddNewtonBodyToVector);
+    NewtonWorldForEachBodyInAABBDo(mpNewtonWorld, apBV->GetMin().v, apBV->GetMax().v, AddNewtonBodyToVector, nullptr);
   }
 
   //-----------------------------------------------------------------------
 
   iCharacterBody* cPhysicsWorldNewton::CreateCharacterBody(const tString& asName, const cVector3f& avSize) {
-    cCharacterBodyNewton* pChar = hplNew(cCharacterBodyNewton, (asName, this, avSize));
-
+    auto* pChar = hplNew(cCharacterBodyNewton, (asName, this, avSize));
     mlstCharBodies.push_back(pChar);
-
     return pChar;
   }
 
   //-----------------------------------------------------------------------
 
   iPhysicsMaterial* cPhysicsWorldNewton::CreateMaterial(const tString& asName) {
-    cPhysicsMaterialNewton* pMaterial = hplNew(cPhysicsMaterialNewton, (asName, this));
-
+    auto*                           pMaterial = hplNew(cPhysicsMaterialNewton, (asName, this));
     tPhysicsMaterialMap::value_type Val(asName, pMaterial);
     m_mapMaterials.insert(Val);
-
     pMaterial->UpdateMaterials();
-
     return pMaterial;
   }
 
@@ -395,9 +386,7 @@ namespace hpl {
 
   iPhysicsController* cPhysicsWorldNewton::CreateController(const tString& asName) {
     iPhysicsController* pController = hplNew(cPhysicsControllerNewton, (asName, this));
-
     mlstControllers.push_back(pController);
-
     return pController;
   }
 
@@ -405,9 +394,7 @@ namespace hpl {
 
   iPhysicsRope* cPhysicsWorldNewton::CreateRope(const tString& asName, const cVector3f& avStartPos, const cVector3f& avEndPos) {
     iPhysicsRope* pRope = hplNew(cPhysicsRopeNewton, (asName, this, avStartPos, avEndPos));
-
     mlstRopes.push_back(pRope);
-
     return pRope;
   }
 
@@ -430,26 +417,32 @@ namespace hpl {
   //////////////////////////////////////
 
   static unsigned RayCastPrefilterFunc(const NewtonBody* apNewtonBody, const NewtonCollision* collision, void* userData) {
-    cPhysicsBodyNewton* pRigidBody = (cPhysicsBodyNewton*) NewtonBodyGetUserData(apNewtonBody);
-    if (pRigidBody->IsActive() == false) return 0;
+    auto* pRigidBody = (cPhysicsBodyNewton*) NewtonBodyGetUserData(apNewtonBody);
+    if (!pRigidBody->IsActive()) {
+      return 0;
+    }
 
     //Temp:
     cBoundingVolume* pBv = pRigidBody->GetBoundingVolume();
-    if (cMath::CheckAABBIntersection(gvRayBoxMin, gvRayBoxMax, pBv->GetMin(), pBv->GetMax()) == false) {
+    if (!cMath::CheckAABBIntersection(gvRayBoxMin, gvRayBoxMax, pBv->GetMin(), pBv->GetMax())) {
       return 0;
     }
 
     bool bRet = gpRayCallback->BeforeIntersect(pRigidBody);
 
-    if (bRet) return 1;
-    else
+    if (bRet) {
+      return 1;
+    } else {
       return 0;
+    }
   }
 
   static float RayCastFilterFunc(const NewtonBody* apNewtonBody, const float* apNormalVec,
                                  int alCollisionID, void* apUserData, float afIntersetParam) {
-    cPhysicsBodyNewton* pRigidBody = (cPhysicsBodyNewton*) NewtonBodyGetUserData(apNewtonBody);
-    if (pRigidBody->IsActive() == false) return 1;
+    auto* pRigidBody = (cPhysicsBodyNewton*) NewtonBodyGetUserData(apNewtonBody);
+    if (!pRigidBody->IsActive()) {
+      return 1;
+    }
 
     gRayParams.mfT = afIntersetParam;
 
@@ -468,9 +461,11 @@ namespace hpl {
     bool bRet = gpRayCallback->OnIntersect(pRigidBody, &gRayParams);
 
     //return correct value.
-    if (bRet) return 1; //afIntersetParam;
-    else
+    if (bRet) {
+      return 1;
+    } else {
       return 0;
+    }
   }
 
   //////////////////////////////////////

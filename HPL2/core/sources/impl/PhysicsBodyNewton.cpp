@@ -39,12 +39,12 @@ namespace hpl {
 
   cPhysicsBodyNewton::cPhysicsBodyNewton(const tString& asName, iPhysicsWorld* apWorld, iCollideShape* apShape)
       : iPhysicsBody(asName, apWorld, apShape) {
-    cPhysicsWorldNewton* pWorldNewton = static_cast<cPhysicsWorldNewton*>(apWorld);
-    cCollideShapeNewton* pShapeNewton = static_cast<cCollideShapeNewton*>(apShape);
+    auto* pWorldNewton = dynamic_cast<cPhysicsWorldNewton*>(apWorld);
+    auto* pShapeNewton = dynamic_cast<cCollideShapeNewton*>(apShape);
 
     mpNewtonWorld = pWorldNewton->GetNewtonWorld();
-    mpNewtonBody  = NewtonCreateBody(pWorldNewton->GetNewtonWorld(),
-                                    pShapeNewton->GetNewtonCollision());
+    cMatrixf matrix = cMatrixf::Identity;
+    mpNewtonBody  = NewtonCreateBody(pWorldNewton->GetNewtonWorld(), pShapeNewton->GetNewtonCollision(), matrix.v);
 
     mpCallback = hplNew(cPhysicsBodyNewtonCallback, ());
 

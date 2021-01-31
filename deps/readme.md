@@ -18,3 +18,11 @@
 - angelscript: 2.19.2
   - created cmakelists from newer version
 - CgToolkit: 3.1 - April 2012 (3.1.0013)
+- newton dynamics sdk: 2.36
+- GLEW: 2.2.0
+- theora: master
+  - added CMakeLists.txt
+- devIL: 1.8.0
+  - reworked CMake
+- fltk: 1.3.5
+- zlib: 1.2.11

@@ -17,12 +17,18 @@ set(MACOSX_BUNDLE_COPYRIGHT "Copyright © 2010-2013 Frictional Games")
 
 # TODO this is BAAAD
 # silence some annoying warnings
-add_definitions(
-    -Wno-switch
-    -Wno-reorder
-    -Wno-unused-variable
-    -Wno-unused-function
-)
+if (CMAKE_CXX_COMPILER_ID MATCHES ".*clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    add_definitions(
+        -Wno-switch
+        -Wno-reorder
+        -Wno-unused-variable
+        -Wno-unused-function
+    )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    add_definitions(
+        -D_CRT_SECURE_NO_WARNINGS
+    )
+endif()
 
 if(USERDIR_RESOURCES)
     add_definitions(-DUSERDIR_RESOURCES)
