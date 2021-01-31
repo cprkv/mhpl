@@ -39,224 +39,207 @@
 #include "impl/LowLevelSoundOpenAL.h"
 #include "impl/LowLevelPhysicsNewton.h"
 
-#ifdef INCLUDE_HAPTIC 
-	#include "impl/LowLevelHapticHaptX.h"
+#ifdef INCLUDE_HAPTIC
+  #include "impl/LowLevelHapticHaptX.h"
 #endif
 
 #if USE_SDL2
-#include "SDL.h"
-#include "SDL_syswm.h"
+  #include "SDL.h"
+  #include "SDL_syswm.h"
 #else
-#include "SDL/SDL.h"
-#include "SDL/SDL_syswm.h"
+  #include "SDL/SDL.h"
+  #include "SDL/SDL_syswm.h"
 #endif
 #ifdef WIN32
-#include "Windows.h"
-#include "Dbt.h"
+  #include "Windows.h"
+  #include "Dbt.h"
 #endif
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cSDLEngineSetup::cSDLEngineSetup(tFlag alHplSetupFlags)
-	{
-#if SDL_VERSION_ATLEAST(2,0,0)
-		SDL_SetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES, "0");
+  cSDLEngineSetup::cSDLEngineSetup(tFlag alHplSetupFlags) {
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+    SDL_SetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES, "0");
 #endif
-		if(alHplSetupFlags & (eHplSetup_Screen | eHplSetup_Video))
-		{
-			if(SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0) {
-				FatalError("Error Initializing Display: %s",SDL_GetError()); 
-				exit(1);
-			}
-#if SDL_VERSION_ATLEAST(2,0,0)
-            SDL_DisableScreenSaver();
-#elif defined WIN32 // only on SDL1.2
-			// Set up device notifications!
-			// This is bad, cos it is actually Windows specific code, should not be here. TODO: move it, obviously
-			SDL_SysWMinfo info;
-			SDL_VERSION(&info.version);
-			if(SDL_GetWMInfo(&info))
-			{
-				DEV_BROADCAST_DEVICEINTERFACE notificationFilter;
-				ZeroMemory(&notificationFilter, sizeof(notificationFilter));
- 
-				// set up filtering, so we only get notified of input device changes
-				notificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
-				static const GUID GuidDevInterfaceHID = {0x745a17a0, 0x74d3, 0x11d0,
-															{ 0xb6, 0xfe, 0x00, 0xa0, 0xc9, 0x0f, 0x57, 0xda }};
-				notificationFilter.dbcc_classguid = GuidDevInterfaceHID;
+    if (alHplSetupFlags & (eHplSetup_Screen | eHplSetup_Video)) {
+      if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
+        FatalError("Error Initializing Display: %s", SDL_GetError());
+        exit(1);
+      }
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+      SDL_DisableScreenSaver();
+#elif defined WIN32 // only on SDL1.2               \
+                    // Set up device notifications! \
+                    // This is bad, cos it is actually Windows specific code, should not be here. TODO: move it, obviously
+      SDL_SysWMinfo info;
+      SDL_VERSION(&info.version);
+      if (SDL_GetWMInfo(&info)) {
+        DEV_BROADCAST_DEVICEINTERFACE notificationFilter;
+        ZeroMemory(&notificationFilter, sizeof(notificationFilter));
 
-				notificationFilter.dbcc_size = sizeof(notificationFilter);
- 
-				HDEVNOTIFY hDevNotify;
-				hDevNotify = RegisterDeviceNotification(info.window, &notificationFilter,
-					DEVICE_NOTIFY_WINDOW_HANDLE |
-					DEVICE_NOTIFY_ALL_INTERFACE_CLASSES);
- 
-				if(hDevNotify == NULL) {
-				}
-			}
+        // set up filtering, so we only get notified of input device changes
+        notificationFilter.dbcc_devicetype    = DBT_DEVTYP_DEVICEINTERFACE;
+        static const GUID GuidDevInterfaceHID = { 0x745a17a0, 0x74d3, 0x11d0, { 0xb6, 0xfe, 0x00, 0xa0, 0xc9, 0x0f, 0x57, 0xda } };
+        notificationFilter.dbcc_classguid     = GuidDevInterfaceHID;
+
+        notificationFilter.dbcc_size = sizeof(notificationFilter);
+
+        HDEVNOTIFY hDevNotify;
+        hDevNotify = RegisterDeviceNotification(info.window, &notificationFilter,
+                                                DEVICE_NOTIFY_WINDOW_HANDLE |
+                                                    DEVICE_NOTIFY_ALL_INTERFACE_CLASSES);
+
+        if (hDevNotify == NULL) {
+        }
+      }
 #endif // WIN32
-		}
-		else
-		{
-			SDL_Init( SDL_INIT_TIMER );
-		}
-		
-		//////////////////////////
-		// System
-		mpLowLevelSystem = hplNew( cLowLevelSystemSDL, () );
-		
-		//////////////////////////
-		// Graphics
-		mpLowLevelGraphics = hplNew( cLowLevelGraphicsSDL,() );
-		
-		//////////////////////////
-		// Input
-		mpLowLevelInput = hplNew( cLowLevelInputSDL,(mpLowLevelGraphics) );
-		
-		//////////////////////////
-		// Resources
-		mpLowLevelResources = hplNew( cLowLevelResourcesSDL,(mpLowLevelGraphics) );
-		
-		//////////////////////////
-		// Sound
-		mpLowLevelSound	= hplNew( cLowLevelSoundOpenAL,() );
-		
-		//////////////////////////
-		// Physics
-		mpLowLevelPhysics = hplNew( cLowLevelPhysicsNewton,() );
-		
-		//////////////////////////
-		// Haptic
-#ifdef INCLUDE_HAPTIC 
-		mpLowLevelHaptic = hplNew( cLowLevelHapticHaptX,() );
-#else 
-		mpLowLevelHaptic = NULL;
+    } else {
+      SDL_Init(SDL_INIT_TIMER);
+    }
+
+    //////////////////////////
+    // System
+    mpLowLevelSystem = hplNew(cLowLevelSystemSDL, ());
+
+    //////////////////////////
+    // Graphics
+    mpLowLevelGraphics = hplNew(cLowLevelGraphicsSDL, ());
+
+    //////////////////////////
+    // Input
+    mpLowLevelInput = hplNew(cLowLevelInputSDL, (mpLowLevelGraphics));
+
+    //////////////////////////
+    // Resources
+    mpLowLevelResources = hplNew(cLowLevelResourcesSDL, (mpLowLevelGraphics));
+
+    //////////////////////////
+    // Sound
+    mpLowLevelSound = hplNew(cLowLevelSoundOpenAL, ());
+
+    //////////////////////////
+    // Physics
+    mpLowLevelPhysics = hplNew(cLowLevelPhysicsNewton, ());
+
+    //////////////////////////
+    // Haptic
+#ifdef INCLUDE_HAPTIC
+    mpLowLevelHaptic = hplNew(cLowLevelHapticHaptX, ());
+#else
+    mpLowLevelHaptic = NULL;
 #endif
-		
-	}
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cSDLEngineSetup::~cSDLEngineSetup()
-	{
-		Log("- Deleting lowlevel stuff.\n");
-		
-		Log("  Physics\n");
-		hplDelete(mpLowLevelPhysics);
-		Log("  Sound\n");
-		hplDelete(mpLowLevelSound);
-		Log("  Input\n");
-		hplDelete(mpLowLevelInput);
-		Log("  Resources\n");
-		hplDelete(mpLowLevelResources);
-		Log("  System\n");
-		hplDelete(mpLowLevelSystem);
-		Log("  Graphics\n");
-		hplDelete(mpLowLevelGraphics);
-		Log("  Haptic\n");
-#ifdef INCLUDE_HAPTIC 	
-		hplDelete(mpLowLevelHaptic);
+  cSDLEngineSetup::~cSDLEngineSetup() {
+    Log("- Deleting lowlevel stuff.\n");
+
+    Log("  Physics\n");
+    hplDelete(mpLowLevelPhysics);
+    Log("  Sound\n");
+    hplDelete(mpLowLevelSound);
+    Log("  Input\n");
+    hplDelete(mpLowLevelInput);
+    Log("  Resources\n");
+    hplDelete(mpLowLevelResources);
+    Log("  System\n");
+    hplDelete(mpLowLevelSystem);
+    Log("  Graphics\n");
+    hplDelete(mpLowLevelGraphics);
+    Log("  Haptic\n");
+#ifdef INCLUDE_HAPTIC
+    hplDelete(mpLowLevelHaptic);
 #endif
 
-#if SDL_VERSION_ATLEAST(2,0,0)
-        SDL_EnableScreenSaver();
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+    SDL_EnableScreenSaver();
 #endif
-		SDL_Quit();
-	}
+    SDL_Quit();
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	cScene* cSDLEngineSetup::CreateScene(cGraphics* apGraphics, cResources *apResources, cSound* apSound,
-										cPhysics *apPhysics, cSystem *apSystem,cAI *apAI,cGui *apGui,
-										cHaptic *apHaptic)
-	{
-		cScene *pScene = hplNew( cScene, (apGraphics,apResources, apSound,apPhysics, apSystem,apAI,apGui,apHaptic) );
-		return pScene;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  cScene* cSDLEngineSetup::CreateScene(cGraphics* apGraphics, cResources* apResources, cSound* apSound,
+                                       cPhysics* apPhysics, cSystem* apSystem, cAI* apAI, cGui* apGui,
+                                       cHaptic* apHaptic) {
+    cScene* pScene = hplNew(cScene, (apGraphics, apResources, apSound, apPhysics, apSystem, apAI, apGui, apHaptic));
+    return pScene;
+  }
 
-	
-	/**
+  //-----------------------------------------------------------------------
+
+
+  /**
 	 * \todo Lowlevelresource and resource both use lowlevel graphics. Can this be fixed??
 	 * \param apGraphics 
 	 * \return 
 	 */
-	cResources* cSDLEngineSetup::CreateResources(cGraphics* apGraphics)
-	{
-		cResources *pResources = hplNew( cResources, (mpLowLevelResources,mpLowLevelGraphics) );
-		return pResources;
-	}
-	
-	//-----------------------------------------------------------------------
+  cResources* cSDLEngineSetup::CreateResources(cGraphics* apGraphics) {
+    cResources* pResources = hplNew(cResources, (mpLowLevelResources, mpLowLevelGraphics));
+    return pResources;
+  }
 
-	cInput* cSDLEngineSetup::CreateInput(cGraphics* apGraphics)
-	{
-		cInput *pInput = hplNew( cInput, (mpLowLevelInput) );
-		return pInput;
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cSystem* cSDLEngineSetup::CreateSystem()
-	{
-		cSystem *pSystem = hplNew( cSystem, (mpLowLevelSystem) );
-		return pSystem;
-	}
-	
-	//-----------------------------------------------------------------------
+  cInput* cSDLEngineSetup::CreateInput(cGraphics* apGraphics) {
+    cInput* pInput = hplNew(cInput, (mpLowLevelInput));
+    return pInput;
+  }
 
-	cGraphics* cSDLEngineSetup::CreateGraphics()
-	{
-		cGraphics *pGraphics = hplNew( cGraphics, (mpLowLevelGraphics,mpLowLevelResources) );
-		return pGraphics;
-	}
-	//-----------------------------------------------------------------------
-	
-	cSound* cSDLEngineSetup::CreateSound()
-	{
-		cSound *pSound = hplNew( cSound, (mpLowLevelSound) );
-		return pSound;
-	}
-	
-	//-----------------------------------------------------------------------
-	
-	cPhysics* cSDLEngineSetup::CreatePhysics()
-	{
-		cPhysics *pPhysics = hplNew( cPhysics, (mpLowLevelPhysics) );
-		return pPhysics;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  cSystem* cSDLEngineSetup::CreateSystem() {
+    cSystem* pSystem = hplNew(cSystem, (mpLowLevelSystem));
+    return pSystem;
+  }
 
-	cAI* cSDLEngineSetup::CreateAI()
-	{
-		cAI *pAI = hplNew( cAI,() );
-		return pAI;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  cGraphics* cSDLEngineSetup::CreateGraphics() {
+    cGraphics* pGraphics = hplNew(cGraphics, (mpLowLevelGraphics, mpLowLevelResources));
+    return pGraphics;
+  }
+  //-----------------------------------------------------------------------
 
-	cHaptic* cSDLEngineSetup::CreateHaptic()
-	{
-		cHaptic *pHaptic = hplNew( cHaptic, (mpLowLevelHaptic) );
-		return pHaptic;
-	}
+  cSound* cSDLEngineSetup::CreateSound() {
+    cSound* pSound = hplNew(cSound, (mpLowLevelSound));
+    return pSound;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-}
+  cPhysics* cSDLEngineSetup::CreatePhysics() {
+    cPhysics* pPhysics = hplNew(cPhysics, (mpLowLevelPhysics));
+    return pPhysics;
+  }
+
+  //-----------------------------------------------------------------------
+
+  cAI* cSDLEngineSetup::CreateAI() {
+    cAI* pAI = hplNew(cAI, ());
+    return pAI;
+  }
+
+  //-----------------------------------------------------------------------
+
+  cHaptic* cSDLEngineSetup::CreateHaptic() {
+    cHaptic* pHaptic = hplNew(cHaptic, (mpLowLevelHaptic));
+    return pHaptic;
+  }
+
+  //-----------------------------------------------------------------------
+
+} // namespace hpl

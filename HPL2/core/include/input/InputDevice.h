@@ -32,20 +32,20 @@ namespace hpl {
 		virtual ~iInputDevice(){}
 			
 		/**
-		 *
-		 * \return name of the device
-		 */
+     *
+     * \return name of the device
+     */
 		tString GetName();
 		
 		/**
-		 *
-		 * \return type of device.
-		 */
+     *
+     * \return type of device.
+     */
 		eInputDeviceType GetType();
 	    
 		/**
-		 * Update the device, called by cInput
-		 */
+     * Update the device, called by cInput
+     */
 		virtual void Update()=0;
 
 	private:

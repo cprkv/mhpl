@@ -29,97 +29,96 @@
 
 namespace hpl {
 
-	class cMaterialManager;
-	class cResources;
-	class cGraphics;
-	class iLowLevelGraphics;
-	class cMaterial;
-	class iVertexBuffer;
-	
-	//------------------------------------------
+  class cMaterialManager;
+  class cResources;
+  class cGraphics;
+  class iLowLevelGraphics;
+  class cMaterial;
+  class iVertexBuffer;
 
-	class cBillboard : public iRenderable
-	{
-	#ifdef __GNUC__
-		typedef iRenderable __super;
-	#endif
-	public:
-		cBillboard(const tString asName,const cVector2f& avSize,eBillboardType aType, cResources *apResources,cGraphics *apGraphics);
-		~cBillboard();
+  //------------------------------------------
 
-		void SetMaterial(cMaterial * apMaterial);
+  class cBillboard : public iRenderable {
+#ifdef __GNUC__
+    typedef iRenderable __super;
+#endif
+  public:
+    cBillboard(const tString asName, const cVector2f& avSize, eBillboardType aType, cResources* apResources, cGraphics* apGraphics);
+    ~cBillboard();
 
-		void SetSize(const cVector2f& avSize);
-		cVector2f GetSize(){ return mvSize;}
+    void SetMaterial(cMaterial* apMaterial);
 
-		eBillboardType GetType(){ return mType;}
+    void      SetSize(const cVector2f& avSize);
+    cVector2f GetSize() { return mvSize; }
 
-		void SetAxis(const cVector3f& avAxis);
-		cVector3f GetAxis(){ return mvAxis;}
+    eBillboardType GetType() { return mType; }
 
-		void SetForwardOffset(float afOffset);
-		float GetForwardOffset(){ return mfForwardOffset;}
+    void      SetAxis(const cVector3f& avAxis);
+    cVector3f GetAxis() { return mvAxis; }
 
-		void SetColor(const cColor &aColor);
-		const cColor& GetColor(){ return mColor;}
+    void  SetForwardOffset(float afOffset);
+    float GetForwardOffset() { return mfForwardOffset; }
 
-		void SetHaloAlpha(float afX);
-		float GetHaloAlpha(){ return mfHaloAlpha;}
+    void          SetColor(const cColor& aColor);
+    const cColor& GetColor() { return mColor; }
 
-		/////////////////////////////////
-		//Halo stuff
-		void SetIsHalo(bool abX);
-		bool IsHalo(){ return mbIsHalo;}
+    void  SetHaloAlpha(float afX);
+    float GetHaloAlpha() { return mfHaloAlpha; }
 
-		void SetHaloSourceSize(const cVector3f &avSize);
-		cVector3f GetHaloSourceSize(){return mvHaloSourceSize;}
-		
-		bool UsesOcclusionQuery();
-		void AssignOcclusionQuery(iRenderer *apRenderer);
-		bool RetrieveOcculsionQuery(iRenderer *apRenderer);
-		
-		/////////////////////////////////
-		//Entity implementation
-		tString GetEntityType(){ return "Billboard";}
+    /////////////////////////////////
+    //Halo stuff
+    void SetIsHalo(bool abX);
+    bool IsHalo() { return mbIsHalo; }
 
-		bool IsVisible();
-		
-		//Renderable implementations
-		cMaterial *GetMaterial(){ return mpMaterial;}
-		iVertexBuffer* GetVertexBuffer(){return mpVtxBuffer;}
+    void      SetHaloSourceSize(const cVector3f& avSize);
+    cVector3f GetHaloSourceSize() { return mvHaloSourceSize; }
 
-		cMatrixf* GetModelMatrix(cFrustum *apFrustum);
+    bool UsesOcclusionQuery();
+    void AssignOcclusionQuery(iRenderer* apRenderer);
+    bool RetrieveOcculsionQuery(iRenderer* apRenderer);
 
-		int GetMatrixUpdateCount();
+    /////////////////////////////////
+    //Entity implementation
+    tString GetEntityType() { return "Billboard"; }
 
-		eRenderableType GetRenderType(){ return eRenderableType_Billboard;}
+    bool IsVisible();
 
-	private:
-		cMaterialManager* mpMaterialManager;
-		iLowLevelGraphics* mpLowLevelGraphics;
-		
-		cMaterial *mpMaterial;
-		iVertexBuffer* mpVtxBuffer;
+    //Renderable implementations
+    cMaterial*     GetMaterial() { return mpMaterial; }
+    iVertexBuffer* GetVertexBuffer() { return mpVtxBuffer; }
 
-		cMatrixf m_mtxHaloOcclusionMatrix;
-		cMatrixf m_mtxTempTransform;
+    cMatrixf* GetModelMatrix(cFrustum* apFrustum);
 
-		eBillboardType mType;
-		cVector2f mvSize;
-		cVector3f mvAxis;
+    int GetMatrixUpdateCount();
 
-		int mlLastRenderCount;
+    eRenderableType GetRenderType() { return eRenderableType_Billboard; }
 
-		bool mbIsHalo;
-		cVector3f mvHaloSourceSize;
-		cBoundingVolume *mpHaloSourceBV;
-		int mbHaloSizeUpdated;
-		int mlHaloBVMatrixCount;
-		
-		float mfForwardOffset;
-		cColor mColor;
-		float mfHaloAlpha;
-	};
+  private:
+    cMaterialManager*  mpMaterialManager;
+    iLowLevelGraphics* mpLowLevelGraphics;
 
-};
+    cMaterial*     mpMaterial;
+    iVertexBuffer* mpVtxBuffer;
+
+    cMatrixf m_mtxHaloOcclusionMatrix;
+    cMatrixf m_mtxTempTransform;
+
+    eBillboardType mType;
+    cVector2f      mvSize;
+    cVector3f      mvAxis;
+
+    int mlLastRenderCount;
+
+    bool             mbIsHalo;
+    cVector3f        mvHaloSourceSize;
+    cBoundingVolume* mpHaloSourceBV;
+    int              mbHaloSizeUpdated;
+    int              mlHaloBVMatrixCount;
+
+    float  mfForwardOffset;
+    cColor mColor;
+    float  mfHaloAlpha;
+  };
+
+};     // namespace hpl
 #endif // HPL_BILLBOARD_H

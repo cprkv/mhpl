@@ -17,36 +17,36 @@
  * along with Amnesia: The Dark Descent.  If not, see <https://www.gnu.org/licenses/>.
  */
 #if 0
-#include "impl/MeshLoaderFBX.h"
+  #include "impl/MeshLoaderFBX.h"
 
-#include "system/LowLevelSystem.h"
-#include "system/String.h"
-#include "system/Platform.h"
+  #include "system/LowLevelSystem.h"
+  #include "system/String.h"
+  #include "system/Platform.h"
 
-#include "resources/MaterialManager.h"
-#include "resources/MeshManager.h"
-#include "resources/Resources.h"
-#include "resources/FileSearcher.h"
+  #include "resources/MaterialManager.h"
+  #include "resources/MeshManager.h"
+  #include "resources/Resources.h"
+  #include "resources/FileSearcher.h"
 
-#include "graphics/LowLevelGraphics.h"
-#include "graphics/VertexBuffer.h"
-#include "graphics/Mesh.h"
-#include "graphics/SubMesh.h"
+  #include "graphics/LowLevelGraphics.h"
+  #include "graphics/VertexBuffer.h"
+  #include "graphics/Mesh.h"
+  #include "graphics/SubMesh.h"
 
-#include "graphics/Material.h"
-#include "graphics/Skeleton.h"
-#include "graphics/Bone.h"
-#include "graphics/Animation.h"
-#include "graphics/AnimationTrack.h"
+  #include "graphics/Material.h"
+  #include "graphics/Skeleton.h"
+  #include "graphics/Bone.h"
+  #include "graphics/Animation.h"
+  #include "graphics/AnimationTrack.h"
 
-#include "impl/MeshLoaderMSH.h"
+  #include "impl/MeshLoaderMSH.h"
 
-#include "math/Math.h"
+  #include "math/Math.h"
 
-#ifdef IOS_REF
-	#undef  IOS_REF
-	#define IOS_REF (*(mpSdkManager->GetIOSettings()))
-#endif
+  #ifdef IOS_REF
+    #undef IOS_REF
+    #define IOS_REF (*(mpSdkManager->GetIOSettings()))
+  #endif
 
 namespace hpl {
 

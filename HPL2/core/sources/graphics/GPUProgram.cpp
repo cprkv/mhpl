@@ -22,53 +22,49 @@
 #include "resources/Resources.h"
 #include "resources/GpuShaderManager.h"
 
-namespace hpl{
+namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	iGpuProgram::iGpuProgram(const tString& asName,eGpuProgramFormat aProgramFormat) 
-	{
-		msName = asName;
+  iGpuProgram::iGpuProgram(const tString& asName, eGpuProgramFormat aProgramFormat) {
+    msName               = asName;
+    mpResources          = nullptr;
+    mProgramFormat       = aProgramFormat;
+    mbAutoDestroyShaders = true;
 
-		mpResources = NULL;
+    for (auto& i : mpShader) {
+      i = nullptr;
+    }
 
-		mProgramFormat = aProgramFormat;
+    mlUserId = 0;
+  }
 
-		mbAutoDestroyShaders = true;
+  iGpuProgram::~iGpuProgram() {
+    if (mbAutoDestroyShaders && mpResources) {
+      for (auto& i : mpShader) {
+        if (i) {
+          mpResources->GetGpuShaderManager()->Destroy(i);
+        }
+      }
+    }
+  }
 
-		for(int i=0; i<2; ++i) mpShader[i] = NULL;
+  //-----------------------------------------------------------------------
 
-		mlUserId = 0;
-	}
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	iGpuProgram::~iGpuProgram()
-	{
-		if(mbAutoDestroyShaders && mpResources)
-		{
-			for(int i=0; i<2; ++i) 
-			{
-				if(mpShader[i]) mpResources->GetGpuShaderManager()->Destroy(mpShader[i]); 
-			}
-		}
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void iGpuProgram::SetShader(eGpuShaderType aType, iGpuShader* apShader) {
+    mpShader[aType] = apShader;
+  }
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-
-	void iGpuProgram::SetShader(eGpuShaderType aType, iGpuShader *apShader)
-	{
-		mpShader[aType] = apShader;
-	}
-
-	//-----------------------------------------------------------------------
-
-}
+} // namespace hpl

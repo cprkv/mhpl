@@ -656,20 +656,19 @@ bool cLuxBase::InitApp() {
 #else
   cConfigFile* pInitCfg = hplNew(cConfigFile, (msInitConfigFile));
 #endif
-  if (pInitCfg->Load() == false) {
+
+  if (!pInitCfg->Load()) {
     msErrorMessage = _W("Could not load main init file: ") + msInitConfigFile;
     return false;
   }
 
-
   //Set the name of the folder (in Lux) that all save stuff will be put.
   msMainSaveFolder = pInitCfg->GetStringW("Directories", "MainSaveFolder", _W(""));
 
-
   //Get the config file paths
   msDefaultUserConfigPath = pInitCfg->GetStringW("ConfigFiles", "DefaultUserSettings", _W(""));
-#if USE_SDL2
 
+#if USE_SDL2
   msDefaultUserKeyConfigPath = pInitCfg->GetStringW("ConfigFiles", "DefaultUserKeysSDL2", _W(""));
   msDefaultMainConfigPath    = pInitCfg->GetStringW("ConfigFiles", "DefaultMainSettingsSDL2", _W(""));
 

@@ -24,124 +24,124 @@
 
 namespace hpl {
 
-	//-------------------------------------------
+  //-------------------------------------------
 
-	class cBoundingVolume;
+  class cBoundingVolume;
 
-	class cRCNode_DynBoxTree;
-	class cRenderableContainer_DynBoxTree;
+  class cRCNode_DynBoxTree;
+  class cRenderableContainer_DynBoxTree;
 
-	//-------------------------------------------
+  //-------------------------------------------
 
 
-	class cDynBoxTreeObjectCallback : public cRenderableContainerObjectCallback, public iEntityCallback
-	{
-	public:
-		cDynBoxTreeObjectCallback(cRenderableContainer_DynBoxTree *apContainer);
+  class cDynBoxTreeObjectCallback : public cRenderableContainerObjectCallback
+      , public iEntityCallback {
+  public:
+    cDynBoxTreeObjectCallback(cRenderableContainer_DynBoxTree* apContainer);
 
-		void OnTransformUpdate(iEntity3D * apEntity);
+    void OnTransformUpdate(iEntity3D* apEntity);
 
-	private:
-		cRenderableContainer_DynBoxTree *mpContainer;
-	};
+  private:
+    cRenderableContainer_DynBoxTree* mpContainer;
+  };
 
-	
-	//-------------------------------------------
 
-	class cRCNode_DynBoxTree : public iRenderableContainerNode
-	{
-	friend class cRenderableContainer_DynBoxTree;
-	friend class cDynBoxTreeObjectCallback;
-	public:
-		cRCNode_DynBoxTree();
-		~cRCNode_DynBoxTree();
+  //-------------------------------------------
 
-		void UpdateBeforeUse();
+  class cRCNode_DynBoxTree : public iRenderableContainerNode {
+    friend class cRenderableContainer_DynBoxTree;
+    friend class cDynBoxTreeObjectCallback;
 
-		void RemoveObject(iRenderable *apObject);
+  public:
+    cRCNode_DynBoxTree();
+    ~cRCNode_DynBoxTree();
 
-		void RecalculateSplit();
-		void RecalculateAABB();
+    void UpdateBeforeUse();
 
-		void ObjectMoved();
+    void RemoveObject(iRenderable* apObject);
 
-	private:
-		cRenderableContainer_DynBoxTree *mpContainer;
+    void RecalculateSplit();
+    void RecalculateAABB();
 
-		int mlSplitAxis;
-		float mfSplitPlane;
+    void ObjectMoved();
 
-		bool mbRecalculateSplit;
-		bool mbRecalculateSplitAxis;
-		bool mbRecalculateAABB;
-        bool mbObjectMoved;
+  private:
+    cRenderableContainer_DynBoxTree* mpContainer;
 
-		bool mbIsSplit;
+    int   mlSplitAxis;
+    float mfSplitPlane;
 
-		int mlIgnoreSplitCount;
-		int mlGarbageCollectCount;
+    bool mbRecalculateSplit;
+    bool mbRecalculateSplitAxis;
+    bool mbRecalculateAABB;
+    bool mbObjectMoved;
 
-		cVector3f mvMeanPosition;
-	};
+    bool mbIsSplit;
 
-	//-------------------------------------------
-	
-	class cRenderableContainer_DynBoxTree : public iRenderableContainer
-	{
-	friend class cRCNode_DynBoxTree;
-	friend class cDynBoxTreeObjectCallback;
-	public:
-		cRenderableContainer_DynBoxTree();
-		~cRenderableContainer_DynBoxTree();
+    int mlIgnoreSplitCount;
+    int mlGarbageCollectCount;
 
-		void Add(iRenderable *apRenderable);
-		void Remove(iRenderable *apRenderable);
+    cVector3f mvMeanPosition;
+  };
 
-		iRenderableContainerNode* GetRoot();
+  //-------------------------------------------
 
-        void Compile();	
+  class cRenderableContainer_DynBoxTree : public iRenderableContainer {
+    friend class cRCNode_DynBoxTree;
+    friend class cDynBoxTreeObjectCallback;
 
-		void RebuildNodes();
+  public:
+    cRenderableContainer_DynBoxTree();
+    ~cRenderableContainer_DynBoxTree();
 
-		void RenderDebug(cRendererCallbackFunctions *apFunctions);
-	
-	private:
-		void AddNodeObjectsToRoot(cRCNode_DynBoxTree *apNode);
-		void SpecificUpdateBeforeRendering();
+    void Add(iRenderable* apRenderable);
+    void Remove(iRenderable* apRenderable);
 
-		void RenderDebugNode(cRendererCallbackFunctions *apFunctions, cRCNode_DynBoxTree *apNode, int alLevel);
+    iRenderableContainerNode* GetRoot();
 
-		void RemoveNode(cRCNode_DynBoxTree *apNode);
-		void CheckNodeAABBNeedsUpdateIterative(cRCNode_DynBoxTree *apNode, iRenderable *apObject);
-		
-		cRCNode_DynBoxTree *GetAddNode(cRCNode_DynBoxTree *apStartNode, iRenderable *apObject);
-		void AddObjectToNodeIterative(cRCNode_DynBoxTree *apNode, iRenderable *apObject);
+    void Compile();
 
-		int GetSplitGroup(iRenderable *apObject, float afSplitPlane, int alAxis, const cVector3f &avNodeSize);
+    void RebuildNodes();
 
-		void UpdateObjectInContainer(iRenderable* apObject);
-		void CheckForFitIterative(cRCNode_DynBoxTree *apNode, cBoundingVolume *apBV);
+    void RenderDebug(cRendererCallbackFunctions* apFunctions);
 
-		
-		cRCNode_DynBoxTree mRoot;
+  private:
+    void AddNodeObjectsToRoot(cRCNode_DynBoxTree* apNode);
+    void SpecificUpdateBeforeRendering();
 
-		int mlSplitThreshold;
-		float mfMaxIntersectionAmount;
-		int mlMaxIgnoreSplitCount;
-		int mlMaxGarbageCollectCount;
+    void RenderDebugNode(cRendererCallbackFunctions* apFunctions, cRCNode_DynBoxTree* apNode, int alLevel);
 
-		int mlRebuildCount;
-		int mlMaxRebuildCount;
+    void RemoveNode(cRCNode_DynBoxTree* apNode);
+    void CheckNodeAABBNeedsUpdateIterative(cRCNode_DynBoxTree* apNode, iRenderable* apObject);
 
-		cRCNode_DynBoxTree *mpCheckForFitTempNode;
+    cRCNode_DynBoxTree* GetAddNode(cRCNode_DynBoxTree* apStartNode, iRenderable* apObject);
+    void                AddObjectToNodeIterative(cRCNode_DynBoxTree* apNode, iRenderable* apObject);
 
-		tRenderableSet m_setObjectsToUpdate;
+    int GetSplitGroup(iRenderable* apObject, float afSplitPlane, int alAxis, const cVector3f& avNodeSize);
 
-		cDynBoxTreeObjectCallback *mpObjectCalllback;
+    void UpdateObjectInContainer(iRenderable* apObject);
+    void CheckForFitIterative(cRCNode_DynBoxTree* apNode, cBoundingVolume* apBV);
 
-		cRCNode_DynBoxTree *mpTempNode;
-	};
 
-	//-------------------------------------------
-};
+    cRCNode_DynBoxTree mRoot;
+
+    int   mlSplitThreshold;
+    float mfMaxIntersectionAmount;
+    int   mlMaxIgnoreSplitCount;
+    int   mlMaxGarbageCollectCount;
+
+    int mlRebuildCount;
+    int mlMaxRebuildCount;
+
+    cRCNode_DynBoxTree* mpCheckForFitTempNode;
+
+    tRenderableSet m_setObjectsToUpdate;
+
+    cDynBoxTreeObjectCallback* mpObjectCalllback;
+
+    cRCNode_DynBoxTree* mpTempNode;
+  };
+
+  //-------------------------------------------
+};     // namespace hpl
 #endif // HPL_RENDERABLE_CONTAINER_DYNBOXTREE_H

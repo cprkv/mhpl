@@ -25,102 +25,93 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	cFmodSoundData::cFmodSoundData(const tString& asName, bool abStream) : iSoundData(asName,_W(""),abStream)
-	{
-		mpSample = NULL;
-		mpStream = NULL;
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cFmodSoundData::~cFmodSoundData()
-	{
-		if(mpSample){
-			FSOUND_Sample_Free(mpSample);
-		}
-	}
-	
-	//-----------------------------------------------------------------------
+  cFmodSoundData::cFmodSoundData(const tString& asName, bool abStream)
+      : iSoundData(asName, _W(""), abStream) {
+    mpSample = NULL;
+    mpStream = NULL;
+  }
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-	
-	bool cFmodSoundData::CreateFromFile(const tWString &asFile)
-	{
-		SetFullPath(asFile);
+  cFmodSoundData::~cFmodSoundData() {
+    if (mpSample) {
+      FSOUND_Sample_Free(mpSample);
+    }
+  }
 
-		int lFlags=0;
-		
-		unsigned int lCaps = 0;
-		FSOUND_GetDriverCaps(0, &lCaps);//Current driver here instead of 0
-		
-		//Get the load flags
-		if(lCaps & FSOUND_CAPS_HARDWARE)	lFlags |= FSOUND_HW3D;
-		//if(mbStream)						lFlags |= FSOUND_STREAMABLE;
+  //-----------------------------------------------------------------------
 
-		if(mbStream)
-		{
-			if(mbLoopStream)
-				mpStream = FSOUND_Stream_Open(cString::To8Char(asFile).c_str(), FSOUND_NORMAL | FSOUND_LOOP_NORMAL,0,0);
-			else
-				mpStream = FSOUND_Stream_Open(cString::To8Char(asFile).c_str(), FSOUND_NORMAL,0,0);
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-			if(mpStream==NULL){
-				Error("Couldn't load sound stream '%s'\n", cString::To8Char(asFile).c_str());
-				return false;
-			}
+  //-----------------------------------------------------------------------
 
-		}
-		else
-		{
-			mpSample = FSOUND_Sample_Load(FSOUND_FREE,cString::To8Char(asFile).c_str(), lFlags,0,0);
-			//mpSample = FSOUND_Sample_Load(FSOUND_FREE,asFile.c_str(), FSOUND_HW3D,0,0);
-			if(mpSample==NULL){
-				Error("Couldn't load sound data '%s'\n", asFile.c_str());
-				return false;
-			}
-			FSOUND_Sample_SetMinMaxDistance(mpSample, 4.0f, 10000.0f);    
-			FSOUND_Sample_SetMode(mpSample, FSOUND_LOOP_NORMAL);
-		}
-				
-		return true;
-	}
-	
-	//-----------------------------------------------------------------------
+  bool cFmodSoundData::CreateFromFile(const tWString& asFile) {
+    SetFullPath(asFile);
 
-	iSoundChannel* cFmodSoundData::CreateChannel(int alPriority)
-	{
-		if(mpSample==NULL && mpStream==NULL)return NULL;
+    int lFlags = 0;
 
-		int lHandle;
-		iSoundChannel *pSoundChannel=NULL;
-		if(mbStream)
-		{
-			lHandle = FSOUND_Stream_PlayEx(FSOUND_FREE,mpStream,NULL, 1);
-			if(lHandle==-1)return NULL;
+    unsigned int lCaps = 0;
+    FSOUND_GetDriverCaps(0, &lCaps); //Current driver here instead of 0
 
-			pSoundChannel = hplNew( cFmodSoundChannel,(this,lHandle, mpSoundManger));
-		}
-		else
-		{
-			lHandle = FSOUND_PlaySoundEx(FSOUND_FREE,mpSample,NULL, 1);
-			if(lHandle==-1)return NULL;
-			
-			pSoundChannel = hplNew( cFmodSoundChannel,(this,lHandle, mpSoundManger));
-		}
+    //Get the load flags
+    if (lCaps & FSOUND_CAPS_HARDWARE) lFlags |= FSOUND_HW3D;
+    //if(mbStream)						lFlags |= FSOUND_STREAMABLE;
 
-		return pSoundChannel;
-	}
+    if (mbStream) {
+      if (mbLoopStream)
+        mpStream = FSOUND_Stream_Open(cString::To8Char(asFile).c_str(), FSOUND_NORMAL | FSOUND_LOOP_NORMAL, 0, 0);
+      else
+        mpStream = FSOUND_Stream_Open(cString::To8Char(asFile).c_str(), FSOUND_NORMAL, 0, 0);
 
-	//-----------------------------------------------------------------------
+      if (mpStream == NULL) {
+        Error("Couldn't load sound stream '%s'\n", cString::To8Char(asFile).c_str());
+        return false;
+      }
 
-}
+    } else {
+      mpSample = FSOUND_Sample_Load(FSOUND_FREE, cString::To8Char(asFile).c_str(), lFlags, 0, 0);
+      //mpSample = FSOUND_Sample_Load(FSOUND_FREE,asFile.c_str(), FSOUND_HW3D,0,0);
+      if (mpSample == NULL) {
+        Error("Couldn't load sound data '%s'\n", asFile.c_str());
+        return false;
+      }
+      FSOUND_Sample_SetMinMaxDistance(mpSample, 4.0f, 10000.0f);
+      FSOUND_Sample_SetMode(mpSample, FSOUND_LOOP_NORMAL);
+    }
+
+    return true;
+  }
+
+  //-----------------------------------------------------------------------
+
+  iSoundChannel* cFmodSoundData::CreateChannel(int alPriority) {
+    if (mpSample == NULL && mpStream == NULL) return NULL;
+
+    int            lHandle;
+    iSoundChannel* pSoundChannel = NULL;
+    if (mbStream) {
+      lHandle = FSOUND_Stream_PlayEx(FSOUND_FREE, mpStream, NULL, 1);
+      if (lHandle == -1) return NULL;
+
+      pSoundChannel = hplNew(cFmodSoundChannel, (this, lHandle, mpSoundManger));
+    } else {
+      lHandle = FSOUND_PlaySoundEx(FSOUND_FREE, mpSample, NULL, 1);
+      if (lHandle == -1) return NULL;
+
+      pSoundChannel = hplNew(cFmodSoundChannel, (this, lHandle, mpSoundManger));
+    }
+
+    return pSoundChannel;
+  }
+
+  //-----------------------------------------------------------------------
+
+} // namespace hpl

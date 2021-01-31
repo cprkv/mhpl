@@ -28,66 +28,60 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	cWorldLoaderHandler::cWorldLoaderHandler(cResources* apResources,cGraphics *apGraphics, cScene *apScene, cPhysics *apPhysics)
-	{
-		mpResources = apResources;
-		mpScene = apScene;
-		mpGraphics = apGraphics;
-		mpPhysics = apPhysics;
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cWorldLoaderHandler::~cWorldLoaderHandler()
-	{
-		
-	}
+  cWorldLoaderHandler::cWorldLoaderHandler(cResources* apResources, cGraphics* apGraphics, cScene* apScene, cPhysics* apPhysics) {
+    mpResources = apResources;
+    mpScene     = apScene;
+    mpGraphics  = apGraphics;
+    mpPhysics   = apPhysics;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  cWorldLoaderHandler::~cWorldLoaderHandler() {
+  }
 
-	//-----------------------------------------------------------------------
-	
-	cWorld* cWorldLoaderHandler::LoadWorld(const tWString& asFile,tWorldLoadFlag aFlags)
-	{
-		iWorldLoader *pWorldLoader = static_cast<iWorldLoader*>(GetLoaderForFile(asFile));
+  //-----------------------------------------------------------------------
 
-		if(pWorldLoader)
-		{
-				return pWorldLoader->LoadWorld(asFile,aFlags);
-		}
-		
-		return NULL;
-	}
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+  cWorld* cWorldLoaderHandler::LoadWorld(const tWString& asFile, tWorldLoadFlag aFlags) {
+    iWorldLoader* pWorldLoader = static_cast<iWorldLoader*>(GetLoaderForFile(asFile));
 
-	//-----------------------------------------------------------------------
+    if (pWorldLoader) {
+      return pWorldLoader->LoadWorld(asFile, aFlags);
+    }
 
-	
-	void cWorldLoaderHandler::SetupLoader(iResourceLoader *apLoader)
-	{
-		iWorldLoader *pWorldLoader = static_cast<iWorldLoader*>(apLoader);
-		
-		pWorldLoader->mpResources = mpResources;
-		pWorldLoader->mpGraphics = mpGraphics;
-		pWorldLoader->mpScene = mpScene;
-		pWorldLoader->mpPhysics = mpPhysics;
-	}
+    return NULL;
+  }
 
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+
+
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
+
+  //-----------------------------------------------------------------------
+
+
+  void cWorldLoaderHandler::SetupLoader(iResourceLoader* apLoader) {
+    iWorldLoader* pWorldLoader = static_cast<iWorldLoader*>(apLoader);
+
+    pWorldLoader->mpResources = mpResources;
+    pWorldLoader->mpGraphics  = mpGraphics;
+    pWorldLoader->mpScene     = mpScene;
+    pWorldLoader->mpPhysics   = mpPhysics;
+  }
+
+  //-----------------------------------------------------------------------
+} // namespace hpl

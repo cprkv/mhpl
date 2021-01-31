@@ -37,10 +37,10 @@ namespace hpl {
 			: iPhysicsJoint(asName,apParentBody,apChildBody, apWorld,avPivotPoint,avPinDir){}
 			virtual ~iPhysicsJointSlider(){}
 		/**
-		 * Set the maximum distance the bodies can be from each other, relative to the start dist between them
-		 * This is true if pin points towards the child.
-		 * In other words, distance increases as the distance between start pivot and current pivot
-		 * increases in the opposite direction of the pin.
+     * Set the maximum distance the bodies can be from each other, relative to the start dist between them
+     * This is true if pin points towards the child.
+     * In other words, distance increases as the distance between start pivot and current pivot
+     * increases in the opposite direction of the pin.
 		*/
 		virtual void SetMaxDistance(float afX)=0;
 		/**

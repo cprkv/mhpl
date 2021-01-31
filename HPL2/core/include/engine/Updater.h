@@ -49,36 +49,36 @@ namespace hpl {
 		void RunMessage(eUpdateableMessage aMessage, float afX=0);
         
 		/**
-		 * Sets the active update container to be used.
-		 * \param asContainer Name of the contianer
-		 * \return 
-		 */
+     * Sets the active update container to be used.
+     * \param asContainer Name of the contianer
+     * \return
+     */
 		bool SetContainer(tString asContainer);
 
 		/**
-		 * Gets the name of the current container in use.
-		 * \return name of current container.
-		 */
+     * Gets the name of the current container in use.
+     * \return name of current container.
+     */
 		tString GetCurrentContainerName();
 		/**
-		 * Adds a new container
-		 * \todo change name to state instead of container?
-		 * \param asName Name for the new container.
-		 * \return 
-		 */
+     * Adds a new container
+     * \todo change name to state instead of container?
+     * \param asName Name for the new container.
+     * \return
+     */
 		bool AddContainer(tString asName);
 		/**
-		 * Adds a new update in a container.
-		 * \param asContainer Container name
-		 * \param apUpdate pointer to the class that will be updated
-		 * \return 
-		 */
+     * Adds a new update in a container.
+     * \param asContainer Container name
+     * \param apUpdate pointer to the class that will be updated
+     * \return
+     */
 		bool AddUpdate(tString asContainer, iUpdateable* apUpdate);
 		/**
-		 * Adds a global update that runs no matter what container is set
-		 * \param apUpdate 
-		 * \return 
-		 */
+     * Adds a global update that runs no matter what container is set
+     * \param apUpdate
+     * \return
+     */
 		bool AddGlobalUpdate(iUpdateable* apUpdate);
 	
 	private:

@@ -74,11 +74,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 }
   #else
 int main(int argc, char* argv[]) {
+
     #ifdef __linux__
   if (!std::setlocale(LC_CTYPE, "")) {
     fprintf(stderr, "Can't set the specified locale! Check LANG, LC_CTYPE, LC_ALL.\n");
     return 1;
   }
+
   char* charset   = nl_langinfo(CODESET);
   bool  utf8_mode = (strcasecmp(charset, "UTF-8") == 0);
   if (!utf8_mode) {
@@ -106,7 +108,7 @@ int main(int argc, char* argv[]) {
 
   if (!cwd) {
     hpl::tString dataDir = hpl::cPlatform::GetDataDir();
-
+    fprintf(stderr, "Changing directory to: %s\n", dataDir.c_str());
     chdir(dataDir.c_str());
   }
 
@@ -131,42 +133,52 @@ namespace hpl {
 
   cLogWriter::cLogWriter(const tWString& asFileName) {
     msFileName = asFileName;
-    mpFile     = NULL;
+    mpFile     = nullptr;
   }
 
   cLogWriter::~cLogWriter() {
-    if (mpFile) fclose(mpFile);
+    if (mpFile)
+      fclose(mpFile);
   }
 
   void cLogWriter::Write(const tString& asMessage) {
-    if (!mpFile) ReopenFile();
+    if (!mpFile) {
+      ReopenFile();
+    }
 
     if (mpFile) {
       fprintf(mpFile, "%s", asMessage.c_str());
       fflush(mpFile);
     }
+
+    fprintf(stderr, "%s", asMessage.c_str());
+    fflush(stderr);
   }
 
   void cLogWriter::Clear() {
     ReopenFile();
-    if (mpFile) fflush(mpFile);
+    if (mpFile)
+      fflush(mpFile);
   }
 
   //-----------------------------------------------------------------------
 
 
   void cLogWriter::SetFileName(const tWString& asFile) {
-    if (msFileName == asFile) return;
+    if (msFileName == asFile)
+      return;
 
     msFileName = asFile;
-    if (mpFile) ReopenFile();
+    if (mpFile)
+      ReopenFile();
   }
 
   //-----------------------------------------------------------------------
 
 
   void cLogWriter::ReopenFile() {
-    if (mpFile) fclose(mpFile);
+    if (mpFile)
+      fclose(mpFile);
 
 #ifdef WIN32
     mpFile = _wfopen(msFileName.c_str(), _W("w"));
@@ -197,8 +209,9 @@ namespace hpl {
   void FatalError(const char* fmt, ...) {
     char    text[4096];
     va_list ap;
-    if (fmt == NULL)
+    if (fmt == nullptr) {
       return;
+    }
     va_start(ap, fmt);
     vsprintf(text, fmt, ap);
     va_end(ap);
@@ -207,7 +220,9 @@ namespace hpl {
     sMess += text;
     gLogWriter.Write(sMess);
 
-    if (gpLogMessageCallbackFunc) gpLogMessageCallbackFunc(eLogOutputType_FatalError, sMess.c_str());
+    if (gpLogMessageCallbackFunc) {
+      gpLogMessageCallbackFunc(eLogOutputType_FatalError, sMess.c_str());
+    }
 
 #if defined(__APPLE__) || defined(__linux__)
   #if !SDL_VERSION_ATLEAST(2, 0, 0)
@@ -225,8 +240,9 @@ namespace hpl {
   void Error(const char* fmt, ...) {
     char    text[2048];
     va_list ap;
-    if (fmt == NULL)
+    if (fmt == nullptr) {
       return;
+    }
     va_start(ap, fmt);
     vsprintf(text, fmt, ap);
     va_end(ap);
@@ -235,7 +251,9 @@ namespace hpl {
     sMess += text;
     gLogWriter.Write(sMess);
 
-    if (gpLogMessageCallbackFunc) gpLogMessageCallbackFunc(eLogOutputType_Error, sMess.c_str());
+    if (gpLogMessageCallbackFunc) {
+      gpLogMessageCallbackFunc(eLogOutputType_Error, sMess.c_str());
+    }
   }
 
   //-----------------------------------------------------------------------
@@ -244,8 +262,9 @@ namespace hpl {
   void Warning(const char* fmt, ...) {
     char    text[2048];
     va_list ap;
-    if (fmt == NULL)
+    if (fmt == nullptr) {
       return;
+    }
     va_start(ap, fmt);
     vsprintf(text, fmt, ap);
     va_end(ap);
@@ -254,7 +273,9 @@ namespace hpl {
     sMess += text;
     gLogWriter.Write(sMess);
 
-    if (gpLogMessageCallbackFunc) gpLogMessageCallbackFunc(eLogOutputType_Warning, sMess.c_str());
+    if (gpLogMessageCallbackFunc) {
+      gpLogMessageCallbackFunc(eLogOutputType_Warning, sMess.c_str());
+    }
   }
 
   //-----------------------------------------------------------------------
@@ -263,8 +284,9 @@ namespace hpl {
   void Log(const char* fmt, ...) {
     char    text[4096];
     va_list ap;
-    if (fmt == NULL)
+    if (fmt == nullptr) {
       return;
+    }
     va_start(ap, fmt);
     vsprintf(text, fmt, ap);
     va_end(ap);
@@ -273,7 +295,9 @@ namespace hpl {
     sMess += text;
     gLogWriter.Write(sMess);
 
-    if (gpLogMessageCallbackFunc) gpLogMessageCallbackFunc(eLogOutputType_Normal, sMess.c_str());
+    if (gpLogMessageCallbackFunc) {
+      gpLogMessageCallbackFunc(eLogOutputType_Normal, sMess.c_str());
+    }
   }
 
   //-----------------------------------------------------------------------
@@ -284,7 +308,8 @@ namespace hpl {
   }
 
   void ClearUpdateLogFile() {
-    if (!gbUpdateLogIsActive) return;
+    if (!gbUpdateLogIsActive)
+      return;
 
     gUpdateLogWriter.Clear();
   }
@@ -300,7 +325,8 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   void LogUpdate(const char* fmt, ...) {
-    if (!gbUpdateLogIsActive) return;
+    if (!gbUpdateLogIsActive)
+      return;
 
     char    text[2048];
     va_list ap;

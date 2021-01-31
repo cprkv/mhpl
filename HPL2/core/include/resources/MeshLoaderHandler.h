@@ -28,33 +28,32 @@
 #include "resources/ResourcesTypes.h"
 
 namespace hpl {
-	
-	class cMesh;
-	class iMeshLoader;
-	class cResources;
-	class cWorld;
-	class cScene;
-	class cAnimation;
 
-	//--------------------------------
+  class cMesh;
+  class iMeshLoader;
+  class cResources;
+  class cWorld;
+  class cScene;
+  class cAnimation;
 
-	class cMeshLoaderHandler : public iResourceLoaderHandler
-	{
-	public:
-		cMeshLoaderHandler(cResources* apResources, cScene *apScene);
-		~cMeshLoaderHandler();
+  //--------------------------------
 
-		cMesh* LoadMesh(const tWString& asFile,tMeshLoadFlag aFlags);
-		bool SaveMesh(cMesh* apMesh,const tWString& asFile);
+  class cMeshLoaderHandler : public iResourceLoaderHandler {
+  public:
+    cMeshLoaderHandler(cResources* apResources, cScene* apScene);
+    ~cMeshLoaderHandler();
 
-		cAnimation *LoadAnimation(const tWString& asFile);
+    cMesh* LoadMesh(const tWString& asFile, tMeshLoadFlag aFlags);
+    bool   SaveMesh(cMesh* apMesh, const tWString& asFile);
 
-	private:
-		void SetupLoader(iResourceLoader *apLoader);
+    cAnimation* LoadAnimation(const tWString& asFile);
 
-		cResources* mpResources;
-		cScene* mpScene;
-	};
+  private:
+    void SetupLoader(iResourceLoader* apLoader);
 
-};
+    cResources* mpResources;
+    cScene*     mpScene;
+  };
+
+};     // namespace hpl
 #endif // HPL_MESH_LOADER_HANDLER_H

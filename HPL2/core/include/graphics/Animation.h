@@ -27,46 +27,45 @@
 
 namespace hpl {
 
-	class cAnimationTrack;
-	
-	typedef std::vector<cAnimationTrack*> tAnimationTrackVec;
-	typedef tAnimationTrackVec::iterator tAnimationTrackVecIt;
+  class cAnimationTrack;
 
-	class cAnimation : public iResourceBase
-	{
-	public:
-		cAnimation(const tString &asName, const tWString &asFullPath, const tString &asFile);
-		~cAnimation();
+  typedef std::vector<cAnimationTrack*> tAnimationTrackVec;
+  typedef tAnimationTrackVec::iterator  tAnimationTrackVecIt;
 
-		float GetLength();
-		void SetLength(float afTime);
+  class cAnimation : public iResourceBase {
+  public:
+    cAnimation(const tString& asName, const tWString& asFullPath, const tString& asFile);
+    ~cAnimation();
 
-		cAnimationTrack* CreateTrack(const tString &asName, tAnimTransformFlag aFlags);
-		cAnimationTrack* GetTrack(int alIndex);
-		cAnimationTrack* GetTrackByName(const tString &asName);
-		void ReserveTrackNum(int alNum);
-		int GetTrackNum();
+    float GetLength();
+    void  SetLength(float afTime);
 
-		void SmoothAllTracks(float afAmount, float afPow, int alSamples,bool abTranslation, bool abRotation);
+    cAnimationTrack* CreateTrack(const tString& asName, tAnimTransformFlag aFlags);
+    cAnimationTrack* GetTrack(int alIndex);
+    cAnimationTrack* GetTrackByName(const tString& asName);
+    void             ReserveTrackNum(int alNum);
+    int              GetTrackNum();
 
-		const char* GetAnimationName(){ return msAnimName.c_str();}
-		void SetAnimationName(const tString &asName){ msAnimName =asName;}
-		
-		tString& GetFileName(){ return msFileName;}
+    void SmoothAllTracks(float afAmount, float afPow, int alSamples, bool abTranslation, bool abRotation);
 
-		//Resources implementation
-		bool Reload(){ return false;}
-		void Unload(){}
-		void Destroy(){}
+    const char* GetAnimationName() { return msAnimName.c_str(); }
+    void        SetAnimationName(const tString& asName) { msAnimName = asName; }
 
-	private:
-		tString msAnimName;
-		tString msFileName;
+    tString& GetFileName() { return msFileName; }
 
-		float mfLength;
-		
-		tAnimationTrackVec mvTracks;
-	};
+    //Resources implementation
+    bool Reload() { return false; }
+    void Unload() {}
+    void Destroy() {}
 
-};
+  private:
+    tString msAnimName;
+    tString msFileName;
+
+    float mfLength;
+
+    tAnimationTrackVec mvTracks;
+  };
+
+};     // namespace hpl
 #endif // HPL_ANIMATION_H

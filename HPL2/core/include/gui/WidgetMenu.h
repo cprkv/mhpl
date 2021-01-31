@@ -59,8 +59,8 @@ namespace hpl {
 		cWidgetMenuItem* GetHightlightedItem () { return mpHighlightedItem; }
 
 		/**
-		 * Hide() : Hides current menu and submenues
-		 */
+     * Hide() : Hides current menu and submenues
+     */
 		virtual void Hide(){}
 
 		virtual void SetMustHide(bool abX);

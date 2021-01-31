@@ -29,74 +29,74 @@
 
 namespace hpl {
 
-	class cFrameTexture;
-	class cFrameBitmap;
-	class iTexture;
-	class cFBitmapImage;
+  class cFrameTexture;
+  class cFrameBitmap;
+  class iTexture;
+  class cFBitmapImage;
 
-	//----------------------------------------------------
+  //----------------------------------------------------
 
-	class cFrameSubImage : public iResourceBase
-	{
-	friend class cFBitmapImage;
-	friend class cFrameBitmap;
-	friend class cImageManager;
-	public:
-		cFrameSubImage(const tString& asName,const tWString& asFullPath, cFrameTexture *apFrameTex, 
-						cFrameBitmap *apFrameBmp,
-						cRect2l aRect,
-						cVector2l avSrcSize, int alHandle,
-						cFBitmapImage *apFrameBitmapImage);
-		~cFrameSubImage();
+  class cFrameSubImage : public iResourceBase {
+    friend class cFBitmapImage;
+    friend class cFrameBitmap;
+    friend class cImageManager;
 
-		
-		bool Reload();
-		void Unload();
-		void Destroy();
+  public:
+    cFrameSubImage(const tString& asName, const tWString& asFullPath, cFrameTexture* apFrameTex,
+                   cFrameBitmap* apFrameBmp,
+                   cRect2l       aRect,
+                   cVector2l avSrcSize, int alHandle,
+                   cFBitmapImage* apFrameBitmapImage);
+    ~cFrameSubImage();
 
-		//Image specific
-		int GetHeight()const{return mRect.h;}
-		int GetWidth()const{return mRect.w;}
-		cVector2l GetSize()const{return cVector2l(mRect.w,mRect.h);}
-        cVector2l GetPosition()const{return cVector2l(mRect.x,mRect.y);}
 
-		int GetSourceWidth()const{return mvSourceSize.x;}
-		int GetSourceHeight()const{return mvSourceSize.y;}
+    bool Reload();
+    void Unload();
+    void Destroy();
 
-		iTexture *GetTexture()const;
+    //Image specific
+    int       GetHeight() const { return mRect.h; }
+    int       GetWidth() const { return mRect.w; }
+    cVector2l GetSize() const { return cVector2l(mRect.w, mRect.h); }
+    cVector2l GetPosition() const { return cVector2l(mRect.x, mRect.y); }
 
-		cFrameTexture *GetFrameTexture()const{return mpFrameTexture;}
-		cFrameBitmap *GetFrameBitmap()const{return mpFrameBitmap;}
+    int GetSourceWidth() const { return mvSourceSize.x; }
+    int GetSourceHeight() const { return mvSourceSize.y; }
 
-		tVertexVec GetVertexVecCopy(const cVector2f &avPos, const cVector2f &avSize);
-		const tVertexVec& GetVertexVec(){return mvVtx;}
+    iTexture* GetTexture() const;
 
-		int GetUpdateCount(){ return mlUpdateCount;}
+    cFrameTexture* GetFrameTexture() const { return mpFrameTexture; }
+    cFrameBitmap*  GetFrameBitmap() const { return mpFrameBitmap; }
 
-		void Flush();
+    tVertexVec        GetVertexVecCopy(const cVector2f& avPos, const cVector2f& avSize);
+    const tVertexVec& GetVertexVec() { return mvVtx; }
 
-		void SetNeedUpdateUvs();
+    int GetUpdateCount() { return mlUpdateCount; }
 
-    private:
-		void UpdateUvs();
-        		
-		cFrameTexture *mpFrameTexture;
-		cFrameBitmap *mpFrameBitmap;
-		cFBitmapImage *mpFrameBitmapImage;
-		
-		cVector2l mvSourceSize;
-		cRect2l mRect;
-		tVertexVec mvVtx;
+    void Flush();
 
-		int mlHandle;
+    void SetNeedUpdateUvs();
 
-		bool mbNeedUvUpdate;
-		int mlUpdateCount;
-	};
+  private:
+    void UpdateUvs();
 
-	typedef std::vector<cFrameSubImage*> tResourceImageVec;
-	typedef tResourceImageVec::iterator tResourceImageVecIt;
+    cFrameTexture* mpFrameTexture;
+    cFrameBitmap*  mpFrameBitmap;
+    cFBitmapImage* mpFrameBitmapImage;
 
-};
+    cVector2l  mvSourceSize;
+    cRect2l    mRect;
+    tVertexVec mvVtx;
+
+    int mlHandle;
+
+    bool mbNeedUvUpdate;
+    int  mlUpdateCount;
+  };
+
+  typedef std::vector<cFrameSubImage*> tResourceImageVec;
+  typedef tResourceImageVec::iterator  tResourceImageVecIt;
+
+}; // namespace hpl
 
 #endif // HPL_RESOURCE_IMAGE_H

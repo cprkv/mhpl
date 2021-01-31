@@ -132,8 +132,9 @@ namespace hpl {
     mbUseOcclusionCulling = true;
 
     mMaxShadowMapResolution = eShadowMapResolution_High;
-    if (mbIsReflection)
+    if (mbIsReflection) {
       mMaxShadowMapResolution = eShadowMapResolution_Medium;
+    }
 
     mbClipReflectionScreenRect = true;
 
@@ -149,7 +150,7 @@ namespace hpl {
 
     ////////////////////////////
     //Light settings
-    mbSSAOActive = mbIsReflection ? false : true;
+    mbSSAOActive = !mbIsReflection;
 
     ////////////////////////
     // Set up Output Variables
@@ -162,8 +163,8 @@ namespace hpl {
 
     ////////////////////////
     // Create Reflection settings
-    mpReflectionSettings = NULL;
-    if (mbIsReflection == false) {
+    mpReflectionSettings = nullptr;
+    if (!mbIsReflection) {
       mpReflectionSettings = hplNew(cRenderSettings, (true));
     }
   }
@@ -174,12 +175,15 @@ namespace hpl {
 
     STLDeleteAll(mvOcclusionObjectPool);
 
-    for (size_t i = 0; i < mvLightOcclusionPairs.size(); ++i) {
-      if (mvLightOcclusionPairs[i].mpQuery)
-        hplDelete(mvLightOcclusionPairs[i].mpQuery);
+    for (auto& mvLightOcclusionPair : mvLightOcclusionPairs) {
+      if (mvLightOcclusionPair.mpQuery) {
+        hplDelete(mvLightOcclusionPair.mpQuery);
+      }
     }
 
-    if (mpReflectionSettings) hplDelete(mpReflectionSettings);
+    if (mpReflectionSettings) {
+      hplDelete(mpReflectionSettings);
+    }
   }
 
   //-----------------------------------------------------------------------
@@ -188,7 +192,9 @@ namespace hpl {
     //return;
     mpVisibleNodeTracker->Reset();
 
-    if (mpReflectionSettings) mpReflectionSettings->ResetVariables();
+    if (mpReflectionSettings) {
+      mpReflectionSettings->ResetVariables();
+    }
   }
 
 //-----------------------------------------------------------------------
@@ -198,7 +204,9 @@ namespace hpl {
 // This means SSAO, edgesmooth, etc are always off for reflections.
 #define RenderSettingsCopy(aVar) mpReflectionSettings->aVar = aVar
   void cRenderSettings::SetupReflectionSettings() {
-    if (mpReflectionSettings == NULL) return;
+    if (mpReflectionSettings == nullptr) {
+      return;
+    }
     RenderSettingsCopy(mbLog);
 
     RenderSettingsCopy(mClearColor);
@@ -265,14 +273,16 @@ namespace hpl {
   int cRenderSettings::RetrieveOcclusionObjectSamples(iRenderer* apRenderer, void* apSource, int alCustomIndex) {
     tOcclusionQueryObjectMapIt it = m_setOcclusionObjects.find(apSource);
     if (it == m_setOcclusionObjects.end()) {
-      if (mbLog) Log(" Could not find source %d custom index %d in occlusion objects set!\n", apSource, alCustomIndex);
+      if (mbLog) {
+        Log(" Could not find source %d custom index %d in occlusion objects set!\n", apSource, alCustomIndex);
+      }
       return 0;
     }
 
     //////////////////////////////////////
     //Get the number of objects with key and get the one with right custom ID
     size_t                 lCount  = m_setOcclusionObjects.count(apSource);
-    cOcclusionQueryObject* pObject = NULL;
+    cOcclusionQueryObject* pObject = nullptr;
     for (size_t i = 0; i < lCount; ++i) {
       cOcclusionQueryObject* pTestObject = it->second;
       if (pTestObject->mlCustomID == alCustomIndex) {
@@ -281,8 +291,10 @@ namespace hpl {
       }
       it++;
     }
-    if (pObject == NULL) {
-      if (mbLog) Log(" Found source %d but could NOT find custom index %d in occlusion objects set!\n", apSource, alCustomIndex);
+    if (pObject == nullptr) {
+      if (mbLog) {
+        Log(" Found source %d but could NOT find custom index %d in occlusion objects set!\n", apSource, alCustomIndex);
+      }
       return 0;
     }
 
@@ -291,13 +303,15 @@ namespace hpl {
     iOcclusionQuery* pQuery = pObject->mpQuery;
 
     //If query is null, then samples have already been retrieved.
-    if (pQuery == NULL) return pObject->mlSampleResults;
+    if (pQuery == nullptr) {
+      return pObject->mlSampleResults;
+    }
 
-    while (pQuery->FetchResults() == false)
-      ;
+    while (!pQuery->FetchResults()) {
+    }
 
     pObject->mlSampleResults = pQuery->GetSampleCount();
-    pObject->mpQuery         = NULL;
+    pObject->mpQuery         = nullptr;
     apRenderer->ReleaseOcclusionQuery(pQuery);
 
     return pObject->mlSampleResults;
@@ -308,13 +322,15 @@ namespace hpl {
   void cRenderSettings::WaitAndRetrieveAllOcclusionQueries(iRenderer* apRenderer) {
     for (int i = 0; i < mlCurrentOcclusionObject; ++i) {
       iOcclusionQuery* pQuery = mvOcclusionObjectPool[i]->mpQuery;
-      if (pQuery == NULL) continue;
+      if (pQuery == nullptr) {
+        continue;
+      }
 
-      while (pQuery->FetchResults() == false)
+      while (!pQuery->FetchResults())
         ;
 
       mvOcclusionObjectPool[i]->mlSampleResults = pQuery->GetSampleCount();
-      mvOcclusionObjectPool[i]->mpQuery         = NULL;
+      mvOcclusionObjectPool[i]->mpQuery         = nullptr;
       apRenderer->ReleaseOcclusionQuery(pQuery);
     }
   }
@@ -322,14 +338,17 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   void cRenderSettings::ClearOcclusionObjects(iRenderer* apRenderer) {
-    if (mbLog) Log(" Clearing occlusion queries i settings!\n");
+    if (mbLog) {
+      Log(" Clearing occlusion queries i settings!\n");
+    }
     m_setOcclusionObjects.clear();
     for (int i = 0; i < mlCurrentOcclusionObject; ++i) {
       iOcclusionQuery* pQuery = mvOcclusionObjectPool[i]->mpQuery;
-      if (pQuery == NULL) continue;
-
+      if (pQuery == nullptr) {
+        continue;
+      }
       apRenderer->ReleaseOcclusionQuery(pQuery);
-      mvOcclusionObjectPool[i]->mpQuery = NULL;
+      mvOcclusionObjectPool[i]->mpQuery = nullptr;
     }
 
     mlCurrentOcclusionObject = 0;
@@ -349,9 +368,9 @@ namespace hpl {
     mfRadius         = apLight->GetRadius();
 
     if (apLight->GetLightType() == eLightType_Spot) {
-      cLightSpot* pSpotLight = static_cast<cLightSpot*>(apLight);
-      mfAspect               = pSpotLight->GetAspect();
-      mfFOV                  = pSpotLight->GetFOV();
+      auto* pSpotLight = static_cast<cLightSpot*>(apLight);
+      mfAspect         = pSpotLight->GetAspect();
+      mfFOV            = pSpotLight->GetFOV();
     }
   }
 
@@ -412,7 +431,6 @@ namespace hpl {
                                                                     "deferred_depthonly_frag.glsl",
                                                                     &vars, false);
 
-
     ////////////
     // Create shapes
     //  Color and Texture because Geforce cards fail without it, no idea why...
@@ -426,7 +444,9 @@ namespace hpl {
 
     STLDeleteAll(mvOcclusionQueryPool);
 
-    if (mpShapeBox) hplDelete(mpShapeBox);
+    if (mpShapeBox) {
+      hplDelete(mpShapeBox);
+    }
 
     hplDelete(mpCallbackFunctions);
     hplDelete(mpProgramManager);
@@ -463,19 +483,21 @@ namespace hpl {
   iTexture* iRenderer::GetPostEffectTexture() {
     if (mpCurrentRenderTarget->mpFrameBuffer) {
       iFrameBufferAttachment* pAttachement = mpCurrentRenderTarget->mpFrameBuffer->GetColorBuffer(0);
-      iTexture*               pTexture     = static_cast<iTexture*>(pAttachement);
+      auto*                   pTexture     = static_cast<iTexture*>(pAttachement);
 
       return pTexture;
     } else {
       //TODO: Copy from frambuffer to texture. But what texture?
-      return NULL;
+      return nullptr;
     }
   }
 
   //-----------------------------------------------------------------------
 
   void iRenderer::AssignOcclusionObject(void* apSource, int alCustomIndex, iVertexBuffer* apVtxBuffer, cMatrixf* apMatrix, bool abDepthTest) {
-    if (mbLog) Log("  Creating occlusion object from source %d with custom ID: %d . VtxBuffer: %d Matrix: %d Depthtest: %d\n", apSource, alCustomIndex, apVtxBuffer, apMatrix, abDepthTest);
+    if (mbLog) {
+      Log("  Creating occlusion object from source %d with custom ID: %d . VtxBuffer: %d Matrix: %d Depthtest: %d\n", apSource, alCustomIndex, apVtxBuffer, apMatrix, abDepthTest);
+    }
 
     mpCurrentSettings->AssignOcclusionObject(this, apSource, alCustomIndex, apVtxBuffer, apMatrix, abDepthTest);
   }
@@ -483,13 +505,17 @@ namespace hpl {
   int iRenderer::RetrieveOcclusionObjectSamples(void* apSource, int alCustomIndex) {
     int lSamples = mpCurrentSettings->RetrieveOcclusionObjectSamples(this, apSource, alCustomIndex);
 
-    if (mbLog) Log("  Retrieved %d samples from occlusion object with source %d and custom ID: %d.\n", lSamples, apSource, alCustomIndex);
+    if (mbLog) {
+      Log("  Retrieved %d samples from occlusion object with source %d and custom ID: %d.\n", lSamples, apSource, alCustomIndex);
+    }
 
     return lSamples;
   }
 
   void iRenderer::WaitAndRetrieveAllOcclusionQueries() {
-    if (mbLog) Log("  Retrieving sample count for all active occlusion queries.\n");
+    if (mbLog) {
+      Log("  Retrieving sample count for all active occlusion queries.\n");
+    }
 
     mpCurrentSettings->WaitAndRetrieveAllOcclusionQueries(this);
   }
@@ -543,8 +569,9 @@ namespace hpl {
     mvCurrentOcclusionPlanes.resize(0);
 
     //User clip planes
-    for (size_t i = 0; i < apSettings->mvOcclusionPlanes.size(); ++i)
+    for (size_t i = 0; i < apSettings->mvOcclusionPlanes.size(); ++i) {
       mvCurrentOcclusionPlanes.push_back(apSettings->mvOcclusionPlanes[i]);
+    }
 
     //Fog
     if (mbSetupOcclusionPlaneForFog && apWorld->GetFogActive() && apWorld->GetFogColor().a >= 1.0f && apWorld->GetFogCulling()) {
@@ -581,8 +608,9 @@ namespace hpl {
 
     mpLowLevelGraphics->SetColor(cColor(1, 1, 1, 1));
 
-    for (int i = 0; i < kMaxTextureUnits; ++i)
-      mpLowLevelGraphics->SetTexture(i, NULL);
+    for (int i = 0; i < kMaxTextureUnits; ++i) {
+      mpLowLevelGraphics->SetTexture(i, nullptr);
+    }
 
     //////////////////////////////
     //Clear screen
@@ -597,8 +625,9 @@ namespace hpl {
 
     /////////////////////////////////////////////
     // Clear Render list
-    if (abAtStartOfRendering)
+    if (abAtStartOfRendering) {
       mpCurrentRenderList->Clear();
+    }
   }
 
   //-----------------------------------------------------------------------
@@ -606,12 +635,13 @@ namespace hpl {
   void iRenderer::EndRendering(bool abAtEndOfRendering) {
     ///////////////////////////////
     //Clear all occlusion objects
-    if (abAtEndOfRendering)
+    if (abAtEndOfRendering) {
       mpCurrentSettings->ClearOcclusionObjects(this);
+    }
 
     /////////////////////////////////////////////
     // If no post effects, make sure rendering is copied to frame buffer.
-    if (abAtEndOfRendering && mbSendFrameBufferToPostEffects == false) {
+    if (abAtEndOfRendering && !mbSendFrameBufferToPostEffects) {
       CopyToFrameBuffer();
     }
 
@@ -629,11 +659,17 @@ namespace hpl {
     /////////////////////////////////////////////
     // Unbind all rendering data
     for (int i = 0; i < kMaxTextureUnits; ++i) {
-      if (mvCurrentTexture[i]) mpLowLevelGraphics->SetTexture(i, NULL);
+      if (mvCurrentTexture[i]) {
+        mpLowLevelGraphics->SetTexture(i, nullptr);
+      }
     }
 
-    if (mpCurrentProgram) mpCurrentProgram->UnBind();
-    if (mpCurrentVtxBuffer) mpCurrentVtxBuffer->UnBind();
+    if (mpCurrentProgram) {
+      mpCurrentProgram->UnBind();
+    }
+    if (mpCurrentVtxBuffer) {
+      mpCurrentVtxBuffer->UnBind();
+    }
 
     /////////////////////////////////////////////
     // Clean up render functions
@@ -654,12 +690,12 @@ namespace hpl {
 
   void iRenderer::CreateAndAddShadowMap(eShadowMapResolution aResolution, const cVector3l& avSize, ePixelFormat aFormat) {
     tString sName = "ShadowMap" + cString::ToString(avSize.x) + "x" + cString::ToString(avSize.y) + "_" +
-                    cString::ToString((int) mvShadowMapData[aResolution].size());
-    cShadowMapData* pData = hplNew(cShadowMapData, ());
-    pData->mlFrameCount   = -1;
+                    cString::ToString(static_cast<int>(mvShadowMapData[aResolution].size()));
+    auto* pData         = hplNew(cShadowMapData, ());
+    pData->mlFrameCount = -1;
 
     pData->mpTexture = mpGraphics->CreateTexture(sName + "_Texture", eTextureType_2D, eTextureUsage_RenderTarget);
-    pData->mpTexture->CreateFromRawData(avSize, aFormat, NULL);
+    pData->mpTexture->CreateFromRawData(avSize, aFormat, nullptr);
     pData->mpTexture->SetCompareMode(eTextureCompareMode_RToTexture);
     pData->mpTexture->SetCompareFunc(eTextureCompareFunc_LessOrEqual);
     pData->mpTexture->SetFilter(eTextureFilter_Nearest);
@@ -668,13 +704,14 @@ namespace hpl {
     //Hack to avoid ATI drier failure:
     if (mpLowLevelGraphics->GetCaps(eGraphicCaps_OGL_ATIFragmentShader)) {
       pData->mpTempDiffTexture = mpGraphics->CreateTexture(sName + "_TempDiff", eTextureType_2D, eTextureUsage_RenderTarget);
-      pData->mpTempDiffTexture->CreateFromRawData(avSize, ePixelFormat_Alpha, NULL);
+      pData->mpTempDiffTexture->CreateFromRawData(avSize, ePixelFormat_Alpha, nullptr);
     } else {
-      pData->mpTempDiffTexture = NULL;
+      pData->mpTempDiffTexture = nullptr;
     }
 
     pData->mpBuffer = mpGraphics->CreateFrameBuffer(sName + "_Buffer");
-    if (pData->mpTempDiffTexture) pData->mpBuffer->SetTexture2D(0, pData->mpTempDiffTexture);
+    if (pData->mpTempDiffTexture)
+      pData->mpBuffer->SetTexture2D(0, pData->mpTempDiffTexture);
     pData->mpBuffer->SetDepthTexture2D(pData->mpTexture);
 
     pData->mpBuffer->CompileAndValidate();
@@ -688,19 +725,19 @@ namespace hpl {
   cShadowMapData* iRenderer::GetShadowMapData(eShadowMapResolution aResolution, iLight* apLight) {
     ////////////////////////////
     //If size is 1, then just return that one
-    if (mvShadowMapData[aResolution].size() == 1) return mvShadowMapData[aResolution][0];
+    if (mvShadowMapData[aResolution].size() == 1) {
+      return mvShadowMapData[aResolution][0];
+    }
 
     //////////////////////////
     //Set up variables
-    cShadowMapData* pBestData     = NULL;
+    cShadowMapData* pBestData     = nullptr;
     int             lMaxFrameDist = -1;
 
     ////////////////////////////
     //Iterate the shadow map array looking for shadow map already used by light
     //Else find the one with the largest frame length.
-    for (size_t i = 0; i < mvShadowMapData[aResolution].size(); ++i) {
-      cShadowMapData* pData = mvShadowMapData[aResolution][i];
-
+    for (auto pData : mvShadowMapData[aResolution]) {
       if (pData->mCache.mpLight == apLight) {
         pBestData = pData;
         break;
@@ -728,7 +765,9 @@ namespace hpl {
 
   bool iRenderer::ShadowMapNeedsUpdate(iLight* apLight, cShadowMapData* apShadowData) {
     //Occlusion culling must always be updated!
-    if (apLight->GetOcclusionCullShadowCasters()) return true;
+    if (apLight->GetOcclusionCullShadowCasters()) {
+      return true;
+    }
 
     cShadowMapLightCache& cacheData = apShadowData->mCache;
 
@@ -740,8 +779,8 @@ namespace hpl {
     /////////////////////////////
     // Spotlight specific
     if (bValid && apLight->GetLightType() == eLightType_Spot) {
-      cLightSpot* pSpotLight = static_cast<cLightSpot*>(apLight);
-      bValid                 = pSpotLight->GetAspect() == cacheData.mfAspect && pSpotLight->GetFOV() == cacheData.mfFOV;
+      auto* pSpotLight = static_cast<cLightSpot*>(apLight);
+      bValid           = pSpotLight->GetAspect() == cacheData.mfAspect && pSpotLight->GetFOV() == cacheData.mfFOV;
     }
 
     /////////////////////////////
@@ -752,26 +791,26 @@ namespace hpl {
 
     /////////////////////////////
     // If not valid, update data
-    if (bValid == false) {
+    if (!bValid) {
       cacheData.SetFromLight(apLight);
       apLight->SetShadowCasterCacheFromVec(mvShadowCasters);
     }
 
-    return bValid ? false : true;
+    return !bValid;
   }
 
   //-----------------------------------------------------------------------
 
   void iRenderer::DestroyShadowMaps() {
-    for (int res = 0; res < eShadowMapResolution_LastEnum; ++res) {
-      for (size_t i = 0; i < mvShadowMapData[res].size(); ++i) {
-        cShadowMapData* pData = mvShadowMapData[res][i];
-
+    for (auto& res : mvShadowMapData) {
+      for (auto pData : res) {
         mpGraphics->DestroyFrameBuffer(pData->mpBuffer);
         mpGraphics->DestroyTexture(pData->mpTexture);
-        if (pData->mpTempDiffTexture) mpGraphics->DestroyTexture(pData->mpTempDiffTexture);
+        if (pData->mpTempDiffTexture) {
+          mpGraphics->DestroyTexture(pData->mpTempDiffTexture);
+        }
       }
-      STLDeleteAll(mvShadowMapData[res]);
+      STLDeleteAll(res);
     }
   }
 
@@ -799,10 +838,11 @@ namespace hpl {
 
     ////////////////////////
     //Matrix
-    if (apCustomFrustum)
+    if (apCustomFrustum) {
       SetMatrix(apObject->GetModelMatrix(apCustomFrustum));
-    else
+    } else {
       SetMatrix(apObject->GetModelMatrixPtr());
+    }
 
     ////////////////////////
     //Vertex buffer
@@ -827,15 +867,18 @@ namespace hpl {
     ////////////////////////////////
     //Do a visible check but always iterate the root node!
     if (apNode->GetParent()) {
-      if (frustumCollision == eCollision_Outside) return;
-      if (CheckNodeIsVisible(apNode) == false) return;
+      if (frustumCollision == eCollision_Outside) {
+        return;
+      }
+      if (!CheckNodeIsVisible(apNode)) {
+        return;
+      }
     }
 
     ////////////////////////
     //Iterate children
     if (apNode->HasChildNodes()) {
-      tRenderableContainerNodeListIt childIt = apNode->GetChildNodeList()->begin();
-      for (; childIt != apNode->GetChildNodeList()->end(); ++childIt) {
+      for (auto childIt = apNode->GetChildNodeList()->begin(); childIt != apNode->GetChildNodeList()->end(); ++childIt) {
         iRenderableContainerNode* pChildNode = *childIt;
         CheckNodesAndAddToListIterative(pChildNode, alNeededFlags);
       }
@@ -844,10 +887,11 @@ namespace hpl {
     /////////////////////////////
     //Iterate objects
     if (apNode->HasObjects()) {
-      tRenderableListIt it = apNode->GetObjectList()->begin();
-      for (; it != apNode->GetObjectList()->end(); ++it) {
+      for (auto it = apNode->GetObjectList()->begin(); it != apNode->GetObjectList()->end(); ++it) {
         iRenderable* pObject = *it;
-        if (CheckObjectIsVisible(pObject, alNeededFlags) == false) continue;
+        if (!CheckObjectIsVisible(pObject, alNeededFlags)) {
+          continue;
+        }
 
         if (frustumCollision == eCollision_Inside ||
             pObject->CollidesWithFrustum(mpCurrentFrustum)) {
@@ -868,8 +912,8 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   /**
-	* Inserts the child nodes in apNode in a_setNodeStack.
-	*/
+   * Inserts the child nodes in apNode in a_setNodeStack.
+   */
   void iRenderer::PushNodeChildrenToStack(tRendererSortedNodeSet& a_setNodeStack, iRenderableContainerNode* apNode, int alNeededFlags) {
     if (!apNode->HasChildNodes()) {
       return;
@@ -947,12 +991,13 @@ namespace hpl {
     noPair.mpQuery           = GetOcclusionQuery();
     noPair.mbObjectsRendered = abObjectsRendered;
 
-    if (mbLog) Log("CHC: Testing query %d on node: %d\n", noPair.mpQuery, apNode);
+    if (mbLog) {
+      Log("CHC: Testing query %d on node: %d\n", noPair.mpQuery, apNode);
+    }
 
     /////////////////////
     // Render node AABB
     RenderNodeBoundingBox(apNode, noPair.mpQuery);
-
 
     /////////////////////
     // Add to list
@@ -973,7 +1018,7 @@ namespace hpl {
 
     /////////////////////////
     //Texture
-    SetTexture(0, NULL);
+    SetTexture(0, nullptr);
 
     /////////////////////////
     //Matrix
@@ -989,9 +1034,13 @@ namespace hpl {
 
     /////////////////////////
     //Draw
-    if (apQuery) apQuery->Begin();
+    if (apQuery) {
+      apQuery->Begin();
+    }
     DrawCurrent();
-    if (apQuery) apQuery->End();
+    if (apQuery) {
+      apQuery->End();
+    }
 
     mpCurrentSettings->mlNumberOfOcclusionQueries++;
 
@@ -1015,7 +1064,7 @@ namespace hpl {
     ////////////////////////////
     //Check if object is translucent or has no material
     // If so, do not render it.
-    if (pMaterial == NULL || pMaterial->GetType()->IsTranslucent()) {
+    if (pMaterial == nullptr || pMaterial->GetType()->IsTranslucent()) {
       return false;
     }
 
@@ -1023,7 +1072,7 @@ namespace hpl {
     //Set up states
     SetDepthWrite(true);
 
-    RenderZObject(apObject, NULL);
+    RenderZObject(apObject, nullptr);
 
     return true;
   }
@@ -1031,24 +1080,29 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   static std::vector<iRenderable*> gvSortedObjects;
-  int                              iRenderer::RenderAndAddNodeObjects(iRenderableContainerNode* apNode, tRenderCHCObjectCallbackFunc apRenderCallback, tRenderableFlag alNeededFlags) {
-    if (apNode->HasObjects() == false) return 0;
+
+  int iRenderer::RenderAndAddNodeObjects(iRenderableContainerNode* apNode, tRenderCHCObjectCallbackFunc apRenderCallback, tRenderableFlag alNeededFlags) {
+    if (!apNode->HasObjects()) {
+      return 0;
+    }
 
     int lRenderedObjects = 0;
 
     ////////////////////////////////////
     //Iterate sorted objects and render
-    for (tRenderableListIt it = apNode->GetObjectList()->begin(); it != apNode->GetObjectList()->end(); ++it) {
+    for (auto it = apNode->GetObjectList()->begin(); it != apNode->GetObjectList()->end(); ++it) {
       iRenderable* pObject = *it;
 
       //////////////////////
       // Check if object is visible
-      if (CheckObjectIsVisible(pObject, alNeededFlags) == false) continue;
+      if (!CheckObjectIsVisible(pObject, alNeededFlags)) {
+        continue;
+      }
 
       /////////////////////////////
       //Check if inside frustum, skip test node was inside
       if (apNode->GetPrevFrustumCollision() != eCollision_Inside &&
-          pObject->CollidesWithFrustum(mpCurrentFrustum) == false) {
+          !pObject->CollidesWithFrustum(mpCurrentFrustum)) {
         continue;
       }
 
@@ -1062,18 +1116,21 @@ namespace hpl {
 
   //-----------------------------------------------------------------------
 
-  cVisibleRCNodeTracker* gpCurrentVisibleNodeTracker = NULL;
-  void                   iRenderer::PushUpVisibility(iRenderableContainerNode* apNode) {
+  cVisibleRCNodeTracker* gpCurrentVisibleNodeTracker = nullptr;
+
+  void iRenderer::PushUpVisibility(iRenderableContainerNode* apNode) {
     gpCurrentVisibleNodeTracker->SetNodeVisible(apNode);
 
-    if (apNode->GetParent()) PushUpVisibility(apNode->GetParent());
+    if (apNode->GetParent()) {
+      PushUpVisibility(apNode->GetParent());
+    }
   }
 
   //-----------------------------------------------------------------------
 
   static void PrintNodeDebugContents(tRendererSortedNodeSet& a_setNodes) {
     Log("  Nodes:\n");
-    tRendererSortedNodeSetIt it = a_setNodes.begin();
+    auto it = a_setNodes.begin();
     for (; it != a_setNodes.end(); ++it) {
       iRenderableContainerNode* pNode = *it;
 
@@ -1100,8 +1157,7 @@ namespace hpl {
       SetBlendMode(eMaterialBlendMode_None);
       SetAlphaMode(eMaterialAlphaMode_Solid);
       SetChannelMode(eMaterialChannelMode_None);
-
-      SetTextureRange(NULL, 0);
+      SetTextureRange(nullptr, 0);
     }
 
     ////////////////////////////
@@ -1121,10 +1177,11 @@ namespace hpl {
     apVisibleNodeTracker->SwitchAndClearVisibleNodeSet();
 
     tRenderCHCObjectCallbackFunc pRenderCallback;
-    if (apRenderObjectCallback) pRenderCallback = apRenderObjectCallback;
-    else
+    if (apRenderObjectCallback) {
+      pRenderCallback = apRenderObjectCallback;
+    } else {
       pRenderCallback = RenderObjectZAndAddToRenderListStaticCallback;
-
+    }
 
     // Setup the container before rendering
     for (int i = 0; i < 2; ++i) {
@@ -1156,19 +1213,19 @@ namespace hpl {
 
     ////////////////////////////
     //Iterate the nodes on the stack.
-    while (setNodeStack.empty() == false || lstNodeOcclusionPairs.empty() == false) {
+    while (!setNodeStack.empty() || !lstNodeOcclusionPairs.empty()) {
       //if(mbLog) PrintNodeDebugContents(setNodeStack);
 
       ///////////////////////////
       //If node stack not empty, pop the first node on the stack
-      if (setNodeStack.empty() == false) {
-        tRendererSortedNodeSetIt  firstIt = setNodeStack.begin(); //Might be slow...
+      if (!setNodeStack.empty()) {
+        auto                      firstIt = setNodeStack.begin(); //Might be slow...
         iRenderableContainerNode* pNode   = *firstIt;
         setNodeStack.erase(firstIt); //This is most likely very slow... use list?
 
         //////////////////////////
         // Check if node is a leaf
-        bool bNodeIsLeaf = pNode->HasChildNodes() == false;
+        bool bNodeIsLeaf = !pNode->HasChildNodes();
 
         //////////////////////////
         // Check if near plane is inside node AABB
@@ -1184,13 +1241,15 @@ namespace hpl {
         // - Near plane is not inside node AABB
         // - All of the closest objects have been rendered (so there are some blockers)
         // - Node was not visible or node is leaf (always draw leaves!)
-        if (bNearPlaneInsideNode == false && lMinRenderedObjects <= 0 &&
-            (bWasVisible == false || bNodeIsLeaf)) {
+        if (!bNearPlaneInsideNode && lMinRenderedObjects <= 0 &&
+            (!bWasVisible || bNodeIsLeaf)) {
           ////////////////
           //If node is leaf and was visible render objects directly.
           // Rendering directly can be good as it may result in extra blocker for next node test.
           bool bRenderObjects = false;
-          if (bNodeIsLeaf && bWasVisible) bRenderObjects = true;
+          if (bNodeIsLeaf && bWasVisible) {
+            bRenderObjects = true;
+          }
 
           /////////////////////////////////////
           // Render AABB and add query to list
@@ -1198,7 +1257,9 @@ namespace hpl {
 
           //////////////////////////
           //Render node objects after AABB so that an object does not occlude its own node.
-          if (bRenderObjects) RenderAndAddNodeObjects(pNode, pRenderCallback, alNeededFlags);
+          if (bRenderObjects) {
+            RenderAndAddNodeObjects(pNode, pRenderCallback, alNeededFlags);
+          }
 
           //Debug:
           // Skipping any queries, so must push up visible if this node was visible
@@ -1212,10 +1273,11 @@ namespace hpl {
         //If previous test failed, push children to stack and render objects (if any) directly.
         else {
           if (mbLog) {
-            if (lMinRenderedObjects > 0)
+            if (lMinRenderedObjects > 0) {
               Log("CHC: Rendered objects left: %d node %d, pushing children and rendering nodes!\n", lMinRenderedObjects, pNode);
-            else
+            } else {
               Log("CHC: Near plane inside node %d, pushing children and rendering nodes!\n", pNode);
+            }
           }
 
           ////////////////
@@ -1237,15 +1299,15 @@ namespace hpl {
 
       ///////////////////////////
       //If node-query list is not empty, check if the first query is ready
-      if (lstNodeOcclusionPairs.empty() == false) {
+      if (!lstNodeOcclusionPairs.empty()) {
         cNodeOcclusionPair& noPair = lstNodeOcclusionPairs.front();
-
 
         //////////////////////////////////////
         //Check if the query is done
-        if (noPair.mpQuery->FetchResults() == false) {
+        if (!noPair.mpQuery->FetchResults()) {
           //Do nothing for now....
         }
+
         ///////////////////////
         // Query is ready
         else {
@@ -1259,12 +1321,16 @@ namespace hpl {
 
           lstNodeOcclusionPairs.pop_front(); //Makes noPair invalid
 
-          if (mbLog) Log("CHC: Fetching query %d on node: %d, samples: %d\n", noPair.mpQuery, pNode, lSampleCount);
+          if (mbLog) {
+            Log("CHC: Fetching query %d on node: %d, samples: %d\n", noPair.mpQuery, pNode, lSampleCount);
+          }
 
           //////////
           // Check if node is visible and if so handle children and objects
           if (lSampleCount > mpCurrentSettings->mlSampleVisiblilityLimit) {
-            if (mbLog) Log("CHC: Rendering objects in node %d\n", pNode);
+            if (mbLog) {
+              Log("CHC: Rendering objects in node %d\n", pNode);
+            }
 
             ////////////////
             //Set node and all of its parents as visible.
@@ -1276,11 +1342,13 @@ namespace hpl {
 
             ////////////////
             //Render objects if any and not already rendered.
-            if (bObjectsRendered == false) {
+            if (!bObjectsRendered) {
               RenderAndAddNodeObjects(pNode, pRenderCallback, alNeededFlags);
             }
           } else {
-            if (mbLog) Log("CHC: Skipping node %d\n", pNode);
+            if (mbLog) {
+              Log("CHC: Skipping node %d\n", pNode);
+            }
           }
         }
       }
@@ -1296,9 +1364,9 @@ namespace hpl {
 
   //-----------------------------------------------------------------------
 
-  static tRenderableVec* gpLightShadowCasterVec = NULL;
-  static cFrustum*       gpLightFrustum         = NULL;
-  static cFrustum*       gpViewFrustum          = NULL;
+  static tRenderableVec* gpLightShadowCasterVec = nullptr;
+  static cFrustum*       gpLightFrustum         = nullptr;
+  static cFrustum*       gpViewFrustum          = nullptr;
   static eFrustumPlane   gvBeyondLightAndViewPlanes[6]; //Use to check if an caster is not going to affect view.
   static int             glBeyondLightAndViewPlaneNum;
   static bool            gbLightBehindNearPlane;
@@ -1349,7 +1417,9 @@ namespace hpl {
       float          fDist     = cMath::PlaneToPointDist(nearPlane, pBV->GetWorldCenter());
 
       //Object is outside of near plane.
-      if (fDist < -pBV->GetRadius()) return true;
+      if (fDist < -pBV->GetRadius()) {
+        return true;
+      }
 
       //Object is not really inside near plane, test more accurately later
       if (fDist < pBV->GetRadius()) {
@@ -1381,11 +1451,15 @@ namespace hpl {
 
     //Log("3\n");
     // If all was inside, then we are sure it contributes
-    if (lInsideCount == glBeyondLightAndViewPlaneNum) return true;
+    if (lInsideCount == glBeyondLightAndViewPlaneNum) {
+      return true;
+    }
 
     //Log("4\n");
     // If any was outside, we are sure it does NOT contribute
-    if (lOutsideCount > 0 && bObjectMightOnNearPlane == false) return false;
+    if (lOutsideCount > 0 && !bObjectMightOnNearPlane) {
+      return false;
+    }
 
     ////////////////////
     // Create corners
@@ -1409,7 +1483,7 @@ namespace hpl {
     // Check near plane intersection
     if (lOutsideCount > 0 && bObjectMightOnNearPlane) {
       //If object is not fully inside, it contributes
-      if (BoxInsidePlane(gpViewFrustum->GetPlane(eFrustumPlane_Near), vCorners) == false) {
+      if (!BoxInsidePlane(gpViewFrustum->GetPlane(eFrustumPlane_Near), vCorners)) {
         return true;
       }
       bObjectMightOnNearPlane = false; //Reset so it is not tested again.
@@ -1422,7 +1496,7 @@ namespace hpl {
     //If needed check so that it is inside the near plane
     if (bObjectMightOnNearPlane) {
       //If object is not fully inside, it contributes
-      if (BoxInsidePlane(gpViewFrustum->GetPlane(eFrustumPlane_Near), vCorners) == false) {
+      if (!BoxInsidePlane(gpViewFrustum->GetPlane(eFrustumPlane_Near), vCorners)) {
         return true;
       }
     }
@@ -1438,7 +1512,9 @@ namespace hpl {
 
       //Log("plane %d contribute: %d\n",frustumPlane, bContributes);
 
-      if (bContributes == false) break;
+      if (!bContributes) {
+        break;
+      }
     }
 
     return bContributes;
@@ -1459,14 +1535,18 @@ namespace hpl {
     ///////////////////////////////////
     //Check if visible but always iterate the root node!
     if (apNode->GetParent()) {
-      if (frustumCollision == eCollision_Outside) return;
-      if (CheckNodeIsVisible(apNode) == false) return;
+      if (frustumCollision == eCollision_Outside) {
+        return;
+      }
+      if (!CheckNodeIsVisible(apNode)) {
+        return;
+      }
     }
 
     ////////////////////////
     //Iterate children
     if (apNode->HasChildNodes()) {
-      for (tRenderableContainerNodeListIt childIt = apNode->GetChildNodeList()->begin(); childIt != apNode->GetChildNodeList()->end(); ++childIt) {
+      for (auto childIt = apNode->GetChildNodeList()->begin(); childIt != apNode->GetChildNodeList()->end(); ++childIt) {
         iRenderableContainerNode* pChildNode = *childIt;
         GetShadowCastersIterative(pChildNode, frustumCollision);
       }
@@ -1475,13 +1555,13 @@ namespace hpl {
     /////////////////////////////
     //Iterate objects
     if (apNode->HasObjects()) {
-      for (tRenderableListIt it = apNode->GetObjectList()->begin(); it != apNode->GetObjectList()->end(); ++it) {
+      for (auto it = apNode->GetObjectList()->begin(); it != apNode->GetObjectList()->end(); ++it) {
         iRenderable* pObject = *it;
 
         /////////
         //Check so visible and shadow caster
-        if (CheckObjectIsVisible(pObject, eRenderableFlag_ShadowCaster) == false ||
-            pObject->GetMaterial() == NULL ||
+        if (!CheckObjectIsVisible(pObject, eRenderableFlag_ShadowCaster) ||
+            pObject->GetMaterial() == nullptr ||
             pObject->GetMaterial()->GetType()->IsTranslucent()) {
           continue;
         }
@@ -1495,8 +1575,9 @@ namespace hpl {
 
         /////////
         // Check if it contributes to scene
-        if (CheckShadowCasterContributesToView(pObject) == false) continue;
-
+        if (!CheckShadowCasterContributesToView(pObject)) {
+          continue;
+        }
 
         ///////////////////////////////
         // Add object!
@@ -1557,10 +1638,12 @@ namespace hpl {
   bool iRenderer::SetupShadowMapRendering(iLight* apLight) {
     /////////////////////////
     // Get light data
-    if (apLight->GetLightType() != eLightType_Spot) return false; //Only support spot lights for now...
+    if (apLight->GetLightType() != eLightType_Spot) {
+      return false; //Only support spot lights for now...
+    }
 
-    cLightSpot* pSpotLight    = static_cast<cLightSpot*>(apLight);
-    cFrustum*   pLightFrustum = pSpotLight->GetFrustum();
+    auto*     pSpotLight    = static_cast<cLightSpot*>(apLight);
+    cFrustum* pLightFrustum = pSpotLight->GetFrustum();
 
     //Set the view frustum, needed in some functions cause the current is set for the light during rendering.
     gpViewFrustum = mpCurrentFrustum;
@@ -1570,14 +1653,14 @@ namespace hpl {
     glBeyondLightAndViewPlaneNum = 0;
     cVector3f vLightForward      = pLightFrustum->GetForward();
     for (int i = 0; i < eFrustumPlane_LastEnum; ++i) {
-      const cPlanef& cameraPlane = gpViewFrustum->GetPlane((eFrustumPlane) i);
+      const cPlanef& cameraPlane = gpViewFrustum->GetPlane(static_cast<eFrustumPlane>(i));
 
       //Check so plane is facing the light
       // Above 0 because GetForward from frustum is inverted.
       // Note that this is not optimal, but good enough for now. Should have some other way of choosing to make it better.
       cVector3f vPlaneNormal = cameraPlane.GetNormal();
       if (cMath::Vector3Dot(vPlaneNormal, vLightForward) > 0) {
-        gvBeyondLightAndViewPlanes[glBeyondLightAndViewPlaneNum] = (eFrustumPlane) i;
+        gvBeyondLightAndViewPlanes[glBeyondLightAndViewPlaneNum] = static_cast<eFrustumPlane>(i);
         ++glBeyondLightAndViewPlaneNum;
       }
     }
@@ -1605,14 +1688,18 @@ namespace hpl {
     mvShadowCasters.resize(0); //No clear, so we keep all in memory.
 
     //Get the objects
-    if (apLight->GetShadowCastersAffected() & eObjectVariabilityFlag_Dynamic)
+    if (apLight->GetShadowCastersAffected() & eObjectVariabilityFlag_Dynamic) {
       GetShadowCasters(mpCurrentWorld->GetRenderableContainer(eWorldContainerType_Dynamic), mvShadowCasters, pSpotLight->GetFrustum());
+    }
 
-    if (apLight->GetShadowCastersAffected() & eObjectVariabilityFlag_Static)
+    if (apLight->GetShadowCastersAffected() & eObjectVariabilityFlag_Static) {
       GetShadowCasters(mpCurrentWorld->GetRenderableContainer(eWorldContainerType_Static), mvShadowCasters, pSpotLight->GetFrustum());
+    }
 
     //See if any objects where added.
-    if (mvShadowCasters.empty()) return false;
+    if (mvShadowCasters.empty()) {
+      return false;
+    }
 
     //Sort the list
     std::sort(mvShadowCasters.begin(), mvShadowCasters.end(), SortFunc_ShadowCasters);
@@ -1622,8 +1709,9 @@ namespace hpl {
 
   //-----------------------------------------------------------------------
 
-  static cFrustum* gpTempLightFrustum = NULL;
-  bool             iRenderer::RenderShadowCasterCHCStaticCallback(iRenderer* apRenderer, iRenderable* apObject) {
+  static cFrustum* gpTempLightFrustum = nullptr;
+
+  bool iRenderer::RenderShadowCasterCHCStaticCallback(iRenderer* apRenderer, iRenderable* apObject) {
     return apRenderer->RenderShadowCasterCHC(apObject);
   }
 
@@ -1631,12 +1719,14 @@ namespace hpl {
     cMaterial* pMaterial = apObject->GetMaterial();
 
     //Check so it is a solid object
-    if (pMaterial == NULL || pMaterial->GetType()->IsTranslucent()) {
+    if (pMaterial == nullptr || pMaterial->GetType()->IsTranslucent()) {
       return false;
     }
 
     //Check so it affects the view frustum
-    if (CheckShadowCasterContributesToView(apObject) == false) return false;
+    if (!CheckShadowCasterContributesToView(apObject)) {
+      return false;
+    }
 
     //mvShadowCasters.push_back(apObject); //Debug. Only to see what object are rendered.
 
@@ -1658,8 +1748,8 @@ namespace hpl {
   void iRenderer::RenderShadowCastersNormal(cFrustum* apLightFrustum) {
     ////////////////////////////////
     // Iterate the objects to be rendered
-    for (size_t i = 0; i < mvShadowCasters.size(); ++i) {
-      RenderShadowCaster(mvShadowCasters[i], apLightFrustum);
+    for (auto& mvShadowCaster : mvShadowCasters) {
+      RenderShadowCaster(mvShadowCaster, apLightFrustum);
     }
   }
   //-----------------------------------------------------------------------
@@ -1670,10 +1760,12 @@ namespace hpl {
     }
     /////////////////////////
     // Get light data
-    if (apLight->GetLightType() != eLightType_Spot) return; //Only support spot lights for now...
+    if (apLight->GetLightType() != eLightType_Spot) {
+      return; //Only support spot lights for now...
+    }
 
-    cLightSpot* pSpotLight    = static_cast<cLightSpot*>(apLight);
-    cFrustum*   pLightFrustum = pSpotLight->GetFrustum();
+    auto*     pSpotLight    = static_cast<cLightSpot*>(apLight);
+    cFrustum* pLightFrustum = pSpotLight->GetFrustum();
 
 
     /////////////////////////
@@ -1684,8 +1776,7 @@ namespace hpl {
     SetAlphaMode(eMaterialAlphaMode_Solid);
     SetAlphaLimit(mfDefaultAlphaLimit);
     SetChannelMode(eMaterialChannelMode_None);
-
-    SetTextureRange(NULL, 0);
+    SetTextureRange(nullptr, 0);
 
     //Do not use any custom occlusion for shadows!
     SetOcclusionPlanesActive(false);
@@ -1723,7 +1814,7 @@ namespace hpl {
 
     /////////////////////////
     // Reset states
-    SetTexture(0, NULL);
+    SetTexture(0, nullptr);
 
     SetOcclusionPlanesActive(true);
 
@@ -1735,7 +1826,9 @@ namespace hpl {
     SetNormalFrustumProjection();
 
 
-    if (mbLog) Log("End Rendering Shadow Map\n---\n");
+    if (mbLog) {
+      Log("End Rendering Shadow Map\n---\n");
+    }
   }
 
   //-----------------------------------------------------------------------
@@ -1771,15 +1864,18 @@ namespace hpl {
 
     /////////////////////////////////////
     //If no queries added, then skip any rendering
-    if (mpCurrentSettings->mlCurrentOcclusionObject <= 0) return;
+    if (mpCurrentSettings->mlCurrentOcclusionObject <= 0) {
+      return;
+    }
 
     START_RENDER_PASS(OcclusionObjects);
 
     ////////////////////////////////////
     // Copying queries to new array
     mvSortedOcclusionObjects.resize(mpCurrentSettings->mlCurrentOcclusionObject);
-    for (int i = 0; i < mpCurrentSettings->mlCurrentOcclusionObject; ++i)
+    for (int i = 0; i < mpCurrentSettings->mlCurrentOcclusionObject; ++i) {
       mvSortedOcclusionObjects[i] = mpCurrentSettings->mvOcclusionObjectPool[i];
+    }
 
     ////////////////////////////////////
     // Sort the queries
@@ -1800,22 +1896,19 @@ namespace hpl {
     SetAlphaMode(eMaterialAlphaMode_Solid);
     SetChannelMode(eMaterialChannelMode_None);
 
-    SetTextureRange(NULL, 0);
-    SetProgram(NULL);
+    SetTextureRange(nullptr, 0);
+    SetProgram(nullptr);
 
     ///////////////////////////////////
     // Render the queries
-    for (size_t i = 0; i < mvSortedOcclusionObjects.size(); ++i) {
-      cOcclusionQueryObject* pObject = mvSortedOcclusionObjects[i];
-
-      if (pObject->mbDepthTest)
+    for (auto pObject : mvSortedOcclusionObjects) {
+      if (pObject->mbDepthTest) {
         SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
-      else
+      } else {
         SetDepthTestFunc(eDepthTestFunc_Always);
+      }
 
       SetMatrix(pObject->mpMatrix);
-
-
       SetVertexBuffer(pObject->mpVtxBuffer);
 
       pObject->mpQuery->Begin();
@@ -1839,16 +1932,17 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   void iRenderer::RetrieveAllLightOcclusionPair(bool abWaitForResult) {
-    for (size_t i = 0; i < mpCurrentSettings->mvLightOcclusionPairs.size(); ++i) {
-      cLightOcclusionPair& loPair = mpCurrentSettings->mvLightOcclusionPairs[i];
-      iOcclusionQuery*     pQuery = loPair.mpQuery;
+    for (auto& loPair : mpCurrentSettings->mvLightOcclusionPairs) {
+      iOcclusionQuery* pQuery = loPair.mpQuery;
 
-      if (pQuery == NULL) continue;
+      if (pQuery == nullptr) {
+        continue;
+      }
 
       //Wait for results if specfied.
       if (abWaitForResult) {
-        while (pQuery->FetchResults())
-          ;
+        while (pQuery->FetchResults()) {
+        }
       }
 
       //Get result and set resulting samples
@@ -1858,7 +1952,7 @@ namespace hpl {
         loPair.mlSampleResults = 0;
       }
 
-      loPair.mpQuery = NULL;
+      loPair.mpQuery = nullptr;
       ReleaseOcclusionQuery(pQuery);
     }
   }
@@ -1866,7 +1960,9 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   void iRenderer::RenderBasicSkyBox() {
-    if (mpCurrentWorld == NULL || mpCurrentWorld->GetSkyBoxActive() == false) return;
+    if (mpCurrentWorld == nullptr || !mpCurrentWorld->GetSkyBoxActive()) {
+      return;
+    }
     START_RENDER_PASS(BasicSkyBox);
 
     SetDepthTest(true);
@@ -1893,12 +1989,12 @@ namespace hpl {
 
     /////////////////////////
     //Program
-    SetProgram(NULL);
+    SetProgram(nullptr);
 
     /////////////////////////
     //Texture and vertex buffer
     SetTexture(0, mpCurrentWorld->GetSkyBoxTexture());
-    SetTextureRange(NULL, 1);
+    SetTextureRange(nullptr, 1);
 
     SetVertexBuffer(mpCurrentWorld->GetSkyBoxVertexBuffer());
 
@@ -1914,8 +2010,7 @@ namespace hpl {
       mfScissorLastTanHalfFov = tan(mpCurrentFrustum->GetFOV() * 0.5f);
     }
 
-    /*cMath::GetClipRectFromBV(mTempClipRect,*apLight->GetBoundingVolume(),mpCurrentFrustum,
-								mvScreenSize, mfScissorLastTanHalfFov);*/
+    /*cMath::GetClipRectFromBV(mTempClipRect,*apLight->GetBoundingVolume(),mpCurrentFrustum,mvScreenSize, mfScissorLastTanHalfFov);*/
 
 
     mTempClipRect = cMath::GetClipRectFromSphere(apViewSpaceMatrix->GetTranslation(),
@@ -1938,10 +2033,14 @@ namespace hpl {
     if (mpCurrentProgram != pProgram) {
       bNewProgramSet = true;
       if (pProgram) {
-        if (mbLog) Log("  Setting gpu program %d : '%s'\n", pProgram, pProgram->GetName().c_str());
+        if (mbLog) {
+          Log("  Setting gpu program %d : '%s'\n", pProgram, pProgram->GetName().c_str());
+        }
         pProgram->Bind();
       } else {
-        if (mbLog) Log("  Setting gpu program NULL\n");
+        if (mbLog) {
+          Log("  Setting gpu program NULL\n");
+        }
         mpCurrentProgram->UnBind();
       }
 
@@ -1954,14 +2053,18 @@ namespace hpl {
       //////////////////////
       //Check if Type specific changes are needed
       if (pMatType->HasTypeSpecifics(aRenderMode) && (bNewProgramSet || mpCurrentMaterialType != pMatType)) {
-        if (mbLog) Log("  Setting up type specific program vars for material type %d/'%s'\n", pMatType, pMatType->GetName().c_str());
+        if (mbLog) {
+          Log("  Setting up type specific program vars for material type %d/'%s'\n", pMatType, pMatType->GetName().c_str());
+        }
         pMatType->SetupTypeSpecificData(aRenderMode, pProgram, this);
         mpCurrentMaterialType = pMatType;
       }
       //////////////////////
       //Check if Material specific changes are needed
       if (apMaterial->GetHasSpecificSettings(aRenderMode) && (bNewProgramSet || mpCurrentMaterial != apMaterial)) {
-        if (mbLog) Log("  Setting up material specific program vars for material %d/'%s'\n", apMaterial, apMaterial->GetName().c_str());
+        if (mbLog) {
+          Log("  Setting up material specific program vars for material %d/'%s'\n", apMaterial, apMaterial->GetName().c_str());
+        }
         pMatType->SetupMaterialSpecificData(aRenderMode, pProgram, apMaterial, this);
         mpCurrentMaterial = apMaterial;
       }
@@ -1982,10 +2085,11 @@ namespace hpl {
 
       if (mvCurrentTexture[i] != pTexture) {
         if (mbLog) {
-          if (pTexture)
+          if (pTexture) {
             Log("  Setting texture unit: %d, %d/'%s'\n", i, pTexture, pTexture->GetName().c_str());
-          else
+          } else {
             Log("  Setting texture unit: %d, 'NULL\n", i);
+          }
         }
 
         mpLowLevelGraphics->SetTexture(i, pTexture);
@@ -2012,12 +2116,16 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   bool iRenderer::CheckRenderablePlaneIsVisible(iRenderable* apObject, cFrustum* apFrustum) {
-    if (apObject->GetRenderType() != eRenderableType_SubMesh) return true;
+    if (apObject->GetRenderType() != eRenderableType_SubMesh) {
+      return true;
+    }
 
-    cSubMeshEntity* pSubMeshEnt = static_cast<cSubMeshEntity*>(apObject);
-    cSubMesh*       pSubMesh    = pSubMeshEnt->GetSubMesh();
+    auto*     pSubMeshEnt = static_cast<cSubMeshEntity*>(apObject);
+    cSubMesh* pSubMesh    = pSubMeshEnt->GetSubMesh();
 
-    if (pSubMesh->GetIsOneSided() == false) return true;
+    if (!pSubMesh->GetIsOneSided()) {
+      return true;
+    }
 
     cVector3f vNormal = cMath::MatrixMul3x3(apObject->GetWorldMatrix(), pSubMesh->GetOneSidedNormal());
     cVector3f vPos    = cMath::MatrixMul(apObject->GetWorldMatrix(), pSubMesh->GetOneSidedPoint());
@@ -2033,13 +2141,14 @@ namespace hpl {
     cBoundingVolume* pBV = apObject->GetBoundingVolume();
 
     cRect2l clipRect;
-    if (afHalfFovTan == 0)
+    if (afHalfFovTan == 0) {
       afHalfFovTan = tan(apFrustum->GetFOV() * 0.5f);
+    }
     cMath::GetClipRectFromBV(clipRect, *pBV, apFrustum, avScreenSize, afHalfFovTan);
 
     //Add 20% padding on clip rect
-    int lXInc = (int) ((float) clipRect.w * afHalfFovTan);
-    int lYInc = (int) ((float) clipRect.h * afHalfFovTan);
+    int lXInc = static_cast<int>(static_cast<float>(clipRect.w) * afHalfFovTan);
+    int lYInc = static_cast<int>(static_cast<float>(clipRect.h) * afHalfFovTan);
 
     clipRect.x = cMath::Max(clipRect.x - lXInc, 0);
     clipRect.y = cMath::Max(clipRect.y - lYInc, 0);
@@ -2055,21 +2164,25 @@ namespace hpl {
   bool iRenderer::CheckObjectIsVisible(iRenderable* apObject, tRenderableFlag alNeededFlags) {
     /////////////////////////////
     // Is Visible var
-    if (apObject->IsVisible() == false) return false;
+    if (!apObject->IsVisible()) {
+      return false;
+    }
 
     /////////////////////////////
     // Check flags
-    if ((apObject->GetRenderFlags() & alNeededFlags) != alNeededFlags) return false;
+    if ((apObject->GetRenderFlags() & alNeededFlags) != alNeededFlags) {
+      return false;
+    }
 
     /////////////////////////////
     // Clip plane check.
     // NOTE: This shall always be the user clip planes! Since we wanna cull stuff like nodes where clip planes are not active, etc.
-    if (mvCurrentOcclusionPlanes.empty() == false && mbOcclusionPlanesActive) {
+    if (!mvCurrentOcclusionPlanes.empty() && mbOcclusionPlanesActive) {
       cBoundingVolume* pBV = apObject->GetBoundingVolume();
-      for (size_t i = 0; i < mvCurrentOcclusionPlanes.size(); ++i) {
-        cPlanef& plane = mvCurrentOcclusionPlanes[i];
-
-        if (cMath::CheckPlaneBVCollision(plane, *pBV) == eCollision_Outside) return false;
+      for (auto& plane : mvCurrentOcclusionPlanes) {
+        if (cMath::CheckPlaneBVCollision(plane, *pBV) == eCollision_Outside) {
+          return false;
+        }
       }
     }
 
@@ -2079,14 +2192,15 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   bool iRenderer::CheckNodeIsVisible(iRenderableContainerNode* apNode) {
-    if (mbOcclusionPlanesActive == false || mvCurrentOcclusionPlanes.empty()) return true;
+    if (!mbOcclusionPlanesActive || mvCurrentOcclusionPlanes.empty()) {
+      return true;
+    }
 
     // NOTE: This shall always be the user clip planes! The render function ones might not be active when culling is needed and so on.
-    for (size_t i = 0; i < mvCurrentOcclusionPlanes.size(); ++i) {
-      cPlanef& plane = mvCurrentOcclusionPlanes[i];
-
-      if (cMath::CheckPlaneAABBCollision(plane, apNode->GetMin(), apNode->GetMax(),
-                                         apNode->GetCenter(), apNode->GetRadius()) == eCollision_Outside) {
+    for (auto& plane : mvCurrentOcclusionPlanes) {
+      if (cMath::CheckPlaneAABBCollision(
+              plane, apNode->GetMin(), apNode->GetMax(),
+              apNode->GetCenter(), apNode->GetRadius()) == eCollision_Outside) {
         return false;
       }
     }
@@ -2115,13 +2229,17 @@ namespace hpl {
 
     //////////////////////////////
     // Near plane points vs AABB
-    for (int i = 0; i < 4; ++i) {
-      if (cMath::CheckPointInAABBIntersection(vNearPlaneVtx[i], vMin, vMax)) return true;
+    for (const auto& i : vNearPlaneVtx) {
+      if (cMath::CheckPointInAABBIntersection(i, vMin, vMax)) {
+        return true;
+      }
     }
 
     //////////////////////////////
     // Check if near plane points intersect with box
-    if (cMath::CheckPointsAABBPlanesCollision(vNearPlaneVtx, 4, vMin, vMax) != eCollision_Outside) return true;
+    if (cMath::CheckPointsAABBPlanesCollision(vNearPlaneVtx, 4, vMin, vMax) != eCollision_Outside) {
+      return true;
+    }
 
     return false;
   }
@@ -2149,17 +2267,19 @@ namespace hpl {
 
     ///////////////////////////////////
     // Iterate the sides of the cube
-    for (int i = 0; i < 6; ++i) {
-      const cVector3f& vPlaneNormal = gvFogBoxPlaneNormals[i];
-
+    for (const auto& vPlaneNormal : gvFogBoxPlaneNormals) {
       ///////////////////////////////////
       // Calculate plane intersection
       float fMul = cMath::Vector3Dot(vPlaneNormal, vBoxSpaceDir);
-      if (fabs(fMul) < 0.0001f) continue;
+      if (fabs(fMul) < 0.0001f) {
+        continue;
+      }
       float fNegDist = -(cMath::Vector3Dot(vPlaneNormal, avBoxSpaceRayStart) + 0.5f);
 
       float fT = fNegDist / fMul;
-      if (fT < 0) continue;
+      if (fT < 0) {
+        continue;
+      }
       cVector3f vAbsNrmIntersect = cMath::Vector3Abs(vBoxSpaceDir * fT + avBoxSpaceRayStart);
 
       ///////////////////////////////////
@@ -2167,7 +2287,7 @@ namespace hpl {
       if (cMath::Vector3LessEqual(vAbsNrmIntersect, gvFogBoxCompareSize)) {
         //////////////////////
         // First intersection
-        if (bFoundIntersection == false) {
+        if (!bFoundIntersection) {
           afEntryDist        = fT;
           afExitDist         = fT;
           bFoundIntersection = true;
@@ -2181,7 +2301,9 @@ namespace hpl {
       }
     }
 
-    if (afExitDist < 0) return false;
+    if (afExitDist < 0) {
+      return false;
+    }
 
     return bFoundIntersection;
   }
@@ -2207,7 +2329,7 @@ namespace hpl {
       mpCurrentSettings->mvFogRenderData.push_back(fogData);
     }
 
-    if (abSort && mpCurrentSettings->mvFogRenderData.empty() == false) {
+    if (abSort && !mpCurrentSettings->mvFogRenderData.empty()) {
       std::sort(mpCurrentSettings->mvFogRenderData.begin(), mpCurrentSettings->mvFogRenderData.end(), SortFunc_FogAreaData);
     }
   }
@@ -2223,11 +2345,11 @@ namespace hpl {
     vRayDir                   = vRayDir / fCameraDistance;
 
     float fEntryDist, fExitDist;
-    if (CheckFogAreaRayIntersection(apFogData->m_mtxInvBoxSpace, apFogData->mvBoxSpaceFrustumOrigin, vRayDir, fEntryDist, fExitDist) == false) {
+    if (!CheckFogAreaRayIntersection(apFogData->m_mtxInvBoxSpace, apFogData->mvBoxSpaceFrustumOrigin, vRayDir, fEntryDist, fExitDist)) {
       return 1.0f;
     }
 
-    if (apFogData->mbInsideNearFrustum == false && fCameraDistance < fEntryDist) {
+    if (!apFogData->mbInsideNearFrustum && fCameraDistance < fEntryDist) {
       return 1.0f;
     }
 
@@ -2235,32 +2357,41 @@ namespace hpl {
     //Calculate the distance the ray travels in the fog
     float fFogDist;
     if (apFogData->mbInsideNearFrustum) {
-      if (pFogArea->GetShowBacksideWhenInside())
+      if (pFogArea->GetShowBacksideWhenInside()) {
         fFogDist = cMath::Min(fExitDist, fCameraDistance);
-      else
+      } else {
         fFogDist = fCameraDistance;
+      }
     } else {
-      if (pFogArea->GetShowBacksideWhenOutside())
+      if (pFogArea->GetShowBacksideWhenOutside()) {
         fFogDist = cMath::Min(fExitDist - fEntryDist, fCameraDistance - fEntryDist);
-      else
+      } else {
         fFogDist = fCameraDistance - fEntryDist;
+      }
     }
 
     //////////////////////////////
     //Calculate the alpha
-    if (fFogDist <= 0) return 1.0f;
+    if (fFogDist <= 0) {
+      return 1.0f;
+    }
 
     float fFogStart = pFogArea->GetStart();
     float fFogEnd   = pFogArea->GetEnd();
     float fFogAlpha = 1 - pFogArea->GetColor().a;
 
-    if (fFogDist < fFogStart) return 1.0f;
+    if (fFogDist < fFogStart) {
+      return 1.0f;
+    }
 
-    if (fFogDist > fFogEnd) return fFogAlpha;
+    if (fFogDist > fFogEnd) {
+      return fFogAlpha;
+    }
 
     float fAlpha = (fFogDist - fFogStart) / (fFogEnd - fFogStart);
-    if (pFogArea->GetFalloffExp() != 1)
+    if (pFogArea->GetFalloffExp() != 1) {
       fAlpha = powf(fAlpha, pFogArea->GetFalloffExp());
+    }
 
     return (1.0f - fAlpha) + fFogAlpha * fAlpha;
   }
@@ -2284,7 +2415,9 @@ namespace hpl {
     pVtxBuffer->CreateElementArray(eVertexBufferElement_Position, eVertexBufferElementFormat_Float, 4);
     pVtxBuffer->CreateElementArray(eVertexBufferElement_Texture0, eVertexBufferElementFormat_Float, 3);
 
-    for (int i = 0; i < 4; ++i) pVtxBuffer->AddIndex(i);
+    for (int i = 0; i < 4; ++i) {
+      pVtxBuffer->AddIndex(i);
+    }
 
     float fMinUV_Y = abInvertY ? avMaxUV.y : avMinUV.y;
     float fMaxUV_Y = abInvertY ? avMinUV.y : avMaxUV.y;
@@ -2332,37 +2465,40 @@ namespace hpl {
     pPos[3 * lVtxStride + 1] = avPos.y + avSize.y;
     pPos[3 * lVtxStride + 2] = avPos.z;
 
-    if (abCallUpdate) apVtxBuffer->UpdateData(eVertexElementFlag_Position, false);
+    if (abCallUpdate) {
+      apVtxBuffer->UpdateData(eVertexElementFlag_Position, false);
+    }
   }
 
   //-----------------------------------------------------------------------
 
   iVertexBuffer* iRenderer::LoadVertexBufferFromMesh(const tString& asMeshName, tVertexElementFlag alVtxToCopy) {
     iVertexBuffer* pVtxBuffer = mpResources->GetMeshManager()->CreateVertexBufferFromMesh(asMeshName, alVtxToCopy);
-    if (pVtxBuffer == NULL) FatalError("Could not load vertex buffer from mesh '%s'\n", asMeshName.c_str());
+    if (pVtxBuffer == nullptr) {
+      FatalError("Could not load vertex buffer from mesh '%s'\n", asMeshName.c_str());
+    }
 
     return pVtxBuffer;
 
-    /*cMesh *pMesh = mpResources->GetMeshManager()->CreateMesh(asMeshName);
-		if(pMesh==NULL)FatalError("Could not load mesh '%s'\n",asMeshName.c_str());
-
-		iVertexBuffer *pVtxBuffer = pMesh->GetSubMesh(0)->GetVertexBuffer()->CreateCopy(eVertexBufferType_Hardware,
-																						eVertexBufferUsageType_Static,
-																						alVtxToCopy);
-		mpResources->GetMeshManager()->Destroy(pMesh);
-		return pVtxBuffer;*/
+    //    cMesh* pMesh = mpResources->GetMeshManager()->CreateMesh(asMeshName);
+    //    if (pMesh == NULL) FatalError("Could not load mesh '%s'\n", asMeshName.c_str());
+    //
+    //    iVertexBuffer* pVtxBuffer = pMesh->GetSubMesh(0)->GetVertexBuffer()->CreateCopy(eVertexBufferType_Hardware,
+    //                                                                                    eVertexBufferUsageType_Static,
+    //                                                                                    alVtxToCopy);
+    //    mpResources->GetMeshManager()->Destroy(pMesh);
+    //    return pVtxBuffer;
   }
 
   //-----------------------------------------------------------------------
 
   void iRenderer::RunCallback(eRendererMessage aMessage) {
-    if (mpCallbackList == NULL || mpCurrentSettings->mbUseCallbacks == false) return;
+    if (mpCallbackList == nullptr || !mpCurrentSettings->mbUseCallbacks) {
+      return;
+    }
 
-    tRendererCallbackListIt it = mpCallbackList->begin();
-    for (; it != mpCallbackList->end(); ++it) {
-      iRendererCallback* pCallback = *it;
-
-      pCallback->RunMessage(aMessage, mpCallbackFunctions);
+    for (auto& callback : *mpCallbackList) {
+      callback->RunMessage(aMessage, mpCallbackFunctions);
     }
   }
 
@@ -2381,7 +2517,7 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   iOcclusionQuery* iRenderer::GetOcclusionQuery() {
-    iOcclusionQuery* pOcclusionQuery = NULL;
+    iOcclusionQuery* pOcclusionQuery = nullptr;
 
     if (mvOcclusionQueryPool.empty()) {
       pOcclusionQuery = mpLowLevelGraphics->CreateOcclusionQuery();
@@ -2397,7 +2533,6 @@ namespace hpl {
 
   void iRenderer::ReleaseOcclusionQuery(iOcclusionQuery* apQuery) {
     mlActiveOcclusionQueryNum--;
-
     mvOcclusionQueryPool.push_back(apQuery);
   }
 

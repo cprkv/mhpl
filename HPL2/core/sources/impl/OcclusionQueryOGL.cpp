@@ -25,82 +25,75 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cOcclusionQueryOGL::cOcclusionQueryOGL()
-	{
-		;
+  cOcclusionQueryOGL::cOcclusionQueryOGL() {
+    ;
 
-		glGenQueriesARB(1, (GLuint *)&mlQueryId);
-		mlLastSampleCount =0;
-		mbResultsAreFetched = true;
-	}
+    glGenQueriesARB(1, (GLuint*) &mlQueryId);
+    mlLastSampleCount   = 0;
+    mbResultsAreFetched = true;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cOcclusionQueryOGL::~cOcclusionQueryOGL()
-	{
-		;
+  cOcclusionQueryOGL::~cOcclusionQueryOGL() {
+    ;
 
-		glDeleteQueriesARB(1, (GLuint *)&mlQueryId);
-	}
+    glDeleteQueriesARB(1, (GLuint*) &mlQueryId);
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cOcclusionQueryOGL::Begin()
-	{
-		;
+  void cOcclusionQueryOGL::Begin() {
+    ;
 
-		glBeginQueryARB(GL_SAMPLES_PASSED_ARB,mlQueryId);
-		mbResultsAreFetched = false;
-	}
+    glBeginQueryARB(GL_SAMPLES_PASSED_ARB, mlQueryId);
+    mbResultsAreFetched = false;
+  }
 
-	void cOcclusionQueryOGL::End()
-	{
-		;
+  void cOcclusionQueryOGL::End() {
+    ;
 
-		glEndQueryARB(GL_SAMPLES_PASSED_ARB);
-	}
+    glEndQueryARB(GL_SAMPLES_PASSED_ARB);
+  }
 
-	bool cOcclusionQueryOGL::FetchResults()
-	{
-		if(mbResultsAreFetched) return true;
+  bool cOcclusionQueryOGL::FetchResults() {
+    if (mbResultsAreFetched) return true;
 
-		;
+    ;
 
-		//if it is not a query, there are no samples to get!
-		if(glIsQuery(mlQueryId) == GL_FALSE)
-		{
-			mbResultsAreFetched = true;
-			mlLastSampleCount =0;
-			return true;
-		}
+    //if it is not a query, there are no samples to get!
+    if (glIsQuery(mlQueryId) == GL_FALSE) {
+      mbResultsAreFetched = true;
+      mlLastSampleCount   = 0;
+      return true;
+    }
 
-		GLint lAvailable=0;
-		glGetQueryObjectivARB(mlQueryId,GL_QUERY_RESULT_AVAILABLE_ARB,&lAvailable);
-		if(lAvailable==0) return false;
+    GLint lAvailable = 0;
+    glGetQueryObjectivARB(mlQueryId, GL_QUERY_RESULT_AVAILABLE_ARB, &lAvailable);
+    if (lAvailable == 0) return false;
 
-		glGetQueryObjectivARB(mlQueryId,GL_QUERY_RESULT_ARB,(GLint *)&mlLastSampleCount);
+    glGetQueryObjectivARB(mlQueryId, GL_QUERY_RESULT_ARB, (GLint*) &mlLastSampleCount);
 
-		mbResultsAreFetched = true;
+    mbResultsAreFetched = true;
 
-		return true;
-	}
+    return true;
+  }
 
-	unsigned int cOcclusionQueryOGL::GetSampleCount()
-	{
-		return mlLastSampleCount;
-	}
+  unsigned int cOcclusionQueryOGL::GetSampleCount() {
+    return mlLastSampleCount;
+  }
 
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+} // namespace hpl

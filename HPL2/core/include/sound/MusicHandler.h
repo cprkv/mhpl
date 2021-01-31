@@ -25,131 +25,133 @@
 
 namespace hpl {
 
-	class iLowLevelSound;
-	class iSoundChannel;
-	
-	
-	////////////////////////////////////////////////////
-	//////////// MUSIC LOCK ///////////////////////////
-	////////////////////////////////////////////////////
-	
-	class cMusicLock
-	{
-	public:
-		cMusicLock() : msFileName(""), mfVolume(0) {}
+  class iLowLevelSound;
+  class iSoundChannel;
 
-		tString msFileName;
-		float mfVolume;
-		bool mbLoop;
-	};
-	
-	////////////////////////////////////////////////////
-	//////////// MUSIC ENTRY ///////////////////////////
-	////////////////////////////////////////////////////
 
-	class cMusicEntry
-	{
-	public:
-		cMusicEntry() : msFileName(""), mpStream(NULL), mfMaxVolume(1), 
-			mfVolume(0), mfVolumeAdd(0.01f){}
+  ////////////////////////////////////////////////////
+  //////////// MUSIC LOCK ///////////////////////////
+  ////////////////////////////////////////////////////
 
-		tString msFileName;
-		iSoundChannel* mpStream;
-		float mfMaxVolume;
-		float mfVolume;
-		float mfVolumeAdd;
-		bool mbLoop;
-	};
+  class cMusicLock {
+  public:
+    cMusicLock()
+        : msFileName("")
+        , mfVolume(0) {}
 
-	typedef std::list<cMusicEntry*> tMusicEntryList;
-	typedef tMusicEntryList::iterator tMusicEntryListIt;
+    tString msFileName;
+    float   mfVolume;
+    bool    mbLoop;
+  };
 
-	////////////////////////////////////////////////////
-	//////////// RESUME ENTRY ///////////////////////////
-	////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////
+  //////////// MUSIC ENTRY ///////////////////////////
+  ////////////////////////////////////////////////////
 
-	class cMusicResumeEntry
-	{
-	public:
-		tString msFileName;
-		double mfCurrentPos;
-	};
+  class cMusicEntry {
+  public:
+    cMusicEntry()
+        : msFileName("")
+        , mpStream(NULL)
+        , mfMaxVolume(1)
+        , mfVolume(0)
+        , mfVolumeAdd(0.01f) {}
 
-	typedef std::list<cMusicResumeEntry*> tMusicResumeEntryList;
-	typedef tMusicResumeEntryList::iterator tMusicResumeEntryListIt;
+    tString        msFileName;
+    iSoundChannel* mpStream;
+    float          mfMaxVolume;
+    float          mfVolume;
+    float          mfVolumeAdd;
+    bool           mbLoop;
+  };
 
-	////////////////////////////////////////////////////
-	//////////// MUSIC HANDLER ///////////////////////
-	////////////////////////////////////////////////////
+  typedef std::list<cMusicEntry*>   tMusicEntryList;
+  typedef tMusicEntryList::iterator tMusicEntryListIt;
 
-	class cResources;
+  ////////////////////////////////////////////////////
+  //////////// RESUME ENTRY ///////////////////////////
+  ////////////////////////////////////////////////////
 
-	class cMusicHandler
-	{
-	public:
-		cMusicHandler(iLowLevelSound* apLowLevelSound, cResources* apResources);
-		~cMusicHandler();
+  class cMusicResumeEntry {
+  public:
+    tString msFileName;
+    double  mfCurrentPos;
+  };
 
-		/**
-		 * Play a song. Playing a song that is already playing updates it's properties.
-		 * \param asFileName file to be played
-		 * \param afVolume volume to be played at
-		 * \param afFadeStepSize volume increse/decrease per app step when fading to new volume.
-		 * \param abLoop If the music should be looped or not.
-		 * \return 
-		 */
-		bool Play(const tString& asFileName,float afVolume, float afFadeStepSize, bool abLoop, bool abResume);
-		
-		/**
-		 * Stop playing the current music.
-		 * \param afFadeStepSize volume increse/decrease per app step when fading volume to 0.
-		 */
-		void Stop(float afFadeStepSize);
-		void Pause();
-		void Resume();
+  typedef std::list<cMusicResumeEntry*>   tMusicResumeEntryList;
+  typedef tMusicResumeEntryList::iterator tMusicResumeEntryListIt;
 
-		void FadeVolumeMul(float afDest, float afSpeed);
-		void SetVolumeMul(float afMul);
-		float GetVolumeMul(){ return mfVolumeMul;}
-		
-		
-		/**
-		 * No more music can be played when locked. Latest song that has been tried to be palyed is saved in lock.
-		 * \param apLock 
-		 */
-		void Lock(cMusicLock* apLock);
-		/**
-		 * Remove lock.
-		 */
-		void UnLock();
-		tString GetCurrentSongName();
-		float GetCurrentSongVolume();
-		
-		cMusicEntry* GetCurrentSong();
-		
-		void Update(float afTimeStep);
+  ////////////////////////////////////////////////////
+  //////////// MUSIC HANDLER ///////////////////////
+  ////////////////////////////////////////////////////
 
-		void ResetResumeData();
+  class cResources;
 
-	private:
-		iLowLevelSound* mpLowLevelSound;
-		cResources* mpResources;
+  class cMusicHandler {
+  public:
+    cMusicHandler(iLowLevelSound* apLowLevelSound, cResources* apResources);
+    ~cMusicHandler();
 
-		tMusicEntryList mlstFadingSongs;
-		cMusicEntry* mpMainSong;
-		cMusicLock* mpLock;
-		bool mbIsPaused;
+    /**
+     * Play a song. Playing a song that is already playing updates it's properties.
+     * \param asFileName file to be played
+     * \param afVolume volume to be played at
+     * \param afFadeStepSize volume increse/decrease per app step when fading to new volume.
+     * \param abLoop If the music should be looped or not.
+     * \return
+     */
+    bool Play(const tString& asFileName, float afVolume, float afFadeStepSize, bool abLoop, bool abResume);
 
-		float mfVolumeMul;
-		float mfVolumeMulFadeGoal;
-		float mfVolumeMulFadeSpeed;
+    /**
+     * Stop playing the current music.
+     * \param afFadeStepSize volume increse/decrease per app step when fading volume to 0.
+     */
+    void Stop(float afFadeStepSize);
+    void Pause();
+    void Resume();
 
-		tMusicResumeEntryList mlstResumeEntries;
+    void  FadeVolumeMul(float afDest, float afSpeed);
+    void  SetVolumeMul(float afMul);
+    float GetVolumeMul() { return mfVolumeMul; }
 
-		cMusicResumeEntry* GetResumeEntry(const tString& asFileName);
-		void UpdateResumeEntry(cMusicEntry* apSong, float afFadeStepSize);
-		bool LoadAndStart(const tString& asFileName,cMusicEntry* apSong  ,float afVolume, bool abLoop, bool abResume);
-	};
 
-};
+    /**
+     * No more music can be played when locked. Latest song that has been tried to be palyed is saved in lock.
+     * \param apLock
+     */
+    void Lock(cMusicLock* apLock);
+    /**
+     * Remove lock.
+     */
+    void    UnLock();
+    tString GetCurrentSongName();
+    float   GetCurrentSongVolume();
+
+    cMusicEntry* GetCurrentSong();
+
+    void Update(float afTimeStep);
+
+    void ResetResumeData();
+
+  private:
+    iLowLevelSound* mpLowLevelSound;
+    cResources*     mpResources;
+
+    tMusicEntryList mlstFadingSongs;
+    cMusicEntry*    mpMainSong;
+    cMusicLock*     mpLock;
+    bool            mbIsPaused;
+
+    float mfVolumeMul;
+    float mfVolumeMulFadeGoal;
+    float mfVolumeMulFadeSpeed;
+
+    tMusicResumeEntryList mlstResumeEntries;
+
+    cMusicResumeEntry* GetResumeEntry(const tString& asFileName);
+    void               UpdateResumeEntry(cMusicEntry* apSong, float afFadeStepSize);
+    bool               LoadAndStart(const tString& asFileName, cMusicEntry* apSong, float afVolume, bool abLoop, bool abResume);
+  };
+
+};     // namespace hpl
 #endif // HPL_MUSICHANDLER_H

@@ -124,7 +124,7 @@ namespace hpl {
 		iPhysicsMaterial *ToMaterial(iPhysicsWorld *apWorld);
 
 		/**
-		 * This must be added with the largest speed first.	
+     * This must be added with the largest speed first.
 		**/
 		cSurfaceImpactData* CreateImpactData(float afMinSpeed);
 		cSurfaceImpactData* GetImpactData(int alIdx);
@@ -144,10 +144,10 @@ namespace hpl {
 		cSurfaceImpactData* GetHitData(int alIdx);
 		int GetHitDataNum();
 		/**
-		 * Gets the the appropriate hit data depending on speed. It gets the data with highest speed not higher than afSpeed
-		 * \param afSpeed The speed value.
-		 * \return 
-		 */
+     * Gets the the appropriate hit data depending on speed. It gets the data with highest speed not higher than afSpeed
+     * \param afSpeed The speed value.
+     * \return
+     */
 		cSurfaceImpactData* GetHitDataFromSpeed(float afSpeed);
 
 		iHapticSurface* GetHapticSurface(){return mpHapticSurface;}

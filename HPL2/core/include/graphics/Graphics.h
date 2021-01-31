@@ -27,137 +27,135 @@
 
 namespace hpl {
 
-	class cResources;
-	class iRenderer;
-	class cPostEffectsComposite;
-	class iPostEffectType;
-	class iPostEffectParams;
-	class iPostEffect;
-	class iLowLevelResources;
-	class iLowLevelGraphics;
-	class cMeshCreator;
-	class cTextureCreator;
-	class cDecalCreator;
-	class iFrameBuffer;
-	class iDepthStencilBuffer;
-	class iTexture;
-	class iMaterialType;
-	class cPostEffectComposite;
-	class iGpuProgram;
-	class cParserVarContainer;
+  class cResources;
+  class iRenderer;
+  class cPostEffectsComposite;
+  class iPostEffectType;
+  class iPostEffectParams;
+  class iPostEffect;
+  class iLowLevelResources;
+  class iLowLevelGraphics;
+  class cMeshCreator;
+  class cTextureCreator;
+  class cDecalCreator;
+  class iFrameBuffer;
+  class iDepthStencilBuffer;
+  class iTexture;
+  class iMaterialType;
+  class cPostEffectComposite;
+  class iGpuProgram;
+  class cParserVarContainer;
 
-	//------------------------------------------------------
-	
-	class cTempFrameBuffer
-	{
-	public:
-		iFrameBuffer *mpFrameBuffer;
-		cVector2l mvSize;
-		ePixelFormat mPixelFormat;
-		int mlIndex;
-	};
+  //------------------------------------------------------
 
-	//------------------------------------------------------
+  class cTempFrameBuffer {
+  public:
+    iFrameBuffer* mpFrameBuffer;
+    cVector2l     mvSize;
+    ePixelFormat  mPixelFormat;
+    int           mlIndex;
+  };
 
-	typedef std::list<iFrameBuffer*> tFrameBufferList;
-	typedef tFrameBufferList::iterator tFrameBufferListIt;
-	
-	typedef std::list<iDepthStencilBuffer*> tDepthStencilBufferList;
-	typedef tDepthStencilBufferList::iterator tDepthStencilBufferListIt;
-	
-	typedef std::list<iTexture*> tTextureList;
-	typedef tTextureList::iterator tTextureListIt;
+  //------------------------------------------------------
 
-	typedef std::list<cPostEffectComposite*> tPostEffectCompositeList;
-	typedef tPostEffectCompositeList::iterator tPostEffectCompositeListIt;
+  typedef std::list<iFrameBuffer*>   tFrameBufferList;
+  typedef tFrameBufferList::iterator tFrameBufferListIt;
 
-	typedef std::list<iPostEffect*> tPostEffectList;
-	typedef tPostEffectList::iterator tPostEffectListIt;
+  typedef std::list<iDepthStencilBuffer*>   tDepthStencilBufferList;
+  typedef tDepthStencilBufferList::iterator tDepthStencilBufferListIt;
 
-	typedef std::map<tString, iMaterialType*> tMaterialTypeMap;
-	typedef tMaterialTypeMap::iterator tMaterialTypeMapIt;
+  typedef std::list<iTexture*>   tTextureList;
+  typedef tTextureList::iterator tTextureListIt;
 
-	//------------------------------------------------------
+  typedef std::list<cPostEffectComposite*>   tPostEffectCompositeList;
+  typedef tPostEffectCompositeList::iterator tPostEffectCompositeListIt;
 
-	class cGraphics : public iUpdateable
-	{
-	public:
-		cGraphics(iLowLevelGraphics *apLowLevelGraphics,iLowLevelResources *apLowLevelResources);
-		~cGraphics();
+  typedef std::list<iPostEffect*>   tPostEffectList;
+  typedef tPostEffectList::iterator tPostEffectListIt;
 
-		bool Init(int alWidth, int alHeight, int alDisplay, int alBpp, int abFullscreen, int alMultisampling,
-					eGpuProgramFormat aGpuProgramFormat,const tString &asWindowCaption, const cVector2l &avWindowPos,
-					cResources* apResources, tFlag alHplSetupFlags);
+  typedef std::map<tString, iMaterialType*> tMaterialTypeMap;
+  typedef tMaterialTypeMap::iterator        tMaterialTypeMapIt;
 
-		void Update(float afTimeStep);
+  //------------------------------------------------------
 
-		cVideoMode* GetValidVideoMode(int alX);
-		
-		iLowLevelGraphics* GetLowLevel(){ return mpLowLevelGraphics;}
+  class cGraphics : public iUpdateable {
+  public:
+    cGraphics(iLowLevelGraphics* apLowLevelGraphics, iLowLevelResources* apLowLevelResources);
+    ~cGraphics();
 
-		iRenderer* GetRenderer(eRenderer aType);
-		void ReloadRendererData();
-		
-		iFrameBuffer* CreateFrameBuffer(const tString& asName);
-		void DestroyFrameBuffer(iFrameBuffer* apFrameBuffer);
+    bool Init(int alWidth, int alHeight, int alDisplay, int alBpp, int abFullscreen, int alMultisampling,
+              eGpuProgramFormat aGpuProgramFormat, const tString& asWindowCaption, const cVector2l& avWindowPos,
+              cResources* apResources, tFlag alHplSetupFlags);
 
-		iFrameBuffer* GetTempFrameBuffer(const cVector2l& avSize, ePixelFormat aPixelFormat, int alIndex);
+    void Update(float afTimeStep);
 
-		iDepthStencilBuffer* CreateDepthStencilBuffer(	const cVector2l& avSize, int alDepthBits, int alStencilBits,
-														bool abLookForMatchingFirst);
-		iDepthStencilBuffer* FindDepthStencilBuffer(const cVector2l& avSize, int alMinDepthBits, int alMinStencilBits);
-		void DestoroyDepthStencilBuffer(iDepthStencilBuffer* apBuffer);
-		
-		iTexture* CreateTexture(const tString &asName,eTextureType aType,   eTextureUsage aUsage);
-		void DestroyTexture(iTexture *apTexture);
+    cVideoMode* GetValidVideoMode(int alX);
 
-		cPostEffectComposite* CreatePostEffectComposite();
-		void DestroyPostEffectComposite(cPostEffectComposite* apComposite);
-		
-        void AddPostEffectType(iPostEffectType *apPostEffectBase);
-		
-		iPostEffect* CreatePostEffect(iPostEffectParams *apParams);
-		void DestroyPostEffect(iPostEffect* apPostEffect);
+    iLowLevelGraphics* GetLowLevel() { return mpLowLevelGraphics; }
 
-		iGpuProgram* CreateGpuProgram(const tString& asName);
-		iGpuProgram* CreateGpuProgramFromShaders(	const tString& asName, const tString& asVtxShader,const tString& asFragShader,
-													cParserVarContainer *apVarContainer);
-		void DestroyGpuProgram(iGpuProgram* apProgram);
-            
-		void AddMaterialType(iMaterialType *apType, const tString& asName);
-		iMaterialType *GetMaterialType(const tString& asName);
-		tStringVec GetMaterialTypeNames();
-		void ReloadMaterials();
-		
-		cMeshCreator* GetMeshCreator(){return mpMeshCreator;}
-		cTextureCreator* GetTextureCreator(){ return mpTextureCreator;}
-		cDecalCreator* GetDecalCreator() {return mpDecalCreator;}
-		
-		bool GetScreenIsSetUp(){ return mbScreenIsSetup;}
-	
-	private:
-		iLowLevelGraphics *mpLowLevelGraphics;
-		iLowLevelResources *mpLowLevelResources;
-		cMeshCreator *mpMeshCreator;
-		cTextureCreator* mpTextureCreator;
-		cDecalCreator* mpDecalCreator;
-		cResources *mpResources;
+    iRenderer* GetRenderer(eRenderer aType);
+    void       ReloadRendererData();
 
-		std::vector<cTempFrameBuffer> mvTempFrameBuffers;
-		
-		std::vector<iRenderer*> mvRenderers;
-		std::vector<iPostEffectType*> mvPostEffectTypes;
+    iFrameBuffer* CreateFrameBuffer(const tString& asName);
+    void          DestroyFrameBuffer(iFrameBuffer* apFrameBuffer);
 
-		tFrameBufferList mlstFrameBuffers;
-		tDepthStencilBufferList mlstDepthStencilBuffers;
-		tTextureList mlstTextures;
-		tPostEffectCompositeList mlstPostEffectComposites;
-		tGpuProgramList mlstGpuPrograms;
-		tMaterialTypeMap m_mapMaterialTypes;
-		tPostEffectList mlstPostEffects;
+    iFrameBuffer* GetTempFrameBuffer(const cVector2l& avSize, ePixelFormat aPixelFormat, int alIndex);
 
-		bool mbScreenIsSetup;
-	};
+    iDepthStencilBuffer* CreateDepthStencilBuffer(const cVector2l& avSize, int alDepthBits, int alStencilBits,
+                                                  bool abLookForMatchingFirst);
+    iDepthStencilBuffer* FindDepthStencilBuffer(const cVector2l& avSize, int alMinDepthBits, int alMinStencilBits);
+    void                 DestoroyDepthStencilBuffer(iDepthStencilBuffer* apBuffer);
 
-};
+    iTexture* CreateTexture(const tString& asName, eTextureType aType, eTextureUsage aUsage);
+    void      DestroyTexture(iTexture* apTexture);
+
+    cPostEffectComposite* CreatePostEffectComposite();
+    void                  DestroyPostEffectComposite(cPostEffectComposite* apComposite);
+
+    void AddPostEffectType(iPostEffectType* apPostEffectBase);
+
+    iPostEffect* CreatePostEffect(iPostEffectParams* apParams);
+    void         DestroyPostEffect(iPostEffect* apPostEffect);
+
+    iGpuProgram* CreateGpuProgram(const tString& asName);
+    iGpuProgram* CreateGpuProgramFromShaders(const tString& asName, const tString& asVtxShader, const tString& asFragShader,
+                                             cParserVarContainer* apVarContainer);
+    void         DestroyGpuProgram(iGpuProgram* apProgram);
+
+    void           AddMaterialType(iMaterialType* apType, const tString& asName);
+    iMaterialType* GetMaterialType(const tString& asName);
+    tStringVec     GetMaterialTypeNames();
+    void           ReloadMaterials();
+
+    cMeshCreator*    GetMeshCreator() { return mpMeshCreator; }
+    cTextureCreator* GetTextureCreator() { return mpTextureCreator; }
+    cDecalCreator*   GetDecalCreator() { return mpDecalCreator; }
+
+    bool GetScreenIsSetUp() { return mbScreenIsSetup; }
+
+  private:
+    iLowLevelGraphics*  mpLowLevelGraphics;
+    iLowLevelResources* mpLowLevelResources;
+    cMeshCreator*       mpMeshCreator;
+    cTextureCreator*    mpTextureCreator;
+    cDecalCreator*      mpDecalCreator;
+    cResources*         mpResources;
+
+    std::vector<cTempFrameBuffer> mvTempFrameBuffers;
+
+    std::vector<iRenderer*>       mvRenderers;
+    std::vector<iPostEffectType*> mvPostEffectTypes;
+
+    tFrameBufferList         mlstFrameBuffers;
+    tDepthStencilBufferList  mlstDepthStencilBuffers;
+    tTextureList             mlstTextures;
+    tPostEffectCompositeList mlstPostEffectComposites;
+    tGpuProgramList          mlstGpuPrograms;
+    tMaterialTypeMap         m_mapMaterialTypes;
+    tPostEffectList          mlstPostEffects;
+
+    bool mbScreenIsSetup;
+  };
+
+};     // namespace hpl
 #endif // HPL_GRAPHICS_H

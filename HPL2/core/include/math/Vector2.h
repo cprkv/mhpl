@@ -202,9 +202,9 @@ namespace hpl {
 			}
 
 			/**
-			 * Only use this on double or float vectors
-			 * \return Length of Vector
-			 */
+	     * Only use this on double or float vectors
+	     * \return Length of Vector
+	     */
 			T Normalize()
 			{
 				T length  = sqrt( x * x + y * y);

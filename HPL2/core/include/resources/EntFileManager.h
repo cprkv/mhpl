@@ -24,48 +24,46 @@
 #include "resources/ResourceBase.h"
 
 namespace hpl {
-	
-	class cResources;
-	class iXmlDocument;
 
-	//------------------------------------
-	
-	class cEntFile : public iResourceBase 
-	{
-	public:
-		cEntFile(const tString& asName, const tWString& asFullPath, cResources *apResources);
-		~cEntFile();
+  class cResources;
+  class iXmlDocument;
 
-		bool CreateFromFile();
+  //------------------------------------
 
-		iXmlDocument *GetXmlDoc(){ return mpXmlDoc;}
+  class cEntFile : public iResourceBase {
+  public:
+    cEntFile(const tString& asName, const tWString& asFullPath, cResources* apResources);
+    ~cEntFile();
 
-		//resources stuff.
-		bool Reload(){ return false;}
-		void Unload(){}
-		void Destroy(){}
-		
-	private:
-		iXmlDocument *mpXmlDoc;
-	};
+    bool CreateFromFile();
+
+    iXmlDocument* GetXmlDoc() { return mpXmlDoc; }
+
+    //resources stuff.
+    bool Reload() { return false; }
+    void Unload() {}
+    void Destroy() {}
+
+  private:
+    iXmlDocument* mpXmlDoc;
+  };
 
 
-	//------------------------------------
-	
-	class cEntFileManager : public iResourceManager
-	{
-	public:
-		cEntFileManager(cResources *apResources);
-		~cEntFileManager();
+  //------------------------------------
 
-		cEntFile* CreateEntFile(const tString& asName);
+  class cEntFileManager : public iResourceManager {
+  public:
+    cEntFileManager(cResources* apResources);
+    ~cEntFileManager();
 
-		void Destroy(iResourceBase* apResource);
-		void Unload(iResourceBase* apResource);
+    cEntFile* CreateEntFile(const tString& asName);
 
-	private:
-		cResources *mpResources;
-	};
+    void Destroy(iResourceBase* apResource);
+    void Unload(iResourceBase* apResource);
 
-};
+  private:
+    cResources* mpResources;
+  };
+
+};     // namespace hpl
 #endif // HPL_ENT_FILE_MANAGER_H

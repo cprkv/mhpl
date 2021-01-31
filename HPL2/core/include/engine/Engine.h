@@ -105,13 +105,13 @@ namespace hpl {
 	public:
 
 		/**
-		 * Starts the game loop. To make stuff run they must be added as updatables..
-		 */
+     * Starts the game loop. To make stuff run they must be added as updatables..
+     */
 		void Run();
 		/**
-		 * Exists the game. 
-		 * \todo is this a good way to do it? Should game be global. If so, make a singleton.
-		 */
+     * Exists the game.
+     * \todo is this a good way to do it? Should game be global. If so, make a singleton.
+     */
 		void Exit();
 		bool GetGameIsDone();
 		

@@ -61,8 +61,8 @@ namespace hpl {
 		bool SamplerNeedsTextureUnitSetup(){ return true; }
 
 		/**
-		 * Binds and unbinds program so must not be done during rendering.
-		 */
+     * Binds and unbinds program so must not be done during rendering.
+     */
 		bool SetSamplerToUnit(const tString& asSamplerName, int alUnit);
 
 		int GetVariableId(const tString& asName);

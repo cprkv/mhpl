@@ -44,269 +44,234 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cMesh::cMesh(const tString& asName, const tWString& asFullPath, cMaterialManager* apMaterialManager,	cAnimationManager * apAnimationManager) : 
-		iResourceBase(asName, asFullPath,0)
-	{
-		mpMaterialManager = apMaterialManager;
-		mpAnimationManager = apAnimationManager;
-		mpSkeleton = NULL;
+  cMesh::cMesh(const tString& asName, const tWString& asFullPath, cMaterialManager* apMaterialManager, cAnimationManager* apAnimationManager)
+      : iResourceBase(asName, asFullPath, 0) {
+    mpMaterialManager  = apMaterialManager;
+    mpAnimationManager = apAnimationManager;
+    mpSkeleton         = NULL;
 
-		mpRootNode = hplNew( cNode3D, () );
-	}
+    mpRootNode = hplNew(cNode3D, ());
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cMesh::~cMesh()
-	{
-		for(int i=0;i<(int)mvSubMeshes.size();i++)
-		{
-			hplDelete(mvSubMeshes[i]);
-		}
-		if(mpSkeleton) hplDelete(mpSkeleton);
-		
-		for(int i=0;i< (int)mvAnimations.size(); i++)
-		{
-			//mpAnimationManager->Destroy(mvAnimations[i]);
-			hplDelete(mvAnimations[i]);
-		}
+  cMesh::~cMesh() {
+    for (auto& mvSubMeshe : mvSubMeshes) {
+      hplDelete(mvSubMeshe);
+    }
+    if (mpSkeleton) {
+      hplDelete(mpSkeleton);
+    }
+    for (auto& mvAnimation : mvAnimations) {
+      //mpAnimationManager->Destroy(mvAnimations[i]);
+      hplDelete(mvAnimation);
+    }
+    if (mpRootNode) {
+      hplDelete(mpRootNode);
+    }
+  }
 
-		if(mpRootNode) hplDelete(mpRootNode);
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-	
-	bool cMesh::CreateFromFile(const tString asFile)
-	{
-		return false;
-	}
-	
-	//-----------------------------------------------------------------------
+  bool cMesh::CreateFromFile(const tString asFile) {
+    return false;
+  }
 
-	cSubMesh* cMesh::CreateSubMesh(const tString &asName)
-	{
-		cSubMesh* pSubMesh = hplNew( cSubMesh, (asName,mpMaterialManager) );
+  //-----------------------------------------------------------------------
 
-		pSubMesh->mpParent = this;
+  cSubMesh* cMesh::CreateSubMesh(const tString& asName) {
+    auto* pSubMesh = hplNew(cSubMesh, (asName, mpMaterialManager));
 
-		mvSubMeshes.push_back(pSubMesh);
-		m_mapSubMeshes.insert(tSubMeshMap::value_type(asName, pSubMesh));
+    pSubMesh->mpParent = this;
 
-		return pSubMesh;
-	}
+    mvSubMeshes.push_back(pSubMesh);
+    m_mapSubMeshes.insert(tSubMeshMap::value_type(asName, pSubMesh));
 
-	//-----------------------------------------------------------------------
+    return pSubMesh;
+  }
 
-	cSubMesh* cMesh::GetSubMesh(unsigned int alIdx)
-	{
-		if(alIdx >= mvSubMeshes.size()) return NULL;
+  //-----------------------------------------------------------------------
 
-		return mvSubMeshes[alIdx];
-	}
+  cSubMesh* cMesh::GetSubMesh(unsigned int alIdx) {
+    if (alIdx >= mvSubMeshes.size()) {
+      return nullptr;
+    }
+    return mvSubMeshes[alIdx];
+  }
 
-	int cMesh::GetSubMeshIndex(const tString &asName)
-	{
-		for(size_t i=0; i<mvSubMeshes.size(); ++i)
-		{
-			if(mvSubMeshes[i]->GetName() == asName) return (int)i;
-		}
-		
-		return -1;
-	}
-	
-	cSubMesh* cMesh::GetSubMeshName(const tString &asName)
-	{
-		tSubMeshMapIt it = m_mapSubMeshes.find(asName);
-		if(it == m_mapSubMeshes.end())return NULL;
+  int cMesh::GetSubMeshIndex(const tString& asName) {
+    for (size_t i = 0; i < mvSubMeshes.size(); ++i) {
+      if (mvSubMeshes[i]->GetName() == asName) {
+        return (int) i;
+      }
+    }
+    return -1;
+  }
 
-		return it->second;
-	}
-	
-	int cMesh::GetSubMeshNum()
-	{
-		return (int)mvSubMeshes.size();
-	}
+  cSubMesh* cMesh::GetSubMeshName(const tString& asName) {
+    auto it = m_mapSubMeshes.find(asName);
+    if (it == m_mapSubMeshes.end()) {
+      return nullptr;
+    }
+    return it->second;
+  }
 
-	//-----------------------------------------------------------------------
+  int cMesh::GetSubMeshNum() {
+    return (int) mvSubMeshes.size();
+  }
 
-	int cMesh::GetTriangleCount()
-	{
-		tSubMeshVecIt it = mvSubMeshes.begin();
+  //-----------------------------------------------------------------------
 
-		int lTriangleCount = 0;
+  int cMesh::GetTriangleCount() {
+    auto it = mvSubMeshes.begin();
 
-		for(;it!=mvSubMeshes.end(); ++it)
-		{
-			iVertexBuffer* pVB = (*it)->GetVertexBuffer();
+    int lTriangleCount = 0;
 
-			if(pVB)
-				lTriangleCount += (int)pVB->GetIndexNum()/3;
-		}
+    for (; it != mvSubMeshes.end(); ++it) {
+      iVertexBuffer* pVB = (*it)->GetVertexBuffer();
+      if (pVB) {
+        lTriangleCount += (int) pVB->GetIndexNum() / 3;
+      }
+    }
 
-		return lTriangleCount;
-	}
+    return lTriangleCount;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cMesh::SetSkeleton(cSkeleton* apSkeleton)
-	{
-		mpSkeleton = apSkeleton;
-	}
+  void cMesh::SetSkeleton(cSkeleton* apSkeleton) {
+    mpSkeleton = apSkeleton;
+  }
 
-	cSkeleton* cMesh::GetSkeleton()
-	{
-		return mpSkeleton;
-	}
-	//-----------------------------------------------------------------------
-	
-	void cMesh::AddAnimation(cAnimation *apAnimation)
-	{
-		mvAnimations.push_back(apAnimation);
-		
-		tAnimationIndexMap::value_type value(apAnimation->GetName(), (int)mvAnimations.size() - 1);
-		m_mapAnimIndices.insert(value);
-	}
-	
-	cAnimation* cMesh::GetAnimation(int alIndex)
-	{
-		return mvAnimations[alIndex];
-	}
-	
-	cAnimation* cMesh::GetAnimationFromName(const tString& asName)
-	{
-		int lIdx = GetAnimationIndex(asName);
-		if(lIdx >= 0)
-		{
-			return mvAnimations[lIdx];
-		}
-		else
-		{
-			return NULL;
-		}
-	}
-	
-	int cMesh::GetAnimationIndex(const tString& asName)
-	{
-		tAnimationIndexMapIt it = m_mapAnimIndices.find(asName);
-		if(it !=  m_mapAnimIndices.end())
-		{
-			return it->second;
-		}
-		else
-		{
-			return -1;
-		}
-	}
+  cSkeleton* cMesh::GetSkeleton() {
+    return mpSkeleton;
+  }
+  //-----------------------------------------------------------------------
 
-	void  cMesh::ClearAnimations(bool abDeleteAll)
-	{
-		if(abDeleteAll)
-		{
-			for(int i=0;i< (int)mvAnimations.size(); i++)
-			{
-				//mpAnimationManager->Destroy(mvAnimations[i]);
-				hplDelete(mvAnimations[i]);
-			}
-		}
+  void cMesh::AddAnimation(cAnimation* apAnimation) {
+    mvAnimations.push_back(apAnimation);
 
-		mvAnimations.clear();
-		m_mapAnimIndices.clear();
-	}
+    tAnimationIndexMap::value_type value(apAnimation->GetName(), (int) mvAnimations.size() - 1);
+    m_mapAnimIndices.insert(value);
+  }
 
-	int cMesh::GetAnimationNum()
-	{
-		return (int)mvAnimations.size();
-	}
-	
-	//-----------------------------------------------------------------------
+  cAnimation* cMesh::GetAnimation(int alIndex) {
+    return mvAnimations[alIndex];
+  }
 
-	void cMesh::CompileBonesAndSubMeshes()
-	{
-		if(mpSkeleton == NULL) return;
+  cAnimation* cMesh::GetAnimationFromName(const tString& asName) {
+    int lIdx = GetAnimationIndex(asName);
+    if (lIdx >= 0) {
+      return mvAnimations[lIdx];
+    } else {
+      return nullptr;
+    }
+  }
 
-		///////////////////////////////////////
-		// Calculate the bounding radius for all bones
-		// - this based on the greatest distance to an attached node.
-		mvBoneBoundingRadii.resize(mpSkeleton->GetBoneNum(), 0);
+  int cMesh::GetAnimationIndex(const tString& asName) {
+    auto it = m_mapAnimIndices.find(asName);
+    if (it != m_mapAnimIndices.end()) {
+      return it->second;
+    } else {
+      return -1;
+    }
+  }
 
-		for(size_t i=0; i<mvSubMeshes.size(); ++i)
-		{
-			////////////////////////////
-			//Get the variables
-			cSubMesh *pSubMesh = mvSubMeshes[i];
-			iVertexBuffer *pVtxBuffer = pSubMesh->GetVertexBuffer();
-			float* pPosArray = pVtxBuffer->GetFloatArray(eVertexBufferElement_Position);
-			const int lVtxStride = pVtxBuffer->GetElementNum(eVertexBufferElement_Position);
+  void cMesh::ClearAnimations(bool abDeleteAll) {
+    if (abDeleteAll) {
+      for (auto& mvAnimation : mvAnimations) {
+        //mpAnimationManager->Destroy(mvAnimations[i]);
+        hplDelete(mvAnimation);
+      }
+    }
 
-			////////////////////////////
-			//Iterate pairs and update the radii
-			for(size_t i=0; i < pSubMesh->mvVtxBonePairs.size(); i++)
-			{
-				cVertexBonePair &Pair = pSubMesh->mvVtxBonePairs[i];
+    mvAnimations.clear();
+    m_mapAnimIndices.clear();
+  }
 
-				float *pPos = &pPosArray[Pair.vtxIdx * lVtxStride];
-				cVector3f vPos(pPos[0], pPos[1],pPos[2]);
+  int cMesh::GetAnimationNum() {
+    return (int) mvAnimations.size();
+  }
 
-				cBone *pBone = mpSkeleton->GetBoneByIndex(Pair.boneIdx);
+  //-----------------------------------------------------------------------
 
-				float fDistSqr = cMath::Vector3DistSqr(vPos, pBone->GetWorldTransform().GetTranslation() );
-				float fRadius = mvBoneBoundingRadii[Pair.boneIdx];
-				if(fDistSqr > fRadius*fRadius)
-				{
-					mvBoneBoundingRadii[Pair.boneIdx] = sqrtf(fDistSqr);
-				}
-			}
-		}
-	}
+  void cMesh::CompileBonesAndSubMeshes() {
+    if (mpSkeleton == nullptr) {
+      return;
+    }
 
-	//-----------------------------------------------------------------------
+    ///////////////////////////////////////
+    // Calculate the bounding radius for all bones
+    // - this based on the greatest distance to an attached node.
+    mvBoneBoundingRadii.resize(mpSkeleton->GetBoneNum(), 0);
 
-	cNode3D* cMesh::GetRootNode()
-	{
-		return mpRootNode;
-	}
-	
-	void cMesh::AddNode(cNode3D* apNode)
-	{
-		mvNodes.push_back(apNode);
-	}
-	
-	int cMesh::GetNodeNum()
-	{
-		return (int)mvNodes.size();
-	}
+    for (auto pSubMesh : mvSubMeshes) {
+      ////////////////////////////
+      //Get the variables
+      iVertexBuffer* pVtxBuffer = pSubMesh->GetVertexBuffer();
+      float*         pPosArray  = pVtxBuffer->GetFloatArray(eVertexBufferElement_Position);
+      const int      lVtxStride = pVtxBuffer->GetElementNum(eVertexBufferElement_Position);
 
-	cNode3D* cMesh::GetNodeByName(const tString &asName)
-	{
-		cNode3D *pNode = (cNode3D*)STLFindByName(mvNodes,asName);
-		 
-		return pNode;
-	}
-	
-	cNode3D* cMesh::GetNode(int alIdx)
-	{
-		return mvNodes[alIdx];
-	}
+      ////////////////////////////
+      //Iterate pairs and update the radii
+      for (auto& pair : pSubMesh->mvVtxBonePairs) {
+        float*    pPos = &pPosArray[pair.vtxIdx * lVtxStride];
+        cVector3f vPos(pPos[0], pPos[1], pPos[2]);
 
-	//-----------------------------------------------------------------------
-	
-	
-	//////////////////////////////////////////////////////////////////////////
-	// PRIAVTE METHODS
-	//////////////////////////////////////////////////////////////////////////
+        cBone* pBone = mpSkeleton->GetBoneByIndex(pair.boneIdx);
 
-	//-----------------------------------------------------------------------
+        float fDistSqr = cMath::Vector3DistSqr(vPos, pBone->GetWorldTransform().GetTranslation());
+        float fRadius  = mvBoneBoundingRadii[pair.boneIdx];
+        if (fDistSqr > fRadius * fRadius) {
+          mvBoneBoundingRadii[pair.boneIdx] = sqrtf(fDistSqr);
+        }
+      }
+    }
+  }
 
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+
+  cNode3D* cMesh::GetRootNode() {
+    return mpRootNode;
+  }
+
+  void cMesh::AddNode(cNode3D* apNode) {
+    mvNodes.push_back(apNode);
+  }
+
+  int cMesh::GetNodeNum() {
+    return (int) mvNodes.size();
+  }
+
+  cNode3D* cMesh::GetNodeByName(const tString& asName) {
+    auto* pNode = (cNode3D*) STLFindByName(mvNodes, asName);
+    return pNode;
+  }
+
+  cNode3D* cMesh::GetNode(int alIdx) {
+    return mvNodes[alIdx];
+  }
+
+  //-----------------------------------------------------------------------
+
+
+  //////////////////////////////////////////////////////////////////////////
+  // PRIAVTE METHODS
+  //////////////////////////////////////////////////////////////////////////
+
+  //-----------------------------------------------------------------------
+
+  //-----------------------------------------------------------------------
+} // namespace hpl

@@ -26,198 +26,181 @@
 #include "system/String.h"
 
 #ifdef WIN32
-#include <io.h>
+  #include <io.h>
 #endif
 
-namespace hpl{
+namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cGLSLShader::cGLSLShader(const tString& asName,eGpuShaderType aType, iLowLevelGraphics *apLowLevelGraphics) 
-				: iGpuShader(asName, _W(""), aType, eGpuProgramFormat_GLSL)
-	{
-		;
+  cGLSLShader::cGLSLShader(const tString& asName, eGpuShaderType aType, iLowLevelGraphics* apLowLevelGraphics)
+      : iGpuShader(asName, _W(""), aType, eGpuProgramFormat_GLSL) {
+    ;
 
-		mpLowLevelGraphics = apLowLevelGraphics;
-		
-		mlHandle = glCreateShader(GetGLShaderType(aType));
-	}
+    mpLowLevelGraphics = apLowLevelGraphics;
 
-	cGLSLShader::~cGLSLShader()
-	{
-		;
+    mlHandle = glCreateShader(GetGLShaderType(aType));
+  }
 
-		glDeleteShader(mlHandle);
-	}
+  cGLSLShader::~cGLSLShader() {
+    ;
 
-	//-----------------------------------------------------------------------
+    glDeleteShader(mlHandle);
+  }
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-	
-	bool cGLSLShader::Reload(){return false;}
-	void cGLSLShader::Unload(){}
-	void cGLSLShader::Destroy(){}
-	
-	//-----------------------------------------------------------------------
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	bool cGLSLShader::CreateFromFile(const tWString &asFile, const tString &asEntry, bool abPrintInfoIfFail)
-	{
-		///////////////////////////////////////
-		//Load file
-		FILE *pFile = cPlatform::OpenFile(asFile, _W("rb"));
-		if(pFile == NULL)
-		{
-			Error("Could not open file %ls\n", asFile.c_str());
-			return false;
-		}
-		SetFullPath(asFile);
-		
-		fseek(pFile,0,SEEK_END);
-		int lFileSize = ftell(pFile);
-		rewind(pFile);
+  //-----------------------------------------------------------------------
 
-		char *pBuffer = (char*) hplMalloc(sizeof(char)* lFileSize+1);
+  bool cGLSLShader::Reload() { return false; }
+  void cGLSLShader::Unload() {}
+  void cGLSLShader::Destroy() {}
 
-		fread(pBuffer, sizeof(GLchar), lFileSize, pFile);
-		pBuffer[lFileSize] =0; //Zero at end so it is a proper string.
-		
-		fclose(pFile);
+  //-----------------------------------------------------------------------
 
-        bool bRet = CreateFromString(pBuffer, asEntry, abPrintInfoIfFail);
+  bool cGLSLShader::CreateFromFile(const tWString& asFile, const tString& asEntry, bool abPrintInfoIfFail) {
+    ///////////////////////////////////////
+    //Load file
+    FILE* pFile = cPlatform::OpenFile(asFile, _W("rb"));
+    if (pFile == NULL) {
+      Error("Could not open file %ls\n", asFile.c_str());
+      return false;
+    }
+    SetFullPath(asFile);
 
-		hplFree(pBuffer);
-		
-		return bRet;
-	}
+    fseek(pFile, 0, SEEK_END);
+    int lFileSize = ftell(pFile);
+    rewind(pFile);
 
-	//-----------------------------------------------------------------------
+    char* pBuffer = (char*) hplMalloc(sizeof(char) * lFileSize + 1);
+
+    fread(pBuffer, sizeof(GLchar), lFileSize, pFile);
+    pBuffer[lFileSize] = 0; //Zero at end so it is a proper string.
+
+    fclose(pFile);
+
+    bool bRet = CreateFromString(pBuffer, asEntry, abPrintInfoIfFail);
+
+    hplFree(pBuffer);
+
+    return bRet;
+  }
+
+  //-----------------------------------------------------------------------
 
 
-	bool cGLSLShader::CreateFromString(const char *apStringData, const tString& asEntry, bool abPrintInfoIfFail)
-	{
-		;
+  bool cGLSLShader::CreateFromString(const char* apStringData, const tString& asEntry, bool abPrintInfoIfFail) {
+    ;
 
-		///////////////////////////////////////
-		//Compile
+    ///////////////////////////////////////
+    //Compile
 
-		//const char *pConstBuffer = apStringData;
-		//glShaderSource(mlHandle, 1, &pConstBuffer, NULL);
-		glShaderSource(mlHandle, 1, &apStringData, NULL);
+    //const char *pConstBuffer = apStringData;
+    //glShaderSource(mlHandle, 1, &pConstBuffer, NULL);
+    glShaderSource(mlHandle, 1, &apStringData, NULL);
 
-		glCompileShader(mlHandle);
+    glCompileShader(mlHandle);
 
-		///////////////////////////////////////
-		//Check for errors.
-		GLint lStatus;
-		glGetShaderiv(mlHandle,GL_COMPILE_STATUS,&lStatus);
-		if(lStatus == GL_FALSE)
-		{
-			if(abPrintInfoIfFail)
-			{
-				Error("Failed to compile GLSL shader '%s'!\n",cString::To8Char(GetFullPath()).c_str());
-				Log("Shader code:\n-------------------\n");
-				
-				LogShaderCode(apStringData);
-	            
-				
-				Log("---------------------\n");
-				Log("Compile log:\n");
-				LogShaderInfoLog();
-			}
-			return false;
-		}
-		
-		/////////////////////////////
-		//If debug is on, then show code + compile log
-		if(mbDebugInfo)
-		{
-			Log("Shader '%s' code:\n-------------------\n", msName.c_str());
+    ///////////////////////////////////////
+    //Check for errors.
+    GLint lStatus;
+    glGetShaderiv(mlHandle, GL_COMPILE_STATUS, &lStatus);
+    if (lStatus == GL_FALSE) {
+      if (abPrintInfoIfFail) {
+        Error("Failed to compile GLSL shader '%s'!\n", cString::To8Char(GetFullPath()).c_str());
+        Log("Shader code:\n-------------------\n");
 
-			//LogShaderCode(apStringData);
-
-			//Log("---------------------\n");
-			Log("Compile log:\n");
-			LogShaderInfoLog();
-		}
+        LogShaderCode(apStringData);
 
 
-		return true;
-	}
+        Log("---------------------\n");
+        Log("Compile log:\n");
+        LogShaderInfoLog();
+      }
+      return false;
+    }
 
-	//-----------------------------------------------------------------------
+    /////////////////////////////
+    //If debug is on, then show code + compile log
+    if (mbDebugInfo) {
+      Log("Shader '%s' code:\n-------------------\n", msName.c_str());
 
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+      //LogShaderCode(apStringData);
 
-	//-----------------------------------------------------------------------
+      //Log("---------------------\n");
+      Log("Compile log:\n");
+      LogShaderInfoLog();
+    }
 
-	void cGLSLShader::LogShaderInfoLog()
-	{
-		;
 
-		GLint infologLength = 0;
-		GLsizei charsWritten  = 0;
-		char *infoLog;
+    return true;
+  }
 
-		glGetShaderiv(mlHandle, GL_INFO_LOG_LENGTH,&infologLength);
+  //-----------------------------------------------------------------------
 
-		if (infologLength > 0)
-		{
-			infoLog = (char *)hplMalloc(infologLength);
-			glGetShaderInfoLog(mlHandle, infologLength, &charsWritten, infoLog);
-			Log("---------------------\n");
-			Log("%s\n",infoLog);
-			Log("---------------------\n");
-			hplFree(infoLog);
-		}
-	}
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cGLSLShader::LogShaderCode(const char *apStringData)
-	{
-		int lRow =1;
-		tString sRowCode ="";
-		for(int i=0; apStringData[i]!=0; ++i)
-		{
-			char lChar = apStringData[i];
-			if(lChar=='\r') continue; //Can skip this sign.
+  void cGLSLShader::LogShaderInfoLog() {
+    ;
 
-			if(lChar == '\n')
-			{
-				Log("[%04d] %s\n",lRow, sRowCode.c_str());
-				sRowCode.resize(0);
-				lRow++;
-			}
-			else
-			{
-				sRowCode +=lChar;
-			}
-		}
-	}
+    GLint   infologLength = 0;
+    GLsizei charsWritten  = 0;
+    char*   infoLog;
 
-	//-----------------------------------------------------------------------
+    glGetShaderiv(mlHandle, GL_INFO_LOG_LENGTH, &infologLength);
 
-	GLenum cGLSLShader::GetGLShaderType(eGpuShaderType aType)
-	{
-		switch(aType)
-		{
-		case eGpuShaderType_Fragment:	return GL_FRAGMENT_SHADER;
-		case eGpuShaderType_Vertex:		return GL_VERTEX_SHADER;
-		}
+    if (infologLength > 0) {
+      infoLog = (char*) hplMalloc(infologLength);
+      glGetShaderInfoLog(mlHandle, infologLength, &charsWritten, infoLog);
+      Log("---------------------\n");
+      Log("%s\n", infoLog);
+      Log("---------------------\n");
+      hplFree(infoLog);
+    }
+  }
 
-		return GL_VERTEX_SHADER;
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-}
+  void cGLSLShader::LogShaderCode(const char* apStringData) {
+    int     lRow     = 1;
+    tString sRowCode = "";
+    for (int i = 0; apStringData[i] != 0; ++i) {
+      char lChar = apStringData[i];
+      if (lChar == '\r') continue; //Can skip this sign.
+
+      if (lChar == '\n') {
+        Log("[%04d] %s\n", lRow, sRowCode.c_str());
+        sRowCode.resize(0);
+        lRow++;
+      } else {
+        sRowCode += lChar;
+      }
+    }
+  }
+
+  //-----------------------------------------------------------------------
+
+  GLenum cGLSLShader::GetGLShaderType(eGpuShaderType aType) {
+    switch (aType) {
+      case eGpuShaderType_Fragment: return GL_FRAGMENT_SHADER;
+      case eGpuShaderType_Vertex: return GL_VERTEX_SHADER;
+    }
+
+    return GL_VERTEX_SHADER;
+  }
+
+  //-----------------------------------------------------------------------
+
+} // namespace hpl

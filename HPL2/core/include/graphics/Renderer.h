@@ -208,7 +208,7 @@ namespace hpl {
   class cShadowMapLightCache {
   public:
     cShadowMapLightCache()
-        : mpLight(NULL)
+        : mpLight(nullptr)
         , mlTransformCount(-1)
         , mfRadius(0)
         , mfFOV(0)
@@ -261,8 +261,8 @@ namespace hpl {
 
     virtual iTexture* GetPostEffectTexture();
 
-    virtual iTexture* GetRefractionTexture() { return NULL; }
-    virtual iTexture* GetReflectionTexture() { return NULL; }
+    virtual iTexture* GetRefractionTexture() { return nullptr; }
+    virtual iTexture* GetReflectionTexture() { return nullptr; }
 
     cWorld*      GetCurrentWorld() { return mpCurrentWorld; }
     cFrustum*    GetCurrentFrustum() { return mpCurrentFrustum; }
@@ -273,8 +273,8 @@ namespace hpl {
     void AssignOcclusionObject(void* apSource, int alCustomIndex, iVertexBuffer* apVtxBuffer, cMatrixf* apMatrix, bool abDepthTest);
     int  RetrieveOcclusionObjectSamples(void* apSource, int alCustomIndex);
     /**
-		* Retrieves number of samples for all active occlusion queries. It does not release the queries, but the values are gotten and stored in query.
-		*/
+     * Retrieves number of samples for all active occlusion queries. It does not release the queries, but the values are gotten and stored in query.
+     */
     void WaitAndRetrieveAllOcclusionQueries();
 
 
@@ -300,15 +300,14 @@ namespace hpl {
     static void SetRefractionEnabled(bool abX) { mbRefractionEnabled = abX; }
     static bool GetRefractionEnabled() { return mbRefractionEnabled; }
 
-
     //Debug
     tRenderableVec* GetShadowCasterVec() { return &mvShadowCasters; }
 
   protected:
     /**
-		* In case some intermediate format is used then make sure it is at the correct buffer before ending rendering. 
-		* When sending to a frame buffer at the end, then this method is never called and the intermediate can be returned with GetPostEffectFrameBuffer
-		*/
+     * In case some intermediate format is used then make sure it is at the correct buffer before ending rendering.
+     * When sending to a frame buffer at the end, then this method is never called and the intermediate can be returned with GetPostEffectFrameBuffer
+     */
     virtual void CopyToFrameBuffer() = 0;
     virtual void SetupRenderList()   = 0;
     virtual void RenderObjects()     = 0;
@@ -325,17 +324,13 @@ namespace hpl {
 
     void RenderZObject(iRenderable* apObject, cFrustum* apCustomFrustum);
 
-    /**
-		 * Brute force adding of visible objects. Nothing is rendered.
-		 */
+    /** Brute force adding of visible objects. Nothing is rendered. */
     void CheckForVisibleAndAddToList(iRenderableContainer* apContainer, tRenderableFlag alNeededFlags);
 
     void CheckNodesAndAddToListIterative(iRenderableContainerNode* apNode, tRenderableFlag alNeededFlags);
 
 
-    /**
-		 * Uses a Coherent occlusion culling to get visible objects. No early Z needed after calling this
-		 */
+    /** Uses a Coherent occlusion culling to get visible objects. No early Z needed after calling this */
     void CheckForVisibleObjectsAddToListAndRenderZ(cVisibleRCNodeTracker* apVisibleNodeTracker,
                                                    tObjectVariabilityFlag alObjectTypes, tRenderableFlag alNeededFlags,
                                                    bool                         abSetupRenderStates,
@@ -362,14 +357,10 @@ namespace hpl {
     void        RenderShadowCastersNormal(cFrustum* apLightFrustum);
     void        RenderShadowMap(iLight* apLight, iFrameBuffer* apShadowBuffer);
 
-    /**
-		 * Only depth is needed for framebuffer. All objects needs to be added to renderlist!
-		 */
+    /** Only depth is needed for framebuffer. All objects needs to be added to renderlist! */
     void AssignAndRenderOcclusionQueryObjects(bool abSetFrameBuffer, iFrameBuffer* apFrameBuffer, bool abUsePosAndSize);
 
-    /**
-		 * This retrieves all occlusion information for light pair queries and release occlusion queries. If specified, this is a waiting operation.
-		 */
+    /** This retrieves all occlusion information for light pair queries and release occlusion queries. If specified, this is a waiting operation. */
     void RetrieveAllLightOcclusionPair(bool abWaitForResult);
 
 
@@ -383,24 +374,16 @@ namespace hpl {
     void DrawCurrentMaterial(eMaterialRenderMode aRenderMode, iRenderable* apObject);
 
 
-    /**
-		 * Checks if the renderable object is 1) submeshentity 2) is onesided plane 3)is away from camera. If all are true, FALSE is returned.
-		 */
+    /** Checks if the renderable object is 1) submeshentity 2) is onesided plane 3)is away from camera. If all are true, FALSE is returned. */
     bool CheckRenderablePlaneIsVisible(iRenderable* apObject, cFrustum* apFrustum);
-    /**
-		 * afHalfFovTan == 0 means that the function calculates tan.
-		 */
+
+    /** afHalfFovTan == 0 means that the function calculates tan. */
     cRect2l GetClipRectFromObject(iRenderable* apObject, float afPaddingPercent, cFrustum* apFrustum, const cVector2l& avScreenSize, float afHalfFovTan);
 
-
-    /**
-		* Checks the IsVisible and also clip planes (in setttings), if visible in reflection and other stuff . No frustum check!
-		*/
+    /** Checks the IsVisible and also clip planes (in setttings), if visible in reflection and other stuff. No frustum check! */
     bool CheckObjectIsVisible(iRenderable* apObject, tRenderableFlag alNeededFlags);
 
-    /**
-		 * Checks custom clip planes (in setttings) and more to determine if a node is viisible. No frustum check!
-		 */
+    /** Checks custom clip planes (in setttings) and more to determine if a node is viisible. No frustum check! */
     bool CheckNodeIsVisible(iRenderableContainerNode* apNode);
 
     bool  CheckFogAreaInsideNearPlane(cMatrixf& a_mtxInvBoxModelMatrix);

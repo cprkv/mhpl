@@ -23,17 +23,16 @@
 
 namespace hpl {
 
-	class iMutex
-	{
-	public:
-		iMutex();
-		virtual ~iMutex(){}
+  class iMutex {
+  public:
+    iMutex();
+    virtual ~iMutex() {}
 
-		virtual bool Lock()=0;
-		virtual bool Unlock()=0;
-       
-	protected:
-	private:
-	};
-};
+    virtual bool Lock()   = 0;
+    virtual bool Unlock() = 0;
+
+  protected:
+  private:
+  };
+};     // namespace hpl
 #endif // HPL_MUTEX_H

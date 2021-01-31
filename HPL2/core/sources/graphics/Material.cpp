@@ -36,315 +36,278 @@
 
 namespace hpl {
 
-	bool cMaterial::mbDestroyTypeSpecifics = true;
+  bool cMaterial::mbDestroyTypeSpecifics = true;
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cMaterial::cMaterial(const tString& asName, const tWString& asFullPath, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType) 
-		: iResourceBase(asName, asFullPath, 0)
-	{
-		mpGraphics = apGraphics;
-		mpResources = apResources;
+  cMaterial::cMaterial(const tString& asName, const tWString& asFullPath, cGraphics* apGraphics, cResources* apResources, iMaterialType* apType)
+      : iResourceBase(asName, asFullPath, 0) {
+    mpGraphics  = apGraphics;
+    mpResources = apResources;
 
-		mpType = NULL;
-		mpVars = NULL;
-		SetType(apType);
+    mpType = NULL;
+    mpVars = NULL;
+    SetType(apType);
 
-		mbAutoDestroyTextures = true;
+    mbAutoDestroyTextures = true;
 
-		mlRenderFrameCount = -1;
+    mlRenderFrameCount = -1;
 
-		mbHasRefraction = false;
-		mlRefractionTextureUnit =0;
-		mbUseRefractionEdgeCheck = false;
+    mbHasRefraction          = false;
+    mlRefractionTextureUnit  = 0;
+    mbUseRefractionEdgeCheck = false;
 
-		mbHasWorldReflection = false;
-		mlWorldReflectionTextureUnit =0;
-		mbWorldReflectionOcclusionTest = true;
-		mfMaxReflectionDistance = 0;
+    mbHasWorldReflection           = false;
+    mlWorldReflectionTextureUnit   = 0;
+    mbWorldReflectionOcclusionTest = true;
+    mfMaxReflectionDistance        = 0;
 
-		mbHasTranslucentIllumination = false; //If the material is translucent and also need an extra additive pass.
+    mbHasTranslucentIllumination = false; //If the material is translucent and also need an extra additive pass.
 
-		mbLargeTransperantSurface = false;
+    mbLargeTransperantSurface = false;
 
-		mbUseAlphaDissolveFilter = false;
+    mbUseAlphaDissolveFilter = false;
 
-		mbAffectedByFog = true;
-		
-		for(int i=0; i<eMaterialRenderMode_LastEnum; ++i)
-		{
-			mbHasSpecificSettings[i] = false;
-			mbHasObjectSpecificsSettings[i] = false;
-		}
+    mbAffectedByFog = true;
 
-		mfAnimTime = 0;
-		m_mtxUV = cMatrixf::Identity;
-		mbHasUvAnimation = false;
+    for (int i = 0; i < eMaterialRenderMode_LastEnum; ++i) {
+      mbHasSpecificSettings[i]        = false;
+      mbHasObjectSpecificsSettings[i] = false;
+    }
 
-		////////////////////////
-		// Set up variables
-		for(int i=0;i<eMaterialTexture_LastEnum; ++i) 
-		{
-			mvTextures[i] = NULL;
-		}
-		for(int j=0; j<2; ++j)
-		for(int i=0;i<eMaterialRenderMode_LastEnum; ++i) 
-		{
-			mvPrograms[j][i] = NULL;
-		}
-		for(int i=0; i<eMaterialRenderMode_LastEnum;++i)
-		for(int j=0; j<kMaxTextureUnits; ++j)
-		{
-			mvTextureInUnit[i][j] = NULL;
-		}
-		
+    mfAnimTime       = 0;
+    m_mtxUV          = cMatrixf::Identity;
+    mbHasUvAnimation = false;
 
-		///////////////////////
-		//Set up depending in type
-		if(mpType->IsTranslucent())
-		{
-			mBlendMode = eMaterialBlendMode_Add;
-		}
-		else
-		{
-			mBlendMode = eMaterialBlendMode_None;
-		}
-		mAlphaMode = eMaterialAlphaMode_Solid;
-		mbDepthTest = true;
+    ////////////////////////
+    // Set up variables
+    for (int i = 0; i < eMaterialTexture_LastEnum; ++i) {
+      mvTextures[i] = NULL;
+    }
+    for (int j = 0; j < 2; ++j)
+      for (int i = 0; i < eMaterialRenderMode_LastEnum; ++i) {
+        mvPrograms[j][i] = NULL;
+      }
+    for (int i = 0; i < eMaterialRenderMode_LastEnum; ++i)
+      for (int j = 0; j < kMaxTextureUnits; ++j) {
+        mvTextureInUnit[i][j] = NULL;
+      }
 
-	}
 
-	//-----------------------------------------------------------------------
-	
-	cMaterial::~cMaterial()
-	{
-		if(mpVars) hplDelete(mpVars);
+    ///////////////////////
+    //Set up depending in type
+    if (mpType->IsTranslucent()) {
+      mBlendMode = eMaterialBlendMode_Add;
+    } else {
+      mBlendMode = eMaterialBlendMode_None;
+    }
+    mAlphaMode  = eMaterialAlphaMode_Solid;
+    mbDepthTest = true;
+  }
 
-		if(mbDestroyTypeSpecifics && mpType)
-		{
-			// Destroy all programs
-			for(int i=0;i<eMaterialRenderMode_LastEnum; ++i) 
-			for(int j=0;j<2; ++j)
-			{
-				if(mvPrograms[j][i])
-				{
-					mpType->DestroyProgram(this, (eMaterialRenderMode)i,mvPrograms[j][i], j);
-				}
-			}
-		}
+  //-----------------------------------------------------------------------
 
-		////////////////////////
-		// Destroy all textures
-		if(mbAutoDestroyTextures)
-		{
-			for(int i=0;i<eMaterialTexture_LastEnum; ++i) 
-			{
-				if(mvTextures[i]) mpResources->GetTextureManager()->Destroy(mvTextures[i]);
-			}
-		}
-	}
+  cMaterial::~cMaterial() {
+    if (mpVars) hplDelete(mpVars);
 
-	//-----------------------------------------------------------------------
+    if (mbDestroyTypeSpecifics && mpType) {
+      // Destroy all programs
+      for (int i = 0; i < eMaterialRenderMode_LastEnum; ++i)
+        for (int j = 0; j < 2; ++j) {
+          if (mvPrograms[j][i]) {
+            mpType->DestroyProgram(this, (eMaterialRenderMode) i, mvPrograms[j][i], j);
+          }
+        }
+    }
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+    ////////////////////////
+    // Destroy all textures
+    if (mbAutoDestroyTextures) {
+      for (int i = 0; i < eMaterialTexture_LastEnum; ++i) {
+        if (mvTextures[i]) mpResources->GetTextureManager()->Destroy(mvTextures[i]);
+      }
+    }
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cMaterial::SetType(iMaterialType* apType)
-	{
-		if(mpType==apType) return;
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-		mpType = apType;
+  //-----------------------------------------------------------------------
 
-		if(mpVars) hplDelete(mpVars);
-		if(mpType) mpVars = mpType->CreateSpecificVariables();
-	}
+  void cMaterial::SetType(iMaterialType* apType) {
+    if (mpType == apType) return;
 
-	//-----------------------------------------------------------------------
+    mpType = apType;
 
-	void cMaterial::Compile()
-	{
-		////////////////////////
-		//Reset some settings before compiling
-		for(int i=0; i<eMaterialRenderMode_LastEnum; ++i)
-		{
-			mbHasSpecificSettings[i] = false;
-			mbHasObjectSpecificsSettings[i] = false;
-		}
+    if (mpVars) hplDelete(mpVars);
+    if (mpType) mpVars = mpType->CreateSpecificVariables();
+  }
 
-		///////////////////
-		// Get the programs
-		for(int i=0;i<eMaterialRenderMode_LastEnum; ++i) 
-		for(int j=0;j<2; ++j)
-		{
-			iGpuProgram *pPrevProg = mvPrograms[j][i];
-			mvPrograms[j][i] = mpType->GetGpuProgram(this, (eMaterialRenderMode)i, j);
+  //-----------------------------------------------------------------------
 
-			//Destroy any previous program (this is so recompilations work with program count!)
-			if(pPrevProg) mpType->DestroyProgram(this, (eMaterialRenderMode)i,pPrevProg, j);
-		}
+  void cMaterial::Compile() {
+    ////////////////////////
+    //Reset some settings before compiling
+    for (int i = 0; i < eMaterialRenderMode_LastEnum; ++i) {
+      mbHasSpecificSettings[i]        = false;
+      mbHasObjectSpecificsSettings[i] = false;
+    }
 
-		///////////////////
-		// Compile texture lookup
-		for(int i=0;i<eMaterialRenderMode_LastEnum; ++i) 
-			for(int j=0; j<kMaxTextureUnits; ++j)
-			{
-				mvTextureInUnit[i][j] = mpType->GetTextureForUnit(this, (eMaterialRenderMode)i, j);
-			}
-		
-		///////////////////
-		// Type specifics
-		mpType->CompileMaterialSpecifics(this);
-	}
-	
-	//-----------------------------------------------------------------------
-	
-	void cMaterial::SetTexture(eMaterialTexture aType, iTexture *apTexture)
-	{
-		mvTextures[aType] = apTexture;
-	}
-	
-	//-----------------------------------------------------------------------
+    ///////////////////
+    // Get the programs
+    for (int i = 0; i < eMaterialRenderMode_LastEnum; ++i)
+      for (int j = 0; j < 2; ++j) {
+        iGpuProgram* pPrevProg = mvPrograms[j][i];
+        mvPrograms[j][i]       = mpType->GetGpuProgram(this, (eMaterialRenderMode) i, j);
 
-	iTexture *cMaterial::GetTexture(eMaterialTexture aType)
-	{
-		return mvTextures[aType];
-	}
+        //Destroy any previous program (this is so recompilations work with program count!)
+        if (pPrevProg) mpType->DestroyProgram(this, (eMaterialRenderMode) i, pPrevProg, j);
+      }
 
-	//-----------------------------------------------------------------------
+    ///////////////////
+    // Compile texture lookup
+    for (int i = 0; i < eMaterialRenderMode_LastEnum; ++i)
+      for (int j = 0; j < kMaxTextureUnits; ++j) {
+        mvTextureInUnit[i][j] = mpType->GetTextureForUnit(this, (eMaterialRenderMode) i, j);
+      }
 
-	cResourceVarsObject* cMaterial::GetVarsObject()
-	{
-		cResourceVarsObject* pVarsObject = hplNew(cResourceVarsObject,());
-		mpType->GetVariableValues(this, pVarsObject);
+    ///////////////////
+    // Type specifics
+    mpType->CompileMaterialSpecifics(this);
+  }
 
-		return pVarsObject;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void cMaterial::SetTexture(eMaterialTexture aType, iTexture* apTexture) {
+    mvTextures[aType] = apTexture;
+  }
 
-	void cMaterial::LoadVariablesFromVarsObject(cResourceVarsObject* apVarsObject)
-	{
-		mpType->LoadVariables(this, apVarsObject);		
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  iTexture* cMaterial::GetTexture(eMaterialTexture aType) {
+    return mvTextures[aType];
+  }
 
-	void cMaterial::SetBlendMode(eMaterialBlendMode aBlendMode)
-	{
-		if(mpType->IsTranslucent()==false) return;
+  //-----------------------------------------------------------------------
 
-		mBlendMode = aBlendMode;
-	}
-	
-	void cMaterial::SetAlphaMode(eMaterialAlphaMode aAlphaMode)
-	{
-		//if(mpType->IsTranslucent()) return;
+  cResourceVarsObject* cMaterial::GetVarsObject() {
+    cResourceVarsObject* pVarsObject = hplNew(cResourceVarsObject, ());
+    mpType->GetVariableValues(this, pVarsObject);
 
-		mAlphaMode = aAlphaMode;
-	}
+    return pVarsObject;
+  }
 
-	void cMaterial::SetDepthTest(bool abDepthTest)
-	{
-		if(mpType->IsTranslucent()==false) return;
+  //-----------------------------------------------------------------------
 
-		mbDepthTest = abDepthTest;
-	}
+  void cMaterial::LoadVariablesFromVarsObject(cResourceVarsObject* apVarsObject) {
+    mpType->LoadVariables(this, apVarsObject);
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cMaterial::UpdateBeforeRendering(float afTimeStep)
-	{
-		if(mbHasUvAnimation) UpdateAnimations(afTimeStep);
-	}
+  void cMaterial::SetBlendMode(eMaterialBlendMode aBlendMode) {
+    if (mpType->IsTranslucent() == false) return;
 
-	//-----------------------------------------------------------------------
+    mBlendMode = aBlendMode;
+  }
 
-	void cMaterial::AddUvAnimation(eMaterialUvAnimation aType, float afSpeed, float afAmp, eMaterialAnimationAxis aAxis)
-	{
-		mvUvAnimations.push_back(cMaterialUvAnimation(aType, afSpeed, afAmp, aAxis));
+  void cMaterial::SetAlphaMode(eMaterialAlphaMode aAlphaMode) {
+    //if(mpType->IsTranslucent()) return;
 
-		mbHasUvAnimation = true;
-	}
+    mAlphaMode = aAlphaMode;
+  }
 
-	//-----------------------------------------------------------------------
+  void cMaterial::SetDepthTest(bool abDepthTest) {
+    if (mpType->IsTranslucent() == false) return;
 
-	void cMaterial::ClearUvAnimations()
-	{
-		mvUvAnimations.clear();
+    mbDepthTest = abDepthTest;
+  }
 
-		mbHasUvAnimation = false;
+  //-----------------------------------------------------------------------
 
-		m_mtxUV = cMatrixf::Identity;
-	}
+  void cMaterial::UpdateBeforeRendering(float afTimeStep) {
+    if (mbHasUvAnimation) UpdateAnimations(afTimeStep);
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+  void cMaterial::AddUvAnimation(eMaterialUvAnimation aType, float afSpeed, float afAmp, eMaterialAnimationAxis aAxis) {
+    mvUvAnimations.push_back(cMaterialUvAnimation(aType, afSpeed, afAmp, aAxis));
 
-	//-----------------------------------------------------------------------
+    mbHasUvAnimation = true;
+  }
 
-	static cVector3f GetAxisVector(eMaterialAnimationAxis aAxis)
-	{
-		switch(aAxis)
-		{
-		case eMaterialAnimationAxis_X: return cVector3f(1,0,0);
-		case eMaterialAnimationAxis_Y: return cVector3f(0,1,0);
-		case eMaterialAnimationAxis_Z: return cVector3f(0,0,1);
-		}
-		return 0;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-	
-	void cMaterial::UpdateAnimations(float afTimeStep)
-	{
-		m_mtxUV = cMatrixf::Identity;
+  void cMaterial::ClearUvAnimations() {
+    mvUvAnimations.clear();
 
-        for(size_t i=0; i<mvUvAnimations.size(); ++i)
-		{
-			cMaterialUvAnimation *pAnim = &mvUvAnimations[i];
+    mbHasUvAnimation = false;
 
-			///////////////////////////
-			// Translate
-			if(pAnim->mType == eMaterialUvAnimation_Translate)
-			{
-				cVector3f vDir = GetAxisVector(pAnim->mAxis);
+    m_mtxUV = cMatrixf::Identity;
+  }
 
-				cMatrixf mtxAdd = cMath::MatrixTranslate(vDir * pAnim->mfSpeed * mfAnimTime);
-				m_mtxUV = cMath::MatrixMul(m_mtxUV, mtxAdd);
-			}
-			///////////////////////////
-			// Sin
-			else if(pAnim->mType == eMaterialUvAnimation_Sin)
-			{
-				cVector3f vDir = GetAxisVector(pAnim->mAxis);
-				
-				cMatrixf mtxAdd = cMath::MatrixTranslate(vDir * sin(mfAnimTime * pAnim->mfSpeed) * pAnim->mfAmp);
-				m_mtxUV = cMath::MatrixMul(m_mtxUV, mtxAdd);
-			}
-			///////////////////////////
-			// Rotate
-			else if(pAnim->mType == eMaterialUvAnimation_Rotate)
-			{
-				cVector3f vDir = GetAxisVector(pAnim->mAxis);
+  //-----------------------------------------------------------------------
 
-				cMatrixf mtxRot = cMath::MatrixRotate(vDir * pAnim->mfSpeed * mfAnimTime,eEulerRotationOrder_XYZ);
-				m_mtxUV = cMath::MatrixMul(m_mtxUV, mtxRot);
-			}
-		}
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-		mfAnimTime += afTimeStep;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  static cVector3f GetAxisVector(eMaterialAnimationAxis aAxis) {
+    switch (aAxis) {
+      case eMaterialAnimationAxis_X: return cVector3f(1, 0, 0);
+      case eMaterialAnimationAxis_Y: return cVector3f(0, 1, 0);
+      case eMaterialAnimationAxis_Z: return cVector3f(0, 0, 1);
+    }
+    return 0;
+  }
 
-}
+  //-----------------------------------------------------------------------
+
+  void cMaterial::UpdateAnimations(float afTimeStep) {
+    m_mtxUV = cMatrixf::Identity;
+
+    for (size_t i = 0; i < mvUvAnimations.size(); ++i) {
+      cMaterialUvAnimation* pAnim = &mvUvAnimations[i];
+
+      ///////////////////////////
+      // Translate
+      if (pAnim->mType == eMaterialUvAnimation_Translate) {
+        cVector3f vDir = GetAxisVector(pAnim->mAxis);
+
+        cMatrixf mtxAdd = cMath::MatrixTranslate(vDir * pAnim->mfSpeed * mfAnimTime);
+        m_mtxUV         = cMath::MatrixMul(m_mtxUV, mtxAdd);
+      }
+      ///////////////////////////
+      // Sin
+      else if (pAnim->mType == eMaterialUvAnimation_Sin) {
+        cVector3f vDir = GetAxisVector(pAnim->mAxis);
+
+        cMatrixf mtxAdd = cMath::MatrixTranslate(vDir * sin(mfAnimTime * pAnim->mfSpeed) * pAnim->mfAmp);
+        m_mtxUV         = cMath::MatrixMul(m_mtxUV, mtxAdd);
+      }
+      ///////////////////////////
+      // Rotate
+      else if (pAnim->mType == eMaterialUvAnimation_Rotate) {
+        cVector3f vDir = GetAxisVector(pAnim->mAxis);
+
+        cMatrixf mtxRot = cMath::MatrixRotate(vDir * pAnim->mfSpeed * mfAnimTime, eEulerRotationOrder_XYZ);
+        m_mtxUV         = cMath::MatrixMul(m_mtxUV, mtxRot);
+      }
+    }
+
+    mfAnimTime += afTimeStep;
+  }
+
+  //-----------------------------------------------------------------------
+
+} // namespace hpl

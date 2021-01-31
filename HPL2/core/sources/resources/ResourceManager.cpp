@@ -32,237 +32,214 @@
 
 namespace hpl {
 
-	int iResourceManager::mlTabCount=0;
+  int iResourceManager::mlTabCount = 0;
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	iResourceManager::iResourceManager(cFileSearcher *apFileSearcher, 
-										iLowLevelResources *apLowLevelResources,
-										iLowLevelSystem *apLowLevelSystem)
-	{
-		mpFileSearcher = apFileSearcher;
-		mpLowLevelResources = apLowLevelResources;
-		mpLowLevelSystem = apLowLevelSystem;
-	}
+  iResourceManager::iResourceManager(cFileSearcher*      apFileSearcher,
+                                     iLowLevelResources* apLowLevelResources,
+                                     iLowLevelSystem*    apLowLevelSystem) {
+    mpFileSearcher      = apFileSearcher;
+    mpLowLevelResources = apLowLevelResources;
+    mpLowLevelSystem    = apLowLevelSystem;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	iResourceBase* iResourceManager::GetResource(const tWString& asFullPath)
-	{
-		unsigned int lHash = cString::GetHashW(asFullPath);
+  iResourceBase* iResourceManager::GetResource(const tWString& asFullPath) {
+    unsigned int lHash = cString::GetHashW(asFullPath);
 
-		tResourceBaseMapIt it = m_mapResources.find(lHash);
-		if(it == m_mapResources.end())return NULL;
+    auto it = m_mapResources.find(lHash);
+    if (it == m_mapResources.end()) {
+      return nullptr;
+    }
 
-        size_t lCount = m_mapResources.count(lHash);
-		for(size_t i=0; i<lCount; ++i, ++it)
-		{
-			iResourceBase *pResource = it->second;
+    size_t lCount = m_mapResources.count(lHash);
+    for (size_t i = 0; i < lCount; ++i, ++it) {
+      iResourceBase* pResource = it->second;
+      if (pResource->GetFullPath() == asFullPath) {
+        return pResource;
+      }
+    }
 
-			if(pResource->GetFullPath() == asFullPath) return pResource;
-		}
+    return nullptr;
+  }
 
-		return NULL;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  cResourceBaseIterator iResourceManager::GetResourceBaseIterator() {
+    return cResourceBaseIterator(&m_mapResources);
+  }
 
-	cResourceBaseIterator iResourceManager::GetResourceBaseIterator()
-	{
-		return cResourceBaseIterator(&m_mapResources);
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	class cSortResources
-	{
-	public:
-		bool operator()(iResourceBase* apResourceA, iResourceBase* apResourceB)
-		{
-			if(apResourceA->GetUserCount() != apResourceB->GetUserCount())
-			{
-				return apResourceA->GetUserCount() > apResourceB->GetUserCount();
-			}
-			
-			return apResourceA->GetTime() > apResourceB->GetTime();
-		}
-	};
+  class cSortResources {
+  public:
+    bool operator()(iResourceBase* apResourceA, iResourceBase* apResourceB) {
+      if (apResourceA->GetUserCount() != apResourceB->GetUserCount()) {
+        return apResourceA->GetUserCount() > apResourceB->GetUserCount();
+      }
 
-	//-----------------------------------------------------------------------
+      return apResourceA->GetTime() > apResourceB->GetTime();
+    }
+  };
 
-    void iResourceManager::DestroyUnused(int alMaxToKeep)
-	{
-		//Log("Start Num Of: %d\n",m_mapHandleResources.size());
-		//Check if there are too many resources.
-		if((int)m_mapResources.size() <= alMaxToKeep) return;
+  //-----------------------------------------------------------------------
 
-		//Add resources to a vector
-		std::vector<iResourceBase*> vResources;
-		vResources.reserve(m_mapResources.size());
-		
-		tResourceBaseMapIt it = m_mapResources.begin();
-		for(;it != m_mapResources.end();++it)
-		{
-			vResources.push_back(it->second);
-		}
+  void iResourceManager::DestroyUnused(int alMaxToKeep) {
+    //Log("Start Num Of: %d\n",m_mapHandleResources.size());
+    //Check if there are too many resources.
+    if ((int) m_mapResources.size() <= alMaxToKeep) return;
 
-		//Sort the sounds according to num of users and then time.
-		std::sort(vResources.begin(), vResources.end(), cSortResources());
-		
-		//Log("-------------Num: %d-----------------\n",vResources.size());
-		for(size_t i=alMaxToKeep; i<vResources.size(); ++i)
-		{
-			iResourceBase *pRes = vResources[i];
-			//Log("%s count:%d time:%d\n",pRes->GetName().c_str(), 
-			//							pRes->GetUserCount(), 
-			//							pRes->GetTime());
+    //Add resources to a vector
+    std::vector<iResourceBase*> vResources;
+    vResources.reserve(m_mapResources.size());
 
-			if(pRes->HasUsers()==false)
-			{
-				RemoveResource(pRes);
-				hplDelete(pRes);
-			}
-		}
-		//Log("--------------------------------------\n");
-		//Log("End Num Of: %d\n",m_mapHandleResources.size());
+    auto it = m_mapResources.begin();
+    for (; it != m_mapResources.end(); ++it) {
+      vResources.push_back(it->second);
+    }
 
-	}
-	
-	//-----------------------------------------------------------------------
-	
-	void iResourceManager::DestroyAll()
-	{
-		tResourceBaseMapIt it = m_mapResources.begin();
-		while(it != m_mapResources.end())
-		{
-			//Log("Start destroy...");
-			
-			iResourceBase* pResource = it->second;
-			
-			//Log(" res: %d ...", pResource);
-			//Log(" res: '%s' / '%s': %d ...",pResource->GetName().c_str(), cString::To8Char(pResource->GetFullPath()).c_str(),pResource->GetUserCount());
+    //Sort the sounds according to num of users and then time.
+    std::sort(vResources.begin(), vResources.end(), cSortResources());
 
-			while(pResource->HasUsers()) pResource->DecUserCount();
-			
-			Destroy(pResource);
+    //Log("-------------Num: %d-----------------\n",vResources.size());
+    for (size_t i = alMaxToKeep; i < vResources.size(); ++i) {
+      iResourceBase* pRes = vResources[i];
+      //      Log("%s count:%d time:%d\n",pRes->GetName().c_str(),
+      //          pRes->GetUserCount(),
+      //          pRes->GetTime());
 
-			it = m_mapResources.begin();
-			
-			//Log(" Done!\n");
-		}
-	}
+      if (!pRes->HasUsers()) {
+        RemoveResource(pRes);
+        hplDelete(pRes);
+      }
+    }
+    //Log("--------------------------------------\n");
+    //Log("End Num Of: %d\n",m_mapHandleResources.size());
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PROTECTED METHODS
-	//////////////////////////////////////////////////////////////////////////
-	
-	//-----------------------------------------------------------------------
+  void iResourceManager::DestroyAll() {
+    auto it = m_mapResources.begin();
+    while (it != m_mapResources.end()) {
+      //Log("Start destroy...");
 
-	void iResourceManager::BeginLoad(const tString& asFile)
-	{
-		mlTimeStart = cPlatform::GetApplicationTime();
-		
-		//Log("Begin resource: %s\n",asFile.c_str());
+      iResourceBase* pResource = it->second;
 
-		mlTabCount++;
-	}
-	
-	//-----------------------------------------------------------------------
+      //Log(" res: %d ...", pResource);
+      //Log(" res: '%s' / '%s': %d ...",pResource->GetName().c_str(), cString::To8Char(pResource->GetFullPath()).c_str(),pResource->GetUserCount());
 
-	void iResourceManager::EndLoad()
-	{
-		mlTabCount--;
-	}
+      while (pResource->HasUsers()) pResource->DecUserCount();
 
-	//-----------------------------------------------------------------------
-	
-	iResourceBase* iResourceManager::FindLoadedResource(const tString &asName, tWString &asFilePath,int *apEqualCount)
-	{
-		asFilePath = mpFileSearcher->GetFilePath(asName, apEqualCount);
-		iResourceBase* pResource = GetResource(asFilePath);
-		if(pResource!=NULL)
-		{
-			asFilePath = _W("");
-		}
+      Destroy(pResource);
 
-		return pResource;
-	}
+      it = m_mapResources.begin();
 
-	//-----------------------------------------------------------------------
-	
-	tString iResourceManager::GetTabs()
-	{
-		tString sTabs ="";
-		for(int i=0; i<mlTabCount; ++i) sTabs+="  ";
-		return sTabs;
-	}
+      //Log(" Done!\n");
+    }
+  }
 
-	void iResourceManager::AddResource(iResourceBase* apResource, bool abLog, bool abAddToSet)
-	{
-		tString sName = cString::ToLowerCase(apResource->GetName());
-		
-		if(abAddToSet)
-		{
-			int lHash = cString::GetHashW(apResource->GetFullPath());
-			m_mapResources.insert(tResourceBaseMap::value_type(lHash, apResource));
-		}
+  //-----------------------------------------------------------------------
 
-		//Log("Adding %d, '%s' hash: %u\n",apResource,cString::To8Char(apResource->GetFullPath()).c_str(), lHash);
-		
-		if(abLog && iResourceBase::GetLogCreateAndDelete())
-		{
-			unsigned long lTime = cPlatform::GetApplicationTime() - mlTimeStart;
-            Log("%sLoaded resource %s in %d ms\n",GetTabs().c_str(), apResource->GetName().c_str(),lTime);
-			apResource->SetLogDestruction(true);
-		}
-		
-		//Log("End resource: %s\n",apResource->GetName().c_str());
-	}
-	
-	//-----------------------------------------------------------------------
+  //////////////////////////////////////////////////////////////////////////
+  // PROTECTED METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	void iResourceManager::RemoveResource(iResourceBase* apResource)
-	{
-		//Log("Removing resource name: '%s' path: '%s' ", apResource->GetName().c_str(), cString::To8Char(apResource->GetFullPath()).c_str());
+  //-----------------------------------------------------------------------
 
-		unsigned int lHash = cString::GetHashW(apResource->GetFullPath());
+  void iResourceManager::BeginLoad(const tString& asFile) {
+    mlTimeStart = cPlatform::GetApplicationTime();
 
-		tResourceBaseMapIt it = m_mapResources.find(lHash);
-		if(it == m_mapResources.end())
-		{
-			//Log("%d was not removed! '%s' Hash: %u\n", apResource, cString::To8Char(apResource->GetFullPath()).c_str(),lHash);
+    Log("Begin resource: %s\n", asFile.c_str());
 
-			//Log("...not found!\n");
-			return;
-		}
+    mlTabCount++;
+  }
 
-		size_t lCount = m_mapResources.count(lHash);
-		for(size_t i=0; i<lCount; ++i, ++it)
-		{
-			iResourceBase *pResource = it->second;
+  //-----------------------------------------------------------------------
 
-			if(pResource == apResource)
-			{
-				//Log("...done!\n");
-				m_mapResources.erase(it);
-				return;
-			}
-		}
- 	}
+  void iResourceManager::EndLoad() {
+    mlTabCount--;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
+
+  iResourceBase* iResourceManager::FindLoadedResource(const tString& asName, tWString& asFilePath, int* apEqualCount) {
+    asFilePath               = mpFileSearcher->GetFilePath(asName, apEqualCount);
+    iResourceBase* pResource = GetResource(asFilePath);
+
+    if (pResource != nullptr) {
+      asFilePath = _W("");
+    }
+
+    return pResource;
+  }
+
+  //-----------------------------------------------------------------------
+
+  tString iResourceManager::GetTabs() {
+    tString sTabs;
+    for (int i = 0; i < mlTabCount; ++i) sTabs += "  ";
+    return sTabs;
+  }
+
+  void iResourceManager::AddResource(iResourceBase* apResource, bool abLog, bool abAddToSet) {
+    tString sName = cString::ToLowerCase(apResource->GetName());
+
+    if (abAddToSet) {
+      int lHash = cString::GetHashW(apResource->GetFullPath());
+      m_mapResources.insert(tResourceBaseMap::value_type(lHash, apResource));
+    }
+
+    //Log("Adding %d, '%s' hash: %u\n",apResource,cString::To8Char(apResource->GetFullPath()).c_str(), lHash);
+
+    if (abLog && iResourceBase::GetLogCreateAndDelete()) {
+      unsigned long lTime = cPlatform::GetApplicationTime() - mlTimeStart;
+      Log("%sLoaded resource %s in %d ms\n", GetTabs().c_str(), apResource->GetName().c_str(), lTime);
+      apResource->SetLogDestruction(true);
+    }
+
+    //Log("End resource: %s\n",apResource->GetName().c_str());
+  }
+
+  //-----------------------------------------------------------------------
+
+  void iResourceManager::RemoveResource(iResourceBase* apResource) {
+    //Log("Removing resource name: '%s' path: '%s' ", apResource->GetName().c_str(), cString::To8Char(apResource->GetFullPath()).c_str());
+
+    unsigned int lHash = cString::GetHashW(apResource->GetFullPath());
+
+    auto it = m_mapResources.find(lHash);
+    if (it == m_mapResources.end()) {
+      //Log("%d was not removed! '%s' Hash: %u\n", apResource, cString::To8Char(apResource->GetFullPath()).c_str(),lHash);
+      //Log("...not found!\n");
+      return;
+    }
+
+    size_t lCount = m_mapResources.count(lHash);
+    for (size_t i = 0; i < lCount; ++i, ++it) {
+      iResourceBase* pResource = it->second;
+
+      if (pResource == apResource) {
+        //Log("...done!\n");
+        m_mapResources.erase(it);
+        return;
+      }
+    }
+  }
+
+  //-----------------------------------------------------------------------
 
 
-}
+} // namespace hpl

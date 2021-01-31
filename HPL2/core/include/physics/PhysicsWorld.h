@@ -129,12 +129,12 @@ namespace hpl {
 		
 		virtual iCollideShape* CreateMeshShape(iVertexBuffer *apVtxBuffer)=0;
 		/**
-		 * The buffer position must be pointing to where the data is saved!
-		 */
+     * The buffer position must be pointing to where the data is saved!
+     */
 		virtual iCollideShape* LoadMeshShapeFromBuffer(cBinaryBuffer *apBuffer)=0;
 		/**
-		 * The shape must be a mesh shape!
-		 */
+     * The shape must be a mesh shape!
+     */
 		virtual void SaveMeshShapeToBuffer(iCollideShape* apMeshShape, cBinaryBuffer *apBuffer)=0;
 		
 		virtual iCollideShape* CreateCompundShape(tCollideShapeVec &avShapes)=0;

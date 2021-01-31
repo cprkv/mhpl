@@ -29,39 +29,40 @@
 
 namespace hpl {
 
-	class cMesh;
+  class cMesh;
 
-	class cResources;
-	class cMaterialManager;
-	class cMeshManager;
-	class cAnimationManager;
-	class cMeshLoaderHandler;
-	class iLowLevelGraphics;
-	class cWorld;
-	class cScene;
-	class cAnimation;
-	class cSystem;
+  class cResources;
+  class cMaterialManager;
+  class cMeshManager;
+  class cAnimationManager;
+  class cMeshLoaderHandler;
+  class iLowLevelGraphics;
+  class cWorld;
+  class cScene;
+  class cAnimation;
+  class cSystem;
 
-	//----------------------------------------
+  //----------------------------------------
 
-	class iMeshLoader : public iResourceLoader
-	{
-	friend class cMeshLoaderHandler;
-	public:
-		iMeshLoader(iLowLevelGraphics *apLowLevelGraphics): mpLowLevelGraphics(apLowLevelGraphics){}
+  class iMeshLoader : public iResourceLoader {
+    friend class cMeshLoaderHandler;
 
-		virtual cMesh* LoadMesh(const tWString& asFile, tMeshLoadFlag aFlags)=0;
-		virtual bool SaveMesh(cMesh* apMesh,const tWString& asFile)=0;
+  public:
+    iMeshLoader(iLowLevelGraphics* apLowLevelGraphics)
+        : mpLowLevelGraphics(apLowLevelGraphics) {}
 
-		virtual cAnimation* LoadAnimation(const tWString& asFile)=0;
-		virtual bool SaveAnimation(cAnimation* apAnimation, const tWString& asFile)=0;
+    virtual cMesh* LoadMesh(const tWString& asFile, tMeshLoadFlag aFlags) = 0;
+    virtual bool   SaveMesh(cMesh* apMesh, const tWString& asFile)        = 0;
 
-	protected:
-        cMaterialManager *mpMaterialManager;
-		cMeshManager *mpMeshManager;
-		cAnimationManager *mpAnimationManager;
-		iLowLevelGraphics *mpLowLevelGraphics;
-	};
+    virtual cAnimation* LoadAnimation(const tWString& asFile)                          = 0;
+    virtual bool        SaveAnimation(cAnimation* apAnimation, const tWString& asFile) = 0;
 
-};
+  protected:
+    cMaterialManager*  mpMaterialManager;
+    cMeshManager*      mpMeshManager;
+    cAnimationManager* mpAnimationManager;
+    iLowLevelGraphics* mpLowLevelGraphics;
+  };
+
+};     // namespace hpl
 #endif // HPL_MESH_LOADER_H

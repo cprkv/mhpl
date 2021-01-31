@@ -24,110 +24,96 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cAnimation::cAnimation(const tString &asName, const tWString &asFullPath, const tString &asFile) : iResourceBase(asName, asFullPath,0)
-	{
-		msAnimName = "";
-		msFileName = asFile;
-	}
+  cAnimation::cAnimation(const tString& asName, const tWString& asFullPath, const tString& asFile)
+      : iResourceBase(asName, asFullPath, 0) {
+    msAnimName = "";
+    msFileName = asFile;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cAnimation::~cAnimation()
-	{
-		STLDeleteAll(mvTracks);
-	}
+  cAnimation::~cAnimation() {
+    STLDeleteAll(mvTracks);
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	float cAnimation::GetLength()
-	{
-		return mfLength;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  float cAnimation::GetLength() {
+    return mfLength;
+  }
 
-	void cAnimation::SetLength(float afTime)
-	{
-		mfLength = afTime;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void cAnimation::SetLength(float afTime) {
+    mfLength = afTime;
+  }
 
-	cAnimationTrack* cAnimation::CreateTrack(const tString &asName, tAnimTransformFlag aFlags)
-	{
-		cAnimationTrack *pTrack = hplNew( cAnimationTrack,(asName, aFlags, this) );
+  //-----------------------------------------------------------------------
 
-		mvTracks.push_back(pTrack);
+  cAnimationTrack* cAnimation::CreateTrack(const tString& asName, tAnimTransformFlag aFlags) {
+    auto* pTrack = hplNew(cAnimationTrack, (asName, aFlags, this));
+    mvTracks.push_back(pTrack);
+    return pTrack;
+  }
 
-		return pTrack;
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cAnimationTrack* cAnimation::GetTrack(int alIndex)
-	{
-		return mvTracks[alIndex];
-	}
+  cAnimationTrack* cAnimation::GetTrack(int alIndex) {
+    return mvTracks[alIndex];
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cAnimationTrack* cAnimation::GetTrackByName(const tString &asName)
-	{
-		for(size_t i=0; i< mvTracks.size(); ++i)
-		{
-			if(asName == tString(mvTracks[i]->GetName()))
-			{
-				return mvTracks[i];
-			}
-		}
+  cAnimationTrack* cAnimation::GetTrackByName(const tString& asName) {
+    for (auto& mvTrack : mvTracks) {
+      if (asName == tString(mvTrack->GetName())) {
+        return mvTrack;
+      }
+    }
 
-		return NULL;
-	}
-	
-	//-----------------------------------------------------------------------
-	
-	void cAnimation::ReserveTrackNum(int alNum)
-	{
-		mvTracks.reserve(alNum);
-	}
-	
-	//-----------------------------------------------------------------------
+    return NULL;
+  }
 
-	int cAnimation::GetTrackNum()
-	{
-		return (int)mvTracks.size();
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void cAnimation::ReserveTrackNum(int alNum) {
+    mvTracks.reserve(alNum);
+  }
 
-	void cAnimation::SmoothAllTracks(float afAmount, float afPow, int alSamples,bool abTranslation, bool abRotation)
-	{
-		for(size_t i=0; i< mvTracks.size(); ++i)
-		{
-			mvTracks[i]->Smooth(afAmount, afPow, alSamples, abTranslation, abRotation);
-		}
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  int cAnimation::GetTrackNum() {
+    return (int) mvTracks.size();
+  }
+
+  //-----------------------------------------------------------------------
+
+  void cAnimation::SmoothAllTracks(float afAmount, float afPow, int alSamples, bool abTranslation, bool abRotation) {
+    for (auto& mvTrack : mvTracks) {
+      mvTrack->Smooth(afAmount, afPow, alSamples, abTranslation, abRotation);
+    }
+  }
+
+  //-----------------------------------------------------------------------
 
 
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+} // namespace hpl

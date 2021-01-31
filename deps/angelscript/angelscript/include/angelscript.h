@@ -925,7 +925,7 @@ struct asSMethodPtr {
   static asSFuncPtr Convert(M Mthd) {
     // This version of the function should never be executed, nor compiled,
     // as it would mean that the size of the method pointer cannot be determined.
-    int ERROR_UnsupportedMethodPtr[N - 100];
+    int        ERROR_UnsupportedMethodPtr[N - 100];
     asSFuncPtr p{};
     return p;
   }
@@ -1617,6 +1617,38 @@ const asSBCInfo asBCInfo[256] = {
 #define asBC_SWORDARG1(x) (*(((short*) x) + 2))
 #define asBC_SWORDARG2(x) (*(((short*) x) + 3))
 
+inline const char* asErrorCodeStr(int code) {
+  switch (code) {
+    case asSUCCESS: return "asSUCCESS";
+    case asERROR: return "asERROR";
+    case asCONTEXT_ACTIVE: return "asCONTEXT_ACTIVE";
+    case asCONTEXT_NOT_FINISHED: return "asCONTEXT_NOT_FINISHED";
+    case asCONTEXT_NOT_PREPARED: return "asCONTEXT_NOT_PREPARED";
+    case asINVALID_ARG: return "asINVALID_ARG";
+    case asNO_FUNCTION: return "asNO_FUNCTION";
+    case asNOT_SUPPORTED: return "asNOT_SUPPORTED";
+    case asINVALID_NAME: return "asINVALID_NAME";
+    case asNAME_TAKEN: return "asNAME_TAKEN";
+    case asINVALID_DECLARATION: return "asINVALID_DECLARATION";
+    case asINVALID_OBJECT: return "asINVALID_OBJECT";
+    case asINVALID_TYPE: return "asINVALID_TYPE";
+    case asALREADY_REGISTERED: return "asALREADY_REGISTERED";
+    case asMULTIPLE_FUNCTIONS: return "asMULTIPLE_FUNCTIONS";
+    case asNO_MODULE: return "asNO_MODULE";
+    case asNO_GLOBAL_VAR: return "asNO_GLOBAL_VAR";
+    case asINVALID_CONFIGURATION: return "asINVALID_CONFIGURATION";
+    case asINVALID_INTERFACE: return "asINVALID_INTERFACE";
+    case asCANT_BIND_ALL_FUNCTIONS: return "asCANT_BIND_ALL_FUNCTIONS";
+    case asLOWER_ARRAY_DIMENSION_NOT_REGISTERED: return "asLOWER_ARRAY_DIMENSION_NOT_REGISTERED";
+    case asWRONG_CONFIG_GROUP: return "asWRONG_CONFIG_GROUP";
+    case asCONFIG_GROUP_IS_IN_USE: return "asCONFIG_GROUP_IS_IN_USE";
+    case asILLEGAL_BEHAVIOUR_FOR_TYPE: return "asILLEGAL_BEHAVIOUR_FOR_TYPE";
+    case asWRONG_CALLING_CONV: return "asWRONG_CALLING_CONV";
+    case asBUILD_IN_PROGRESS: return "asBUILD_IN_PROGRESS";
+    case asINIT_GLOBAL_VARS_FAILED: return "asINIT_GLOBAL_VARS_FAILED";
+  }
+  return "UNKNOWN";
+}
 
 END_AS_NAMESPACE
 

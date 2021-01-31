@@ -41,10 +41,10 @@ namespace hpl {
 		void FromRotationMatrix(const cMatrix<float> &a_mtxRot);
 
 		/**
-		 * Set the quaternion from and angle and axis.
-		 * \param afAngle 
-		 * \param &avAxis MUST be unit length!
-		 */
+     * Set the quaternion from and angle and axis.
+     * \param afAngle
+     * \param &avAxis MUST be unit length!
+     */
 		void FromAngleAxis(float afAngle, const cVector3<float> &avAxis);
 
 

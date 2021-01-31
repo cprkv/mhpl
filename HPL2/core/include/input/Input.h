@@ -59,35 +59,35 @@ namespace hpl {
         ~cInput();
 		
 		/**
-		 * Updates the input, called by cEngine
-		 */
+     * Updates the input, called by cEngine
+     */
 		void Update(float afTimeStep);
 		
 		/**
-		 * Create and add a new action. The Name must be unique, and the Id is optional
-		 */
+     * Create and add a new action. The Name must be unique, and the Id is optional
+     */
 		cAction* CreateAction(const tString& asName, int alId=-1);
 
 		/**
-		 * Check if an action is triggered.
-		 * \param asName 
-		 * \return 
-		 */
+     * Check if an action is triggered.
+     * \param asName
+     * \return
+     */
 		bool IsTriggerd(const tString& asName);
 		bool IsTriggerd(int alId);
 		/**
-		 *
-		 * \param asName name of the action.
-		 * \return 
-		 */
+     *
+     * \param asName name of the action.
+     * \return
+     */
 		bool WasTriggerd(const tString& asName);
 		bool WasTriggerd(int alId);
 
 		/**
-		 *
-		 * \param asName name of the action.
-		 * \return 
-		 */
+     *
+     * \param asName name of the action.
+     * \return
+     */
 		bool BecameTriggerd(const tString& asName);
 		bool BecameTriggerd(int alId);
 
@@ -100,9 +100,9 @@ namespace hpl {
 		bool DoubleTriggerd(int alId, float afLimit);
         
 		/**
-		 *
-		 * \return currently used keyboard
-		 */
+     *
+     * \return currently used keyboard
+     */
 		iKeyboard * GetKeyboard();
 
 		/**
@@ -138,27 +138,27 @@ namespace hpl {
 		cAction* GetAction(int alId);
 
 		/**
-		 * Destroys an action if it exists.
-		 */
+     * Destroys an action if it exists.
+     */
 		void DestroyAction(cAction *apAction);
 
 		/**
-		 * Checks if any input is given.
-		 * \return true if any input is given, else false.
-		 */
+     * Checks if any input is given.
+     * \return true if any input is given, else false.
+     */
 		bool CheckForInput();
 
 
 		/**
-		 * This resets all actions to the current way that 
-		 */
+     * This resets all actions to the current way that
+     */
 		void ResetActionsToCurrentState();
 
 		/**
-		 * Creates an action from the latest input made. Any action with the same name is destroyed.
-		 * \param &asName Name of action be be created.
-		 * \return NULL if no input was given.
-		 */
+     * Creates an action from the latest input made. Any action with the same name is destroyed.
+     * \param &asName Name of action be be created.
+     * \return NULL if no input was given.
+     */
 		iSubAction* InputToSubAction();
 
         bool isQuitMessagePosted();

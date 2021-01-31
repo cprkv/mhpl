@@ -120,8 +120,8 @@ namespace hpl {
 		
 		
 		/**
-		 * Loads several images asFile+00, etc. Used for animations.Must have extension!
-		 */
+     * Loads several images asFile+00, etc. Used for animations.Must have extension!
+     */
 		cGuiGfxElement* CreateGfxImageBuffer(	const tString &asFile,eGuiMaterial aMaterial,
 												bool abCreateAnimation=true,
 												const cColor& aColor=cColor(1,1), bool abAddToList=true);

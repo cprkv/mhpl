@@ -25,40 +25,41 @@
 
 namespace hpl {
 
-	class cSoundManager;
-	class iSoundChannel;
-	
-	class iSoundData : public iResourceBase
-	{
-	public:
-		iSoundData(const tString& asName, const tWString& asFullPath, bool abStream) : iResourceBase(asName, asFullPath, 0),
-		mpSoundManger(NULL), mbStream(abStream){}
-		
-		virtual ~iSoundData(){}
+  class cSoundManager;
+  class iSoundChannel;
 
-		virtual bool CreateFromFile(const tWString &asFile)=0;
+  class iSoundData : public iResourceBase {
+  public:
+    iSoundData(const tString& asName, const tWString& asFullPath, bool abStream)
+        : iResourceBase(asName, asFullPath, 0)
+        , mpSoundManger(NULL)
+        , mbStream(abStream) {}
 
-		virtual iSoundChannel* CreateChannel(int alPriority)=0;
-		
+    virtual ~iSoundData() {}
 
-		virtual bool IsStereo()=0;
+    virtual bool CreateFromFile(const tWString& asFile) = 0;
 
-		bool IsStream(){ return mbStream;}
-		void SetLoopStream(bool abX){mbLoopStream = abX;}
-		bool GetLoopStream(){ return mbLoopStream;}
+    virtual iSoundChannel* CreateChannel(int alPriority) = 0;
 
-		bool Reload(){ return false;}
-		void Unload(){}
-		void Destroy(){}
 
-		void SetSoundManager(cSoundManager* apSoundManager){
-			mpSoundManger = apSoundManager;
-		}
-	
-	protected:	
-		bool mbStream;
-		bool mbLoopStream;
-		cSoundManager* mpSoundManger;
-	};
-};
+    virtual bool IsStereo() = 0;
+
+    bool IsStream() { return mbStream; }
+    void SetLoopStream(bool abX) { mbLoopStream = abX; }
+    bool GetLoopStream() { return mbLoopStream; }
+
+    bool Reload() { return false; }
+    void Unload() {}
+    void Destroy() {}
+
+    void SetSoundManager(cSoundManager* apSoundManager) {
+      mpSoundManger = apSoundManager;
+    }
+
+  protected:
+    bool           mbStream;
+    bool           mbLoopStream;
+    cSoundManager* mpSoundManger;
+  };
+};     // namespace hpl
 #endif // HPL_SOUND_DATA_H

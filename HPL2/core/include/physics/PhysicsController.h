@@ -103,8 +103,8 @@ namespace hpl {
 		void SetActive(bool abX);
 
 		/*
-		 * p in Pid and k in springs
-		 */
+     * p in Pid and k in springs
+     */
 		void SetA(float afA){ mfA = afA;}
 		/*
 		* i in Pid and b in springs

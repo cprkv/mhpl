@@ -85,9 +85,9 @@ namespace hpl {
 		bool GetPath(const cVector3f& avStart, const cVector3f& avGoal, tAINodeList *apNodeList);
 
 		/**
-		 * Set max number of times the algorithm is iterated.
-		 * \param alX -1 = until OpenList is empty
-		 */
+     * Set max number of times the algorithm is iterated.
+     * \param alX -1 = until OpenList is empty
+     */
 		void SetMaxIterations(int alX){ mlMaxIterations = alX;}
 
 		void SetCallback(iAStarCallback *apCallback){ mpCallback = apCallback;}

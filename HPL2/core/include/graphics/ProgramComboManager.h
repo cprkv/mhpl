@@ -26,170 +26,168 @@
 
 namespace hpl {
 
-	//---------------------------------------------------
+  //---------------------------------------------------
 
-	class cGraphics;
-	class cResources;
-	class iTexture;
-	class iGpuProgram;
-	class iGpuShader;
-	class cParserVarContainer;
+  class cGraphics;
+  class cResources;
+  class iTexture;
+  class iGpuProgram;
+  class iGpuShader;
+  class cParserVarContainer;
 
-	//---------------------------------------------------
+  //---------------------------------------------------
 
-	#define kPC_VertexBit		eFlagBit_0
-	#define kPC_FragmentBit		eFlagBit_1
+#define kPC_VertexBit eFlagBit_0
+#define kPC_FragmentBit eFlagBit_1
 
+  //---------------------------------------------------
 
-	//---------------------------------------------------
+  class cProgramComboVariable {
+  public:
+    cProgramComboVariable(const tString& asVarName, int alId)
+        : msVarName(asVarName)
+        , mlId(alId) {}
 
-	class cProgramComboVariable
-	{
-	public:
-		cProgramComboVariable(const tString& asVarName, int alId) : msVarName(asVarName), mlId(alId){}
+    tString msVarName;
+    int     mlId;
+  };
 
-		tString msVarName;
-		int mlId;
-	};
+  typedef std::list<cProgramComboVariable>    tProgramComboVariableList;
+  typedef tProgramComboVariableList::iterator tProgramComboVariableListIt;
 
-	typedef std::list<cProgramComboVariable> tProgramComboVariableList;
-	typedef tProgramComboVariableList::iterator tProgramComboVariableListIt;
+  //---------------------------------------------------
 
-	//---------------------------------------------------
+  class cProgramComboShader {
+  public:
+    cProgramComboShader()
+        : mpShader(nullptr)
+        , mlUserCount(0) {}
 
-	class cProgramComboShader
-	{
-	public:
-		cProgramComboShader() : mpShader(NULL), mlUserCount(0) {}
+    iGpuShader* mpShader;
+    int         mlUserCount;
+  };
 
-		iGpuShader* mpShader;
-		int mlUserCount;
-	};
+  typedef std::map<unsigned int, cProgramComboShader*> tProgramComboShaderMap;
+  typedef tProgramComboShaderMap::iterator             tProgramComboShaderMapIt;
 
-	typedef std::map<unsigned int, cProgramComboShader*> tProgramComboShaderMap;
-	typedef tProgramComboShaderMap::iterator tProgramComboShaderMapIt;
+  //---------------------------------------------------
 
-	//---------------------------------------------------
+  class cProgramComboProgram {
+  public:
+    cProgramComboProgram()
+        : mpProgram(nullptr)
+        , mlUserCount(0) {}
 
-	class cProgramComboProgram
-	{
-	public:
-		cProgramComboProgram() : mpProgram(NULL), mlUserCount(0) {}
-		
-		void DestroyProgram();
+    void DestroyProgram();
 
-		iGpuProgram* mpProgram;
-		int mlUserCount;
-	};
+    iGpuProgram* mpProgram;
+    int          mlUserCount;
+  };
 
-	typedef std::map<unsigned int, cProgramComboProgram*> tProgramComboProgramMap;
-	typedef tProgramComboProgramMap::iterator tProgramComboProgramMapIt;
-	
-	//---------------------------------------------------
+  typedef std::map<unsigned int, cProgramComboProgram*> tProgramComboProgramMap;
+  typedef tProgramComboProgramMap::iterator             tProgramComboProgramMapIt;
 
-	class cProgramComboSettingsVar
-	{
-	public: 
-		cProgramComboSettingsVar(){}
-		cProgramComboSettingsVar(const tString& asName, const tString& asValue) : msName(asName), msValue(asValue) {}
+  //---------------------------------------------------
 
-		tString msName;
-		tString msValue;
-	};
+  class cProgramComboSettingsVar {
+  public:
+    cProgramComboSettingsVar() {}
+    cProgramComboSettingsVar(const tString& asName, const tString& asValue)
+        : msName(asName)
+        , msValue(asValue) {}
 
-	//---------------------------------------------------
+    tString msName;
+    tString msValue;
+  };
 
-	class cProgramComboSettings
-	{
-	public:
-		tString msName;
+  //---------------------------------------------------
 
-		tString msVtxShader;
-		tString msFragShader;
-		
-		std::vector<cProgramComboFeature> mvFeatures;
-		std::vector<cProgramComboSettingsVar> mvDefaultVars;       		
-	};
+  class cProgramComboSettings {
+  public:
+    tString msName;
 
-	//---------------------------------------------------
+    tString msVtxShader;
+    tString msFragShader;
 
-	class cProgramComboManager
-	{
-	public:
-		cProgramComboManager(const tString& asName, cGraphics *apGraphics, cResources *apResources, int alNumOfMainModes);
-		~cProgramComboManager();
+    std::vector<cProgramComboFeature>     mvFeatures;
+    std::vector<cProgramComboSettingsVar> mvDefaultVars;
+  };
 
-		void SetName( const tString& asName){ msName = asName;}
+  //---------------------------------------------------
 
-		iGpuProgram* GenerateProgram(int alMainMode, int alFlags);
-		int GetGenerateCombinationNum(int alMainMode){ return mvCombinationNum[alMainMode]; }
+  class cProgramComboManager {
+  public:
+    cProgramComboManager(const tString& asName, cGraphics* apGraphics, cResources* apResources, int alNumOfMainModes);
+    ~cProgramComboManager();
 
-		void SetupGenerateProgramData(int alMainMode, const tString &asModeName, 
-								const tString &asVtxShaderName, const tString &asFragShaderName,
-								cProgramComboFeature *apFeatures, int alFeatureNum, 
-								cParserVarContainer &avDefaultVars);
+    void SetName(const tString& asName) { msName = asName; }
 
-		void AddGenerateProgramVariableId(const tString& asVarName, int alId, int alMainMode);
+    iGpuProgram* GenerateProgram(int alMainMode, int alFlags);
+    int          GetGenerateCombinationNum(int alMainMode) { return mvCombinationNum[alMainMode]; }
 
-		void DestroyGeneratedProgram(int alMainMode, iGpuProgram* apProgram);
-		void DestroyGeneratedShader(int alMainMode, iGpuShader* apShader, eGpuShaderType aType);
-		
-		iGpuShader *CreateShader(const tString& asName, eGpuShaderType aType, cParserVarContainer *apVars, bool abAddtoList);
-		iGpuProgram *CreateProgram(const tString& asName, bool abAddtoList);
-		
-		/**
-		 * Do NOT use these to destroy program create with SetupProgramModeData
-		 */
-		void DestroyShader(iGpuShader * apShader);
-		void DestroyProgram(iGpuProgram * apProgram);
-		
-		iGpuProgram* CreateProgramFromShaders(	const tString &asProgramName,
-												const tString &asVtxShaderName, const tString &asFragShaderName,
-												cParserVarContainer *apVars,bool abAddtoList);
-		iGpuProgram* CreateProgramFromShaders(	const tString &asProgramName, iGpuShader *apVtxShader,iGpuShader *apFragShader, 
-												bool abAddtoList);
+    void SetupGenerateProgramData(int alMainMode, const tString& asModeName,
+                                  const tString& asVtxShaderName, const tString& asFragShaderName,
+                                  cProgramComboFeature* apFeatures, int alFeatureNum,
+                                  cParserVarContainer& avDefaultVars);
 
-		void DestroyShadersAndPrograms();
+    void AddGenerateProgramVariableId(const tString& asVarName, int alId, int alMainMode);
 
-	private:
-		tString GenerateProgramName(int alMainMode, int alBitFlags);
+    void DestroyGeneratedProgram(int alMainMode, iGpuProgram* apProgram);
+    void DestroyGeneratedShader(int alMainMode, iGpuShader* apShader, eGpuShaderType aType);
 
-		iGpuShader* GetShaderForCombo(int alMainMode, int alBitFlags, const tString& asShaderName, tFlag aShaderType);
-		iGpuShader* CreateShaderFromFeatures(	const tString& asShaderFile, tFlag aShaderType, int alBitFlags, cProgramComboFeature* apFeatures, int alFeatureNum, 
-												cProgramComboSettingsVar *apDefaultVars, int alDefaultVarsNum);
+    iGpuShader*  CreateShader(const tString& asName, eGpuShaderType aType, cParserVarContainer* apVars, bool abAddtoList);
+    iGpuProgram* CreateProgram(const tString& asName, bool abAddtoList);
 
+    /**
+     * Do NOT use these to destroy program create with SetupProgramModeData
+     */
+    void DestroyShader(iGpuShader* apShader);
+    void DestroyProgram(iGpuProgram* apProgram);
 
-		/*void CreateValidShaderCombos(	const tString& asFile, tFlag aShaderType, iGpuShader **apShaderVec,
-										cProgramComboFeature *apFeatures, int alCombinations, int alFeatureNum,
-										cParserVarContainer &avDefaultVars);
-		void CreateProgramCombos(	int alMode,
-									cProgramComboProgram *apProgramDataVec,
-									iGpuShader **apVtxShaderVec,iGpuShader **apFragShaderVec,
-									cProgramComboFeature *apFeatures, int alCombinations, int alFeatureNum);
-		iGpuShader* GetShaderWithCombo(	iGpuShader **apShaderVec, tFlag aShaderType, int alBitFlag,
-										cProgramComboFeature *apFeatures, int alFeatureNum);*/
+    iGpuProgram* CreateProgramFromShaders(const tString& asProgramName,
+                                          const tString& asVtxShaderName, const tString& asFragShaderName,
+                                          cParserVarContainer* apVars, bool abAddtoList);
+    iGpuProgram* CreateProgramFromShaders(const tString& asProgramName, iGpuShader* apVtxShader, iGpuShader* apFragShader,
+                                          bool abAddtoList);
 
+    void DestroyShadersAndPrograms();
 
-		cGraphics *mpGraphics;
-		cResources *mpResources;
+  private:
+    tString GenerateProgramName(int alMainMode, int alBitFlags);
 
-		tString msName;
+    iGpuShader* GetShaderForCombo(int alMainMode, int alBitFlags, const tString& asShaderName, tFlag aShaderType);
+    iGpuShader* CreateShaderFromFeatures(const tString& asShaderFile, tFlag aShaderType, int alBitFlags, cProgramComboFeature* apFeatures, int alFeatureNum,
+                                         cProgramComboSettingsVar* apDefaultVars, int alDefaultVarsNum);
 
-		std::vector< tProgramComboVariableList > mvVarLists;
-		std::vector< cProgramComboSettings > mvSettings;
+    //    void        CreateValidShaderCombos(const tString& asFile, tFlag aShaderType, iGpuShader** apShaderVec,
+    //                                        cProgramComboFeature* apFeatures, int alCombinations, int alFeatureNum,
+    //                                        cParserVarContainer& avDefaultVars);
+    //    void        CreateProgramCombos(int alMode, cProgramComboProgram* apProgramDataVec,
+    //                                    iGpuShader** apVtxShaderVec, iGpuShader** apFragShaderVec,
+    //                                    cProgramComboFeature* apFeatures, int alCombinations, int alFeatureNum);
+    //    iGpuShader* GetShaderWithCombo(iGpuShader** apShaderVec, tFlag aShaderType, int alBitFlag,
+    //                                   cProgramComboFeature* apFeatures, int alFeatureNum);
 
-		int mlNumOfMainModes;
-		std::vector<int> mvCombinationNum;
+    cGraphics*  mpGraphics;
+    cResources* mpResources;
 
-		std::vector<tProgramComboProgramMap> mvProgramSets;
-		std::vector<tProgramComboShaderMap> mvVtxShaderSets;
-		std::vector<tProgramComboShaderMap> mvFragShaderSets;
+    tString msName;
 
-		tGpuShaderList mlstExtraShaders;
-		tGpuProgramList mlstExtraPrograms;
-	};
+    std::vector<tProgramComboVariableList> mvVarLists;
+    std::vector<cProgramComboSettings>     mvSettings;
 
-	//---------------------------------------------------
+    int              mlNumOfMainModes;
+    std::vector<int> mvCombinationNum;
 
-};
+    std::vector<tProgramComboProgramMap> mvProgramSets;
+    std::vector<tProgramComboShaderMap>  mvVtxShaderSets;
+    std::vector<tProgramComboShaderMap>  mvFragShaderSets;
+
+    tGpuShaderList  mlstExtraShaders;
+    tGpuProgramList mlstExtraPrograms;
+  };
+
+  //---------------------------------------------------
+
+};     // namespace hpl
 #endif // HPL_PROGRAM_COMBO_MANAGER_H

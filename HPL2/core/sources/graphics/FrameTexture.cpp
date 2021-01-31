@@ -24,62 +24,65 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cFrameTexture::cFrameTexture(iTexture *apTex, int alHandle,cImageManager *apImageManager, bool abIsCustom) : iFrameBase()
-	{
-		mpTexture = apTex;
-		mlHandle =alHandle;
+  cFrameTexture::cFrameTexture(iTexture* apTex, int alHandle, cImageManager* apImageManager, bool abIsCustom)
+      : iFrameBase() {
+    mpTexture      = apTex;
+    mlHandle       = alHandle;
+    mbIsCustom     = abIsCustom;
+    mpImageManager = apImageManager;
+  }
 
-		mbIsCustom = abIsCustom;
+  cFrameTexture::~cFrameTexture() {
+    if (mpTexture) {
+      hplDelete(mpTexture);
+    }
+    mpTexture = nullptr;
+  }
 
-		mpImageManager = apImageManager;
-	}
+  //-----------------------------------------------------------------------
 
-	cFrameTexture::~cFrameTexture()
-	{
-		if(mpTexture) hplDelete(mpTexture);
-		mpTexture = NULL;
-	}
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  iTexture* cFrameTexture::GetTexture() {
+    return mpTexture;
+  }
 
-	//-----------------------------------------------------------------------
-	
-	iTexture* cFrameTexture::GetTexture()
-	{
-		return mpTexture;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-	
-	cFrameSubImage* cFrameTexture::CreateCustomImage(const cVector2l& avPixelPos,const cVector2l& avPixelSize)
-	{
-		if(mbIsCustom==false) return NULL;
+  cFrameSubImage* cFrameTexture::CreateCustomImage(const cVector2l& avPixelPos, const cVector2l& avPixelSize) {
+    if (!mbIsCustom) {
+      return nullptr;
+    }
 
-		mlPicCount++;
+    mlPicCount++;
 
-        const cVector3l& vSourceSize = mpTexture->GetSize();
-		cVector2f vDestPos = cVector2f((float)avPixelPos.x / (float)vSourceSize.x,(float)avPixelPos.y / (float)vSourceSize.y );
-		cVector2f vDestSize = cVector2f((float)avPixelSize.x / (float)vSourceSize.x,(float)avPixelSize.y / (float)vSourceSize.y );
+    const cVector3l& vSourceSize = mpTexture->GetSize();
+    cVector2f        vDestPos    = cVector2f(
+        static_cast<float>(avPixelPos.x) / static_cast<float>(vSourceSize.x),
+        static_cast<float>(avPixelPos.y) / static_cast<float>(vSourceSize.y));
+    cVector2f vDestSize = cVector2f(
+        static_cast<float>(avPixelSize.x) / static_cast<float>(vSourceSize.x),
+        static_cast<float>(avPixelSize.y) / static_cast<float>(vSourceSize.y));
 
-		cFrameSubImage* pImage = hplNew(cFrameSubImage, ("",_W(""),this,NULL,
-														cRect2l(avPixelPos,avPixelSize),
-														cVector2l(vSourceSize.x,vSourceSize.y),
-														mlHandle, NULL) );
+    auto* pImage = hplNew(cFrameSubImage, ("", _W(""), this, nullptr,
+                                           cRect2l(avPixelPos, avPixelSize),
+                                           cVector2l(vSourceSize.x, vSourceSize.y),
+                                           mlHandle, nullptr));
 
-		pImage->IncUserCount();
+    pImage->IncUserCount();
 
-		return pImage;
-	}
+    return pImage;
+  }
 
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+} // namespace hpl

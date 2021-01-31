@@ -32,32 +32,32 @@ namespace hpl {
 		virtual ~iLowLevelInput(){}
 		
 		/**
-		 * Lock all input to current window.
-		 * \param abX 
-		 * \return 
-		 */
+     * Lock all input to current window.
+     * \param abX
+     * \return
+     */
 		virtual void LockInput(bool abX)=0;
 		/**
-		 * Use relative mouse mode
-		 * \param abX
-		 * \return
-		 */
+     * Use relative mouse mode
+     * \param abX
+     * \return
+     */
 		virtual void RelativeMouse(bool abX)=0;
 		/**
-		 * Called by cInput
-		 */
+     * Called by cInput
+     */
 		virtual void BeginInputUpdate()=0;
 		/**
-		 * called by cInput
-		 */
+     * called by cInput
+     */
 		virtual void EndInputUpdate()=0;
 
 		virtual bool isQuitMessagePosted()=0;
         virtual void resetQuitMessagePosted()=0;
 
 		/**
-		 * 
-		 */
+     *
+     */
 		virtual void InitGamepadSupport()=0;
 		virtual void DropGamepadSupport()=0;
 

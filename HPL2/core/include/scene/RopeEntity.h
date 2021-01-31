@@ -28,94 +28,94 @@
 
 namespace hpl {
 
-	class cMaterialManager;
-	class cGraphics;
-	class cResources;
-	class iLowLevelGraphics;
-	class cMaterial;
-	class iVertexBuffer;
-	class iPhysicsRope;
-	
-	//------------------------------------------
+  class cMaterialManager;
+  class cGraphics;
+  class cResources;
+  class iLowLevelGraphics;
+  class cMaterial;
+  class iVertexBuffer;
+  class iPhysicsRope;
 
-	class cRopeEntity : public iRenderable
-	{
-	public:
-		cRopeEntity(const tString& asName, cResources *apResources,cGraphics *apGraphics, iPhysicsRope *apRope, int alMaxSegments);
-		~cRopeEntity();
+  //------------------------------------------
 
-		const tString& GetName(){return msName;}
+  class cRopeEntity : public iRenderable {
+  public:
+    cRopeEntity(const tString& asName, cResources* apResources, cGraphics* apGraphics, iPhysicsRope* apRope, int alMaxSegments);
+    ~cRopeEntity();
 
-		iPhysicsRope *GetPhysicsRope(){ return mpRope;}
+    const tString& GetName() { return msName; }
 
-		void SetMaterial(cMaterial * apMaterial);
-		
-		void SetColor(const cColor &aColor);
-		const cColor& GetColor(){ return mColor;}
+    iPhysicsRope* GetPhysicsRope() { return mpRope; }
 
-		void SetMultiplyAlphaWithColor(bool abX);
-		bool GetMultiplyAlphaWithColor(){ return mbMultiplyAlphaWithColor;}
+    void SetMaterial(cMaterial* apMaterial);
 
-		void SetRadius(float afX){ mfRadius = afX;}
-		float GetRadius(){ return mfRadius;}
-		
-		int GetMaxSegments(){ return mlMaxSegments;}
+    void          SetColor(const cColor& aColor);
+    const cColor& GetColor() { return mColor; }
 
-		/**
-		 * Only used when segment size > 0
-		 */
-		void SetLengthTileAmount(float afX){ mfLengthTileAmount = afX;}
-		float GetLengthTileAmount(){ return mfLengthTileAmount;}
+    void SetMultiplyAlphaWithColor(bool abX);
+    bool GetMultiplyAlphaWithColor() { return mbMultiplyAlphaWithColor; }
 
-		/**
+    void  SetRadius(float afX) { mfRadius = afX; }
+    float GetRadius() { return mfRadius; }
+
+    int GetMaxSegments() { return mlMaxSegments; }
+
+    /**
+     * Only used when segment size > 0
+     */
+    void  SetLengthTileAmount(float afX) { mfLengthTileAmount = afX; }
+    float GetLengthTileAmount() { return mfLengthTileAmount; }
+
+    /**
 		* Only used when segment size = 0
 		*/
-		void SetLengthTileSize(float afX){ mfLengthTileSize = afX;}
-		float GetLengthTileSize(){ return mfLengthTileSize;}
-
-		
-		/////////////////////////////////
-		//Entity implementation
-		tString GetEntityType(){ return "RopeEntity";}
-
-		bool IsVisible();
-		
-		/////////////////////////////////
-		//Renderable implementations
-		cMaterial *GetMaterial(){ return mpMaterial;}
-		iVertexBuffer* GetVertexBuffer(){return mpVtxBuffer;}
-
-        void UpdateGraphicsForFrame(float afFrameTime);
-		bool UpdateGraphicsForViewport(cFrustum *apFrustum,float afFrameTime);
-
-		cBoundingVolume* GetBoundingVolume();
-
-		cMatrixf* GetModelMatrix(cFrustum *apFrustum);
-
-		int GetMatrixUpdateCount();
+    void  SetLengthTileSize(float afX) { mfLengthTileSize = afX; }
+    float GetLengthTileSize() { return mfLengthTileSize; }
 
 
-		eRenderableType GetRenderType(){ return eRenderableType_Rope;}
-	private:
-		cMaterialManager* mpMaterialManager;
-		iLowLevelGraphics* mpLowLevelGraphics;
+    /////////////////////////////////
+    //Entity implementation
+    tString GetEntityType() { return "RopeEntity"; }
 
-		iPhysicsRope *mpRope;
-		
-		cMaterial *mpMaterial;
-		iVertexBuffer* mpVtxBuffer;
+    bool IsVisible();
 
-		int mlMaxSegments;
+    /////////////////////////////////
+    //Renderable implementations
+    cMaterial*     GetMaterial() { return mpMaterial; }
+    iVertexBuffer* GetVertexBuffer() { return mpVtxBuffer; }
 
-		float mfRadius;
-		float mfLengthTileAmount;
-		float mfLengthTileSize;
-		
-		cColor mColor;
-		bool mbMultiplyAlphaWithColor;
+    void UpdateGraphicsForFrame(float afFrameTime);
+    bool UpdateGraphicsForViewport(cFrustum* apFrustum, float afFrameTime);
 
-		int mlLastUpdateCount;
-	};
+    cBoundingVolume* GetBoundingVolume();
 
-};
+    cMatrixf* GetModelMatrix(cFrustum* apFrustum);
+
+    int GetMatrixUpdateCount();
+
+
+    eRenderableType GetRenderType() { return eRenderableType_Rope; }
+
+  private:
+    cMaterialManager*  mpMaterialManager;
+    iLowLevelGraphics* mpLowLevelGraphics;
+
+    iPhysicsRope* mpRope;
+
+    cMaterial*     mpMaterial;
+    iVertexBuffer* mpVtxBuffer;
+
+    int mlMaxSegments;
+
+    float mfRadius;
+    float mfLengthTileAmount;
+    float mfLengthTileSize;
+
+    cColor mColor;
+    bool   mbMultiplyAlphaWithColor;
+
+    int mlLastUpdateCount;
+  };
+
+};     // namespace hpl
 #endif // HPL_ROPE_ENTITY_H

@@ -23,35 +23,34 @@
 #include "engine/Updateable.h"
 
 namespace hpl {
-	
-	class iLowLevelSound;
-	class cResources;
-	class cSoundHandler;
-	class cMusicHandler;
 
-	class cSound : public iUpdateable
-	{
-	public:
-		cSound(iLowLevelSound *apLowLevelSound);
-		~cSound();
+  class iLowLevelSound;
+  class cResources;
+  class cSoundHandler;
+  class cMusicHandler;
 
-		void Init(	cResources *apResources, int alSoundDeviceID, bool abUseEnvAudio, int alMaxChannels, 
-						int alStreamUpdateFreq, bool abUseThreading, bool abUseVoiceManagement,
-						int alMaxMonoSourceHint, int alMaxStereoSourceHint,
-						int alStreamingBufferSize, int alStreamingBufferCount, bool abEnableLowLevelLog);
+  class cSound : public iUpdateable {
+  public:
+    cSound(iLowLevelSound* apLowLevelSound);
+    ~cSound();
 
-		void Update(float afTimeStep);
+    void Init(cResources* apResources, int alSoundDeviceID, bool abUseEnvAudio, int alMaxChannels,
+              int alStreamUpdateFreq, bool abUseThreading, bool abUseVoiceManagement,
+              int alMaxMonoSourceHint, int alMaxStereoSourceHint,
+              int alStreamingBufferSize, int alStreamingBufferCount, bool abEnableLowLevelLog);
 
-		iLowLevelSound* GetLowLevel(){ return mpLowLevelSound;}
-		cSoundHandler* GetSoundHandler(){ return mpSoundHandler; }
-		cMusicHandler* GetMusicHandler(){ return mpMusicHandler; }
-		
-	private:
-		iLowLevelSound *mpLowLevelSound;
-		cResources* mpResources;
-		cSoundHandler* mpSoundHandler;
-		cMusicHandler* mpMusicHandler;
-	};
+    void Update(float afTimeStep);
 
-};
+    iLowLevelSound* GetLowLevel() { return mpLowLevelSound; }
+    cSoundHandler*  GetSoundHandler() { return mpSoundHandler; }
+    cMusicHandler*  GetMusicHandler() { return mpMusicHandler; }
+
+  private:
+    iLowLevelSound* mpLowLevelSound;
+    cResources*     mpResources;
+    cSoundHandler*  mpSoundHandler;
+    cMusicHandler*  mpMusicHandler;
+  };
+
+};     // namespace hpl
 #endif // HPL_SOUND_H

@@ -170,9 +170,9 @@ namespace hpl {
 		const cVector3f& GetCollideSize(){ return mvSize;}
 		
 		/**
-		 * Reserves spaces for nodes.
-		 * \param alReserveSpace Number of nodes to reserve space for.
-		 */
+     * Reserves spaces for nodes.
+     * \param alReserveSpace Number of nodes to reserve space for.
+     */
 		void ReserveSpace(size_t alReserveSpace);
 
 		/**
@@ -184,59 +184,59 @@ namespace hpl {
         void AddNode(const tString &asName, int alID, const cVector3f &avPosition, void *apUserData=NULL);
 
 		/**
-		 * Get the number of nodes.
-		 */
+     * Get the number of nodes.
+     */
 		int GetNodeNum() const;
 
 		/**
-		 * Get a node.
-		 * \param alIdx index of node.
-		 */
+     * Get a node.
+     * \param alIdx index of node.
+     */
 		inline cAINode* GetNode(int alIdx){return mvNodes[alIdx];}
 
 		/**
-		 * Gets a node based on the name.
-		 * \param &asName Name of the node.
-		 */
+     * Gets a node based on the name.
+     * \param &asName Name of the node.
+     */
 		cAINode* GetNodeFromName(const tString &asName);
 		cAINode* GetNodeFromID(int alID);
 
 
 		/**
-		 * Compile the added nodes.
-		 */
+     * Compile the added nodes.
+     */
 		void Compile();
 
 		/**
-		 * Build a grid map for nodes. (Used internally mostly)
-		 */
+     * Build a grid map for nodes. (Used internally mostly)
+     */
 		void BuildNodeGridMap();
 
 		/**
-		 * Returns a node iterator. Note that the radius is not checked, some nodes may lie outside.
-		 * \param &avPosition 
-		 * \param afRadius 
-		 * \return 
-		 */
+     * Returns a node iterator. Note that the radius is not checked, some nodes may lie outside.
+     * \param &avPosition
+     * \param afRadius
+     * \return
+     */
 		cAINodeIterator GetNodeIterator(const cVector3f &avPosition, float afRadius);
 
 		/**
-		 * Checks for a free path using the containers collide size.
-		 * \param &avStart 
-		 * \param &avEnd 
-		 * \param alRayNum The max number of rays cast, -1 = maximum
-		 * \param alFlags Set Flags for the ray casting.
-		 * \param apCallback Check for every body and overrides alFlags.
-		 * \return 
-		 */
+     * Checks for a free path using the containers collide size.
+     * \param &avStart
+     * \param &avEnd
+     * \param alRayNum The max number of rays cast, -1 = maximum
+     * \param alFlags Set Flags for the ray casting.
+     * \param apCallback Check for every body and overrides alFlags.
+     * \return
+     */
 		bool FreePath(const cVector3f &avStart, const cVector3f &avEnd, int alRayNum=-1, 
 						tAIFreePathFlag aFlags=0, iAIFreePathCallback *apCallback=NULL);
 
 
 		/**
-		 * Sets the max number of end node added to a node.
-		 * \param alX The max number, -1 = unlimited
-		 */
+     * Sets the max number of end node added to a node.
+     * \param alX The max number, -1 = unlimited
+     */
 		void SetMaxEdges(int alX){ mlMaxNodeEnds = alX;}
 
 		/**
@@ -245,9 +245,9 @@ namespace hpl {
 		void SetMinEdges(int alX){ mlMinNodeEnds = alX;}
 		
 		/**
-		 * Sets the max distance for an end node.
-		 * \param afX 
-		 */
+     * Sets the max distance for an end node.
+     * \param afX
+     */
 		void SetMaxEdgeDistance(float afX){ mfMaxEndDistance = afX;}
 
 		float GetMaxEdgeDistance() const { return mfMaxEndDistance;}
@@ -256,16 +256,16 @@ namespace hpl {
 		float GetMaxHeight()const{ return mfMaxHeight;}
 
 		/**
-		 * When calculating if there is a free path between two nodes. Is the node postion the center of the collider.
-		 * If not the position is the feet postion.
-		 */
+     * When calculating if there is a free path between two nodes. Is the node postion the center of the collider.
+     * If not the position is the feet postion.
+     */
 		void SetNodeIsAtCenter(bool abX){ mbNodeIsAtCenter = abX;}
 		bool GetNodeIsAtCenter(){ return mbNodeIsAtCenter;}
 
 
 		/**
-		 * Saves all the node connections to file.
-		 */
+     * Saves all the node connections to file.
+     */
 		void SaveToFile(const tWString &asFile);
 		/**
 		* Loads all node connections from file. Only to be done after all nodes are loaded.

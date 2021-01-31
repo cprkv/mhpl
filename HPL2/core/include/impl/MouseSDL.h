@@ -45,9 +45,9 @@ namespace hpl {
 		cVector2l GetAbsPosition();
 		
 		/**
-		 * \todo Fix so it works and handles screen size
-		 * \return 
-		 */
+     * \todo Fix so it works and handles screen size
+     * \return
+     */
 		cVector2l GetRelPosition();
 
 		void Reset();

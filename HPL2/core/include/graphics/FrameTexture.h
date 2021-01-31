@@ -24,36 +24,33 @@
 
 namespace hpl {
 
-	class iTexture;
-	class cFrameSubImage;
-	class cImageManager;
+  class iTexture;
+  class cFrameSubImage;
+  class cImageManager;
 
-	class cFrameTexture : public iFrameBase
-	{
-	public:
-		cFrameTexture(iTexture *pTex, int alHandle,cImageManager *apImageManager, bool abIsCustom);
-		~cFrameTexture();
+  class cFrameTexture : public iFrameBase {
+  public:
+    cFrameTexture(iTexture* pTex, int alHandle, cImageManager* apImageManager, bool abIsCustom);
+    ~cFrameTexture();
 
-		iTexture* GetTexture();
-		int GetHandle(){return mlHandle;}
+    iTexture* GetTexture();
+    int       GetHandle() { return mlHandle; }
 
-		inline bool IsCustom(){ return mbIsCustom;}
+    inline bool IsCustom() { return mbIsCustom; }
 
-		/**
-		* Creates a subimage in frame at pos and with size messured in pixel. Only works on custom frames!
-		*/
-		cFrameSubImage* CreateCustomImage(const cVector2l& avPixelPos,const cVector2l& avPixelSize);
-		
-	private:
-		
+    /**
+     * Creates a subimage in frame at pos and with size messured in pixel. Only works on custom frames!
+     */
+    cFrameSubImage* CreateCustomImage(const cVector2l& avPixelPos, const cVector2l& avPixelSize);
 
-		iTexture *mpTexture;
-		int mlHandle;
+  private:
+    iTexture* mpTexture;
+    int       mlHandle;
 
-		bool mbIsCustom;
+    bool mbIsCustom;
 
-		cImageManager *mpImageManager;
-	};
+    cImageManager* mpImageManager;
+  };
 
-};
+};     // namespace hpl
 #endif // HPL_FRAMETEXTURE_H

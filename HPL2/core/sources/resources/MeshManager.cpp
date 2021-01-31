@@ -31,151 +31,143 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cMeshManager::cMeshManager(cGraphics* apGraphic,cResources *apResources)
-		: iResourceManager(apResources->GetFileSearcher(), apResources->GetLowLevel(),
-							apResources->GetLowLevelSystem())
-	{
-		mpGraphics = apGraphic;
-		mpResources = apResources;
+  cMeshManager::cMeshManager(cGraphics* apGraphic, cResources* apResources)
+      : iResourceManager(apResources->GetFileSearcher(), apResources->GetLowLevel(),
+                         apResources->GetLowLevelSystem()) {
+    mpGraphics  = apGraphic;
+    mpResources = apResources;
 
-		msFastloadMaterial = "";
-		mbUseFastloadMaterial = false;
-	}
+    msFastloadMaterial    = "";
+    mbUseFastloadMaterial = false;
+  }
 
-	cMeshManager::~cMeshManager()
-	{
-		DestroyAll();
+  cMeshManager::~cMeshManager() {
+    DestroyAll();
 
-		Log(" Done with meshes\n");
-	}
+    Log(" Done with meshes\n");
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cMesh* cMeshManager::CreateMesh(const tString& asName, tMeshLoadFlag aFlag)
-	{
-		tWString sPath;
-		cMesh* pMesh;
-		tString asNewName;
+  cMesh* cMeshManager::CreateMesh(const tString& asName, tMeshLoadFlag aFlag) {
+    tWString sPath;
+    cMesh*   pMesh;
+    tString  asNewName;
 
-		BeginLoad(asName);
+    BeginLoad(asName);
 
-		asNewName = asName;
+    asNewName = asName;
 
-		//If the file is missing an extension, search for an existing file.
-		if(cString::GetFileExt(asNewName) == "")
-		{
-			bool bFound = false;
-			tStringVec *pTypes = mpResources->GetMeshLoaderHandler()->GetSupportedTypes();
-			for(size_t i=0; i< pTypes->size(); i++)
-			{
-				asNewName = cString::SetFileExt(asNewName, (*pTypes)[i]);
-				tWString sPath = mpResources->GetFileSearcher()->GetFilePath(asNewName);
-				if(sPath != _W(""))
-				{
-					bFound = true;
-					break;
-				}
-			}
+    //If the file is missing an extension, search for an existing file.
+    if (cString::GetFileExt(asNewName).empty()) {
+      bool        bFound = false;
+      tStringVec* pTypes = mpResources->GetMeshLoaderHandler()->GetSupportedTypes();
 
-			if(bFound == false){
-				Error("Couldn't find mesh file '%s' in any supported format!\n",asName.c_str());
-				EndLoad();
-				return NULL;
-			}
-		}
+      for (auto& pType : *pTypes) {
+        asNewName     = cString::SetFileExt(asNewName, pType);
+        tWString path = mpResources->GetFileSearcher()->GetFilePath(asNewName);
+        if (path.empty()) {
+          bFound = true;
+          break;
+        }
+      }
 
-		pMesh = static_cast<cMesh*>(FindLoadedResource(asNewName,sPath));
+      if (!bFound) {
+        Error("Couldn't find mesh file '%s' in any supported format!\n", asName.c_str());
+        EndLoad();
+        return nullptr;
+      }
+    }
 
-		//An extra hackish check to load msh or anim
-		//TODO: When the model is loaded, then it 
-		/*if(pMesh==NULL && sPath==_W(""))
-		{
-			tString sExt = cString::GetFileExt(asNewName);
-			tString sNewExt="";
-			if(sExt=="dae") sNewExt = "msh";
-			if(sExt=="dae_anim") sNewExt = "anim";
-			
-			if(sNewExt != "")
-			{
-				FindLoadedResource(cString::SetFileExt(asNewName, sNewExt), sPath);
+    pMesh = dynamic_cast<cMesh*>(FindLoadedResource(asNewName, sPath));
 
-				if(sPath!=_W("")) sPath = cString::SetFileExtW(sPath, cString::To16Char(sExt));
-			}
-		}*/
+    //         An extra hackish check to load msh or anim
+    //         TODO: When the model is loaded, then it
+    //    if (pMesh == nullptr && sPath == _W("")) {
+    //      tString sExt    = cString::GetFileExt(asNewName);
+    //      tString sNewExt = "";
+    //      if (sExt == "dae") sNewExt = "msh";
+    //      if (sExt == "dae_anim") sNewExt = "anim";
+    //
+    //      if (sNewExt != "") {
+    //        FindLoadedResource(cString::SetFileExt(asNewName, sNewExt), sPath);
+    //        if (sPath != _W("")) sPath = cString::SetFileExtW(sPath, cString::To16Char(sExt));
+    //      }
+    //    }
 
-		if(pMesh==NULL && sPath!=_W(""))
-		{
-			pMesh = mpResources->GetMeshLoaderHandler()->LoadMesh(sPath,aFlag);
-			if(pMesh == NULL)
-			{
-				EndLoad();
-				return NULL;
-			}
+    if (pMesh == nullptr && !sPath.empty()) {
+      pMesh = mpResources->GetMeshLoaderHandler()->LoadMesh(sPath, aFlag);
+      if (pMesh == nullptr) {
+        EndLoad();
+        return nullptr;
+      }
 
-			AddResource(pMesh);
-		}
+      AddResource(pMesh);
+    }
 
-		if(pMesh)pMesh->IncUserCount();
-		else Error("Couldn't load mesh '%s'\n",asNewName.c_str());
-		
-		EndLoad();
-		return pMesh;
-	}
+    if (pMesh) {
+      pMesh->IncUserCount();
+    } else {
+      Error("Couldn't load mesh '%s'\n", asNewName.c_str());
+    }
 
-	//-----------------------------------------------------------------------
+    EndLoad();
+    return pMesh;
+  }
 
-	iVertexBuffer* cMeshManager::CreateVertexBufferFromMesh(const tString& asName, tVertexElementFlag alVtxToCopy)
-	{
-		cMesh *pMesh = CreateMesh(asName);
-		if(pMesh==NULL) return NULL;
+  //-----------------------------------------------------------------------
 
-		iVertexBuffer *pVtxBuffer = pMesh->GetSubMesh(0)->GetVertexBuffer()->CreateCopy(eVertexBufferType_Hardware,
-																						eVertexBufferUsageType_Static,
-																						alVtxToCopy);
-		Destroy(pMesh);
-		return pVtxBuffer;
-	}
+  iVertexBuffer* cMeshManager::CreateVertexBufferFromMesh(const tString& asName, tVertexElementFlag alVtxToCopy) {
+    cMesh* pMesh = CreateMesh(asName);
+    if (pMesh == nullptr) {
+      return nullptr;
+    }
+    auto vertexBufferCopy =
+        pMesh
+            ->GetSubMesh(0)
+            ->GetVertexBuffer()
+            ->CreateCopy(eVertexBufferType_Hardware, eVertexBufferUsageType_Static, alVtxToCopy);
+    Destroy(pMesh);
+    return vertexBufferCopy;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cMeshManager::Unload(iResourceBase* apResource)
-	{
+  void cMeshManager::Unload(iResourceBase* apResource) {
+  }
+  //-----------------------------------------------------------------------
 
-	}
-	//-----------------------------------------------------------------------
+  void cMeshManager::Destroy(iResourceBase* apResource) {
+    apResource->DecUserCount();
 
-	void cMeshManager::Destroy(iResourceBase* apResource)
-	{
-		apResource->DecUserCount();
+    if (!apResource->HasUsers()) {
+      RemoveResource(apResource);
+      hplDelete(apResource);
+    }
+  }
 
-		if(apResource->HasUsers()==false){
-			RemoveResource(apResource);
-			hplDelete(apResource);
-		}
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
-
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
 
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+} // namespace hpl

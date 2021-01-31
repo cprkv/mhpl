@@ -30,106 +30,104 @@ class TiXmlElement;
 
 namespace hpl {
 
-	class iPhysicsBody;
-	class iPhysicsJoint;
-	class iPhysicsWorld;
-	class cMesh;
-	class cMeshEntity;
-	class cParticleSystem;
-	class cBillboard;
-	class cBeam;
-	class cSoundEntity;
-	class iLight;
-	class iHapticShape;
-	class cBoneState;
+  class iPhysicsBody;
+  class iPhysicsJoint;
+  class iPhysicsWorld;
+  class cMesh;
+  class cMeshEntity;
+  class cParticleSystem;
+  class cBillboard;
+  class cBeam;
+  class cSoundEntity;
+  class iLight;
+  class iHapticShape;
+  class cBoneState;
 
-	//--------------------------------------------
+  //--------------------------------------------
 
-	class cEntityBodyExtraData
-	{
-	public:
-		cMatrixf m_mtxLocalTransform;
-	};
+  class cEntityBodyExtraData {
+  public:
+    cMatrixf m_mtxLocalTransform;
+  };
 
 
-	//--------------------------------------------
-	
-	class cEntityLoader_Object : public iEntityLoader
-	{
-	public:
-		cEntityLoader_Object(const tString &asName) : iEntityLoader(asName)
-		{
-			mbLoadAnimations=true;
-			mbLoadParticleSystems=true;
-			mbLoadBillboards=true;
-			mbLoadSounds=true;
-			mbLoadLights=true;
-			mbLoadAsStatic = false;
-		}
-		virtual ~cEntityLoader_Object(){}
+  //--------------------------------------------
 
-        iEntity3D* Load(const tString &asName, int alID, bool abActive, cXmlElement *apRootElem, 
-						const cMatrixf &a_mtxTransform, const cVector3f &avScale, 
-						cWorld *apWorld, const tString &asFileName, const tWString &asFullPath, cResourceVarsObject *apInstanceVars);		
+  class cEntityLoader_Object : public iEntityLoader {
+  public:
+    cEntityLoader_Object(const tString& asName)
+        : iEntityLoader(asName) {
+      mbLoadAnimations      = true;
+      mbLoadParticleSystems = true;
+      mbLoadBillboards      = true;
+      mbLoadSounds          = true;
+      mbLoadLights          = true;
+      mbLoadAsStatic        = false;
+    }
+    virtual ~cEntityLoader_Object() {}
 
-	protected:
-		virtual void BeforeLoad(cXmlElement *apRootElem, const cMatrixf &a_mtxTransform,cWorld *apWorld, cResourceVarsObject *apInstanceVars)=0;
-		virtual void AfterLoad(cXmlElement *apRootElem, const cMatrixf &a_mtxTransform,cWorld *apWorld, cResourceVarsObject *apInstanceVars)=0;
-		
-		void AttachEntityChild(iEntity3D *apParent, const cMatrixf& a_mtxInvParent, iEntity3D *apChild);
-		void AttachBoneChild(cBoneState *apBoneState, const cMatrixf& a_mtxInvParent, iEntity3D *apChild);
-		void AttachBoneToBody(iPhysicsBody *apParentBody, const cMatrixf& a_mtxInvParent, cBoneState *apBoneState);
-		void LoadAndAttachChildren(cXmlElement *apMainElem, iEntity3D *apEntityParent, cBoneState *apBoneStateParent, 
-            						std::list<iEntity3D*>& a_lstChildList, tNodeStateMap &a_mapBoneStates,
-									bool abRemoveAttachedChild, bool abIsBody);
+    iEntity3D* Load(const tString& asName, int alID, bool abActive, cXmlElement* apRootElem,
+                    const cMatrixf& a_mtxTransform, const cVector3f& avScale,
+                    cWorld* apWorld, const tString& asFileName, const tWString& asFullPath, cResourceVarsObject* apInstanceVars);
 
-		cBillboard* GetBillboardFromID(int alID);
-		iLight* GetLightFromName(const tString& asName);
+  protected:
+    virtual void BeforeLoad(cXmlElement* apRootElem, const cMatrixf& a_mtxTransform, cWorld* apWorld, cResourceVarsObject* apInstanceVars) = 0;
+    virtual void AfterLoad(cXmlElement* apRootElem, const cMatrixf& a_mtxTransform, cWorld* apWorld, cResourceVarsObject* apInstanceVars)  = 0;
 
-		void SetBodyProperties(iPhysicsBody *apBody, cXmlElement *apPhysicsElem);
-		void SetJointProperties(iPhysicsJoint *apJoint, cXmlElement *apJointElem,cWorld *apWorld);
+    void AttachEntityChild(iEntity3D* apParent, const cMatrixf& a_mtxInvParent, iEntity3D* apChild);
+    void AttachBoneChild(cBoneState* apBoneState, const cMatrixf& a_mtxInvParent, iEntity3D* apChild);
+    void AttachBoneToBody(iPhysicsBody* apParentBody, const cMatrixf& a_mtxInvParent, cBoneState* apBoneState);
+    void LoadAndAttachChildren(cXmlElement* apMainElem, iEntity3D* apEntityParent, cBoneState* apBoneStateParent,
+                               std::list<iEntity3D*>& a_lstChildList, tNodeStateMap& a_mapBoneStates,
+                               bool abRemoveAttachedChild, bool abIsBody);
 
-		void LoadController(iPhysicsJoint *apJoint,iPhysicsWorld *apPhysicsWorld, TiXmlElement *apElem);
+    cBillboard* GetBillboardFromID(int alID);
+    iLight*     GetLightFromName(const tString& asName);
 
-		eAnimationEventType GetAnimationEventType(const char* apString);
+    void SetBodyProperties(iPhysicsBody* apBody, cXmlElement* apPhysicsElem);
+    void SetJointProperties(iPhysicsJoint* apJoint, cXmlElement* apJointElem, cWorld* apWorld);
 
-		void LoadUserVariables(cXmlElement *apRootElem);
-		
-		tString msSubType;
-		int mlID;
-		bool mbActive;
-		cVector3f mvScale;
+    void LoadController(iPhysicsJoint* apJoint, iPhysicsWorld* apPhysicsWorld, TiXmlElement* apElem);
 
-		bool mbNodeAnimation;
+    eAnimationEventType GetAnimationEventType(const char* apString);
 
-		tString msFileName;
+    void LoadUserVariables(cXmlElement* apRootElem);
 
-		tString msEntityType;
-		tString msEntitySubType;
+    tString   msSubType;
+    int       mlID;
+    bool      mbActive;
+    cVector3f mvScale;
 
-		std::vector<iPhysicsBody*> mvBodies;
-		std::vector<iPhysicsJoint*> mvJoints;
+    bool mbNodeAnimation;
 
-		std::vector<cEntityBodyExtraData> mvBodyExtraData;
+    tString msFileName;
 
-		std::vector<iHapticShape*> mvHapticShapes;
-		
-		std::vector<iLight*> mvLights;
-		std::vector<cParticleSystem*> mvParticleSystems;
-		std::vector<cBillboard*> mvBillboards;
-		std::vector<cBeam*> mvBeams;
-		std::vector<cSoundEntity*> mvSoundEntities;
-		
-		cMeshEntity *mpEntity;
-		cMesh *mpMesh;
+    tString msEntityType;
+    tString msEntitySubType;
 
-		bool mbLoadAnimations;
-		bool mbLoadParticleSystems;
-		bool mbLoadBillboards;
-		bool mbLoadSounds;
-		bool mbLoadLights;
-		bool mbLoadAsStatic;
-	};
+    std::vector<iPhysicsBody*>  mvBodies;
+    std::vector<iPhysicsJoint*> mvJoints;
 
-};
+    std::vector<cEntityBodyExtraData> mvBodyExtraData;
+
+    std::vector<iHapticShape*> mvHapticShapes;
+
+    std::vector<iLight*>          mvLights;
+    std::vector<cParticleSystem*> mvParticleSystems;
+    std::vector<cBillboard*>      mvBillboards;
+    std::vector<cBeam*>           mvBeams;
+    std::vector<cSoundEntity*>    mvSoundEntities;
+
+    cMeshEntity* mpEntity;
+    cMesh*       mpMesh;
+
+    bool mbLoadAnimations;
+    bool mbLoadParticleSystems;
+    bool mbLoadBillboards;
+    bool mbLoadSounds;
+    bool mbLoadLights;
+    bool mbLoadAsStatic;
+  };
+
+};     // namespace hpl
 #endif // HPL_ENTITY_LOADER_OBJECT_H

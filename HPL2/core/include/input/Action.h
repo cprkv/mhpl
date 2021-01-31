@@ -109,8 +109,8 @@ namespace hpl {
 		bool DoubleTriggerd(float afLimit);
 
 		/**
-		 * Resets the action to the current state, so no actions are triggered.
-		 */
+     * Resets the action to the current state, so no actions are triggered.
+     */
 		void ResetToCurrentState();
 
 		/**

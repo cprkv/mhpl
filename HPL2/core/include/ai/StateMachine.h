@@ -75,8 +75,8 @@ namespace hpl {
 		void Update(float afTime);
 
 		/**
-		 * Adds a new state to the state machine. The state machine will destroy them when deleted.
-		 */
+     * Adds a new state to the state machine. The state machine will destroy them when deleted.
+     */
 		void AddState(iAIState *apState, const tString& asName, int alId, float afUpdateStep);
 
 		void ChangeState(int alId);

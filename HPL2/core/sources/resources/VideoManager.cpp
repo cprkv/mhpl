@@ -28,99 +28,87 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cVideoManager::cVideoManager(cGraphics* apGraphics,cResources *apResources)
-		: iResourceManager(apResources->GetFileSearcher(), apResources->GetLowLevel(),
-							apResources->GetLowLevelSystem())
-	{
-		mpGraphics = apGraphics;
-		mpResources = apResources;
-	}
+  cVideoManager::cVideoManager(cGraphics* apGraphics, cResources* apResources)
+      : iResourceManager(apResources->GetFileSearcher(), apResources->GetLowLevel(),
+                         apResources->GetLowLevelSystem()) {
+    mpGraphics  = apGraphics;
+    mpResources = apResources;
+  }
 
-	cVideoManager::~cVideoManager()
-	{
-	}
+  cVideoManager::~cVideoManager() {
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	iVideoStream* cVideoManager::CreateVideo(const tString& asName)
-	{
-		BeginLoad(asName);
+  iVideoStream* cVideoManager::CreateVideo(const tString& asName) {
+    BeginLoad(asName);
 
-		tWString sPath = mpFileSearcher->GetFilePath(asName);
-		if(sPath == _W("")) 
-		{
-			EndLoad();
-			Error("Video file '%s' could not be found!\n",asName.c_str());
-			return NULL;
-		}
+    tWString sPath = mpFileSearcher->GetFilePath(asName);
+    if (sPath == _W("")) {
+      EndLoad();
+      Error("Video file '%s' could not be found!\n", asName.c_str());
+      return NULL;
+    }
 
-		iVideoStream *pVideo = mpResources->GetVideoLoaderHandler()->LoadVideo(sPath);
-		pVideo->SetFullPath(sPath);
+    iVideoStream* pVideo = mpResources->GetVideoLoaderHandler()->LoadVideo(sPath);
+    pVideo->SetFullPath(sPath);
 
-		if(pVideo == NULL)
-		{
-			EndLoad();
-			Error("Could not load video '%s'\n",asName.c_str());
-			return NULL;
-		}
+    if (pVideo == NULL) {
+      EndLoad();
+      Error("Could not load video '%s'\n", asName.c_str());
+      return NULL;
+    }
 
-		AddResource(pVideo);
+    AddResource(pVideo);
 
-		EndLoad();
-		return pVideo;
-	}
+    EndLoad();
+    return pVideo;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cVideoManager::Unload(iResourceBase* apResource)
-	{
+  void cVideoManager::Unload(iResourceBase* apResource) {
+  }
+  //-----------------------------------------------------------------------
 
-	}
-	//-----------------------------------------------------------------------
+  void cVideoManager::Destroy(iResourceBase* apResource) {
+    if (apResource) {
+      RemoveResource(apResource);
+      hplDelete(apResource);
+    }
+  }
 
-	void cVideoManager::Destroy(iResourceBase* apResource)
-	{
-		if(apResource)
-		{
-			RemoveResource(apResource);
-			hplDelete(apResource);
-		}
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void cVideoManager::Update(float afTimeStep) {
+    tResourceBaseMapIt it = m_mapResources.begin();
+    for (; it != m_mapResources.end(); ++it) {
+      iResourceBase* pBase  = it->second;
+      iVideoStream*  pVideo = static_cast<iVideoStream*>(pBase);
 
-	void cVideoManager::Update(float afTimeStep)
-	{
-		tResourceBaseMapIt it = m_mapResources.begin();
-		for(; it != m_mapResources.end(); ++it)
-		{
-			iResourceBase *pBase = it->second;
-			iVideoStream *pVideo = static_cast<iVideoStream*>(pBase);
+      pVideo->Update(afTimeStep);
+    }
+  }
 
-			pVideo->Update(afTimeStep);
-		}
+  //-----------------------------------------------------------------------
 
-	}
-	
-	//-----------------------------------------------------------------------
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+} // namespace hpl

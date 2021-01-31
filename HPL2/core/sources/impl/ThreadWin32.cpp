@@ -21,83 +21,73 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	cThreadWin32::cThreadWin32()
-	{
-		mpThreadHandle = NULL;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  cThreadWin32::cThreadWin32() {
+    mpThreadHandle = NULL;
+  }
 
-	cThreadWin32::~cThreadWin32()
-	{
+  //-----------------------------------------------------------------------
 
-	}
+  cThreadWin32::~cThreadWin32() {
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	void cThreadWin32::Start()
-	{
-		mbThreadActive = true;
-		mpThreadHandle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)iThread::MainThreadFunc, (LPVOID)this, 0, NULL);
-	}
-	
-	void cThreadWin32::Stop()
-	{
-		mbThreadActive = false;
-		WaitForSingleObject(mpThreadHandle,INFINITE);
-		mpThreadHandle = NULL;
-	}
+  //-----------------------------------------------------------------------
 
-	void cThreadWin32::Sleep(unsigned int alSleepTime)
-	{
-		WaitForSingleObject(mpThreadHandle, alSleepTime);
-	}
+  void cThreadWin32::Start() {
+    mbThreadActive = true;
+    mpThreadHandle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE) iThread::MainThreadFunc, (LPVOID) this, 0, NULL);
+  }
 
-	void cThreadWin32::SetPriority(eThreadPrio aPrio)
-	{
-		iThread::SetPriority(aPrio);
+  void cThreadWin32::Stop() {
+    mbThreadActive = false;
+    WaitForSingleObject(mpThreadHandle, INFINITE);
+    mpThreadHandle = NULL;
+  }
 
-		SetThreadPriority(mpThreadHandle, TranslateEnginePrio(aPrio));
-	}
+  void cThreadWin32::Sleep(unsigned int alSleepTime) {
+    WaitForSingleObject(mpThreadHandle, alSleepTime);
+  }
 
-	//-----------------------------------------------------------------------
+  void cThreadWin32::SetPriority(eThreadPrio aPrio) {
+    iThread::SetPriority(aPrio);
 
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+    SetThreadPriority(mpThreadHandle, TranslateEnginePrio(aPrio));
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	int cThreadWin32::TranslateEnginePrio(eThreadPrio aPrio)
-	{
-		int lPrio = THREAD_PRIORITY_NORMAL;
-		switch(aPrio)
-		{
-		case eThreadPrio_Low:
-			lPrio = THREAD_PRIORITY_LOWEST;
-			break;
-		case eThreadPrio_High:
-			lPrio = THREAD_PRIORITY_HIGHEST;
-			break;
-		}
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-		return lPrio;
-	}
+  //-----------------------------------------------------------------------
+
+  int cThreadWin32::TranslateEnginePrio(eThreadPrio aPrio) {
+    int lPrio = THREAD_PRIORITY_NORMAL;
+    switch (aPrio) {
+      case eThreadPrio_Low:
+        lPrio = THREAD_PRIORITY_LOWEST;
+        break;
+      case eThreadPrio_High:
+        lPrio = THREAD_PRIORITY_HIGHEST;
+        break;
+    }
+
+    return lPrio;
+  }
 
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-}
-
+} // namespace hpl

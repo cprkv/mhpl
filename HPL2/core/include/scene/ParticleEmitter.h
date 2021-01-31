@@ -28,306 +28,297 @@
 
 namespace hpl {
 
-	class cFrameSubImage;
-	class cGraphics;
-	class cResources;
-	class cWorld;
-	class cParticleSystem;
-
-	//-------------------------------------------------------------------
-
-	enum ePEType
-	{
-		ePEType_Normal,
-		ePEType_Beam,
-		ePEType_LastEnum,
-	};
-
+  class cFrameSubImage;
+  class cGraphics;
+  class cResources;
+  class cWorld;
+  class cParticleSystem;
 
-	//-------------------------------------------------------------------
+  //-------------------------------------------------------------------
 
-	enum eParticleEmitterType
-	{
-		eParticleEmitterType_FixedPoint,
-		eParticleEmitterType_DynamicPoint,
-		eParticleEmitterType_Line,
-		eParticleEmitterType_Axis,
-		eParticleEmitterType_LastEnum,
-	};
+  enum ePEType {
+    ePEType_Normal,
+    ePEType_Beam,
+    ePEType_LastEnum,
+  };
 
-	enum eParticleEmitterCoordSystem
-	{
-		eParticleEmitterCoordSystem_World,
-		eParticleEmitterCoordSystem_Local,
-		eParticleEmitterCoordSystem_LastEnum,
-	};
 
-	//------------------------------------------
+  //-------------------------------------------------------------------
 
-	class cPESubDivision
-	{
-	public:
-		cVector3f mvUV[4];
-	};
-	
-	//-------------------------------------------------------------------
+  enum eParticleEmitterType {
+    eParticleEmitterType_FixedPoint,
+    eParticleEmitterType_DynamicPoint,
+    eParticleEmitterType_Line,
+    eParticleEmitterType_Axis,
+    eParticleEmitterType_LastEnum,
+  };
 
-	enum ePENoiseType
-	{
-		ePENoiseType_LowFreq,
-		ePENoiseType_HighFreq,
-		ePENoiseType_Both,
-		ePENoiseType_None,
-		ePENoiseType_LastEnum,
-	};
+  enum eParticleEmitterCoordSystem {
+    eParticleEmitterCoordSystem_World,
+    eParticleEmitterCoordSystem_Local,
+    eParticleEmitterCoordSystem_LastEnum,
+  };
 
-	
-	typedef struct 
-	{
-		float				fRelToBeamPos;
-		float				fRelToBendPos;
-		int					lLowFreqNoiseIdx;
-		int					lHighFreqNoiseIdx;
-		ePENoiseType	noiseType;
-	} tBeamNoisePoint;
+  //------------------------------------------
 
+  class cPESubDivision {
+  public:
+    cVector3f mvUV[4];
+  };
 
-	//-------------------------------------------------------------------
+  //-------------------------------------------------------------------
 
+  enum ePENoiseType {
+    ePENoiseType_LowFreq,
+    ePENoiseType_HighFreq,
+    ePENoiseType_Both,
+    ePENoiseType_None,
+    ePENoiseType_LastEnum,
+  };
 
-	//////////////////////////////////////////////////////
-	/////////////// PARTICLE ///////////////////////////// 
-	//////////////////////////////////////////////////////
 
-	//-------------------------------------------------------------------
+  typedef struct
+  {
+    float        fRelToBeamPos;
+    float        fRelToBendPos;
+    int          lLowFreqNoiseIdx;
+    int          lHighFreqNoiseIdx;
+    ePENoiseType noiseType;
+  } tBeamNoisePoint;
 
-	class cParticle
-	{
-	public:
-		cParticle(){}
 
-		cVector3f mvPos;
-		cVector3f mvLastPos;
-		cVector3f mvLastCollidePos;
-		cVector3f mvAcc;
-		cVector3f mvVel;
+  //-------------------------------------------------------------------
 
-		float mfSpeedMul;
-		float mfMaxSpeed;
 
-		cColor mStartColor;
-		cColor mColor;
+  //////////////////////////////////////////////////////
+  /////////////// PARTICLE /////////////////////////////
+  //////////////////////////////////////////////////////
 
-		cVector2f mvStartSize;
-		cVector2f mvSize;
+  //-------------------------------------------------------------------
 
-		float mfStartLife;
-		float mfLife;
-		float mfLifeSize_MiddleStart;
-		float mfLifeSize_MiddleEnd;
+  class cParticle {
+  public:
+    cParticle() {}
 
-		float mfLifeColor_MiddleStart;
-		float mfLifeColor_MiddleEnd;
+    cVector3f mvPos;
+    cVector3f mvLastPos;
+    cVector3f mvLastCollidePos;
+    cVector3f mvAcc;
+    cVector3f mvVel;
 
-		int mlSubDivNum;
+    float mfSpeedMul;
+    float mfMaxSpeed;
 
-		float mfBounceAmount;
-		int mlBounceCount;
+    cColor mStartColor;
+    cColor mColor;
 
-		cVector3f mvExtra;
+    cVector2f mvStartSize;
+    cVector2f mvSize;
 
-		// NEW
+    float mfStartLife;
+    float mfLife;
+    float mfLifeSize_MiddleStart;
+    float mfLifeSize_MiddleEnd;
 
-		float mfSpin;
-		float mfSpinVel;
-		float mfSpinFactor;
+    float mfLifeColor_MiddleStart;
+    float mfLifeColor_MiddleEnd;
 
+    int mlSubDivNum;
 
-		cVector3f mvRevolutionVel;
+    float mfBounceAmount;
+    int   mlBounceCount;
 
-		// Beam Specific
+    cVector3f mvExtra;
 
-		int mlLowFreqPoints;
-		int mlHighFreqPoints;
-		std::vector<cVector3f> mvBeamPoints;
+    // NEW
 
-		// ---
+    float mfSpin;
+    float mfSpinVel;
+    float mfSpinFactor;
 
-	};
 
-	//-------------------------------------------------------------------
+    cVector3f mvRevolutionVel;
 
-	typedef std::vector<cParticle*> tParticleVec;
-	typedef tParticleVec::iterator tParticleVecIt;
+    // Beam Specific
 
-	//-------------------------------------------------------------------
+    int                    mlLowFreqPoints;
+    int                    mlHighFreqPoints;
+    std::vector<cVector3f> mvBeamPoints;
 
-	//////////////////////////////////////////////////////
-	/////////////// PARTICLE SYSTEM ////////////////////// 
-	//////////////////////////////////////////////////////
+    // ---
+  };
 
-	class iParticleEmitter :public iRenderable
-	{
-	public:
-		iParticleEmitter(	tString asName,tMaterialVec* avMaterials,unsigned int alMaxParticles, 
-							cVector3f avSize, cGraphics* apGraphics,cResources *apResources);
-		virtual ~iParticleEmitter();
+  //-------------------------------------------------------------------
 
-		void UpdateLogic(float afTimeStep);
+  typedef std::vector<cParticle*> tParticleVec;
+  typedef tParticleVec::iterator  tParticleVecIt;
 
-		void Render(){}
+  //-------------------------------------------------------------------
 
-		void SetSubDivUV(const cVector2l &avSubDiv);
+  //////////////////////////////////////////////////////
+  /////////////// PARTICLE SYSTEM //////////////////////
+  //////////////////////////////////////////////////////
 
-		void SetWorld(cWorld *apWorld) { mpWorld = apWorld;}
+  class iParticleEmitter : public iRenderable {
+  public:
+    iParticleEmitter(tString asName, tMaterialVec* avMaterials, unsigned int alMaxParticles,
+                     cVector3f avSize, cGraphics* apGraphics, cResources* apResources);
+    virtual ~iParticleEmitter();
 
-		void SetSystem(cParticleSystem *apSystem){ mpParentSystem = apSystem;}
+    void UpdateLogic(float afTimeStep);
 
-		virtual bool IsDead(){ return mlNumOfParticles==0 && mbDying;}
-		virtual bool IsDying(){ return mbDying;}
-		virtual void Kill(){ mbDying = true;}
-		void KillInstantly();
+    void Render() {}
 
-		void SetDataName(const tString &asName){msDataName = asName;}
-		void SetDataSize(const cVector3f &avSize){mvDataSize = avSize;}
+    void SetSubDivUV(const cVector2l& avSubDiv);
 
-		int GetParticleNum(){ return mlNumOfParticles;}
+    void SetWorld(cWorld* apWorld) { mpWorld = apWorld; }
 
-		//Entity implementation
-		tString GetEntityType(){ return "ParticleEmitter"; }
-		bool IsVisible();
-		
-		//Renderable implementation
-		bool UpdateGraphicsForViewport(cFrustum *apFrustum,float afFrameTime);
+    void SetSystem(cParticleSystem* apSystem) { mpParentSystem = apSystem; }
 
-		cMaterial *GetMaterial();
-		iVertexBuffer* GetVertexBuffer();
+    virtual bool IsDead() { return mlNumOfParticles == 0 && mbDying; }
+    virtual bool IsDying() { return mbDying; }
+    virtual void Kill() { mbDying = true; }
+    void         KillInstantly();
 
-		cBoundingVolume* GetBoundingVolume();
+    void SetDataName(const tString& asName) { msDataName = asName; }
+    void SetDataSize(const cVector3f& avSize) { mvDataSize = avSize; }
 
-		cMatrixf* GetModelMatrix(cFrustum *apFrustum);
+    int GetParticleNum() { return mlNumOfParticles; }
 
-		int GetMatrixUpdateCount(){return GetTransformUpdateCount();}
-		eRenderableType GetRenderType(){ return eRenderableType_ParticleEmitter;}
+    //Entity implementation
+    tString GetEntityType() { return "ParticleEmitter"; }
+    bool    IsVisible();
 
-	protected:
-		void SwapRemove(unsigned int alIndex);
-		cParticle* CreateParticle();
+    //Renderable implementation
+    bool UpdateGraphicsForViewport(cFrustum* apFrustum, float afFrameTime);
 
-		virtual void UpdateMotion(float afTimeStep)=0;
-		virtual void SetParticleDefaults(cParticle *apParticle)=0;
-		
-		cGraphics *mpGraphics;
-		cResources *mpResources;
+    cMaterial*     GetMaterial();
+    iVertexBuffer* GetVertexBuffer();
 
-		tString msDataName;
-		cVector3f mvDataSize;
+    cBoundingVolume* GetBoundingVolume();
 
-		tParticleVec mvParticles;
-		unsigned int mlNumOfParticles;
-		unsigned int mlMaxParticles;
+    cMatrixf* GetModelMatrix(cFrustum* apFrustum);
 
-		cMatrixf m_mtxTemp;
+    int             GetMatrixUpdateCount() { return GetTransformUpdateCount(); }
+    eRenderableType GetRenderType() { return eRenderableType_ParticleEmitter; }
 
-		tMaterialVec* mvMaterials;
+  protected:
+    void       SwapRemove(unsigned int alIndex);
+    cParticle* CreateParticle();
 
-		int mlSleepCount;
+    virtual void UpdateMotion(float afTimeStep)             = 0;
+    virtual void SetParticleDefaults(cParticle* apParticle) = 0;
 
-		//Vars for easier updating.
-		bool mbDying;
-		float mfFrame;
+    cGraphics*  mpGraphics;
+    cResources* mpResources;
 
-		bool mbUpdateGfx;
-		bool mbUpdateBV;
+    tString   msDataName;
+    cVector3f mvDataSize;
 
-		iVertexBuffer *mpVtxBuffer;
+    tParticleVec mvParticles;
+    unsigned int mlNumOfParticles;
+    unsigned int mlMaxParticles;
 
-		std::vector<cPESubDivision> mvSubDivUV;
+    cMatrixf m_mtxTemp;
 
-		cVector3f mvDirection;
-		int mlDirectionUpdateCount;
+    tMaterialVec* mvMaterials;
 
-		cVector3f mvRight;
-		cVector3f mvForward;
-		int mlAxisDrawUpdateCount;
+    int mlSleepCount;
 
-		cParticleSystem *mpParentSystem;
+    //Vars for easier updating.
+    bool  mbDying;
+    float mfFrame;
 
-		//Set by the particle system implementation.
-		cVector2f mvDrawSize;
-		cVector2f mvMaxDrawSize;
+    bool mbUpdateGfx;
+    bool mbUpdateBV;
 
-		eParticleEmitterType mDrawType;
+    iVertexBuffer* mpVtxBuffer;
 
-		eParticleEmitterCoordSystem mCoordSystem;
+    std::vector<cPESubDivision> mvSubDivUV;
 
-		bool mbMultiplyRGBWithAlpha;
+    cVector3f mvDirection;
+    int       mlDirectionUpdateCount;
 
-		cWorld *mpWorld;
+    cVector3f mvRight;
+    cVector3f mvForward;
+    int       mlAxisDrawUpdateCount;
 
-		bool mbUsesDirection;
+    cParticleSystem* mpParentSystem;
 
-		bool mbUsePartSpin;
-		bool mbUseRevolution;
+    //Set by the particle system implementation.
+    cVector2f mvDrawSize;
+    cVector2f mvMaxDrawSize;
 
-		ePEType mPEType;
-	};
+    eParticleEmitterType mDrawType;
 
-	//-----------------------------------------------------------------
+    eParticleEmitterCoordSystem mCoordSystem;
 
-	typedef std::list<iParticleEmitter*> tParticleEmitterList;
-	typedef tParticleEmitterList::iterator tParticleEmitterListIt;
+    bool mbMultiplyRGBWithAlpha;
 
-	//-----------------------------------------------------------------
+    cWorld* mpWorld;
 
-	//////////////////////////////////////////////////////
-	/////////////// PARTICLE EMITTER DATA //////////////// 
-	//////////////////////////////////////////////////////
+    bool mbUsesDirection;
 
-	//-----------------------------------------------------------------
+    bool mbUsePartSpin;
+    bool mbUseRevolution;
 
-	class cResources;
+    ePEType mPEType;
+  };
 
-	class iParticleEmitterData
-	{
-		friend class cParticleSystemData;
-	public:
-		/**
+  //-----------------------------------------------------------------
+
+  typedef std::list<iParticleEmitter*>   tParticleEmitterList;
+  typedef tParticleEmitterList::iterator tParticleEmitterListIt;
+
+  //-----------------------------------------------------------------
+
+  //////////////////////////////////////////////////////
+  /////////////// PARTICLE EMITTER DATA ////////////////
+  //////////////////////////////////////////////////////
+
+  //-----------------------------------------------------------------
+
+  class cResources;
+
+  class iParticleEmitterData {
+    friend class cParticleSystemData;
+
+  public:
+    /**
 		* This inits the data needed for the particles system type
 		* \param &asName name of the type
 		* \param apResources 
 		* \param apGraphics 
 		*/
-		iParticleEmitterData(const tString &asName,cResources* apResources,cGraphics *apGraphics);
-		virtual ~iParticleEmitterData();
+    iParticleEmitterData(const tString& asName, cResources* apResources, cGraphics* apGraphics);
+    virtual ~iParticleEmitterData();
 
-		void AddMaterial(cMaterial *apMaterial);
+    void AddMaterial(cMaterial* apMaterial);
 
-		const tString& GetName(){ return msName;}
+    const tString& GetName() { return msName; }
 
-		virtual iParticleEmitter* Create(tString asName, cVector3f avSize)=0;
+    virtual iParticleEmitter* Create(tString asName, cVector3f avSize) = 0;
 
-		float GetWarmUpTime() const { return mfWarmUpTime;}
-		float GetWarmUpStepsPerSec() const { return mfWarmUpStepsPerSec;}
+    float GetWarmUpTime() const { return mfWarmUpTime; }
+    float GetWarmUpStepsPerSec() const { return mfWarmUpStepsPerSec; }
 
-	protected:
-		cResources *mpResources;
-		cGraphics *mpGraphics;
+  protected:
+    cResources* mpResources;
+    cGraphics*  mpGraphics;
 
-		tString msName;
-		tMaterialVec mvMaterials;
+    tString      msName;
+    tMaterialVec mvMaterials;
 
-		float mfWarmUpTime;
-		float mfWarmUpStepsPerSec;
-	};
+    float mfWarmUpTime;
+    float mfWarmUpStepsPerSec;
+  };
 
-	//-----------------------------------------------------------------
+  //-----------------------------------------------------------------
 
-	typedef std::map<tString,iParticleEmitterData*> tParticleEmitterDataMap;
-	typedef tParticleEmitterDataMap::iterator tParticleEmitterDataMapIt;
+  typedef std::map<tString, iParticleEmitterData*> tParticleEmitterDataMap;
+  typedef tParticleEmitterDataMap::iterator        tParticleEmitterDataMapIt;
 
-	//-----------------------------------------------------------------
-};
+  //-----------------------------------------------------------------
+}; // namespace hpl
 
 #endif // HPL_PARTICLE_EMITTER_H
-

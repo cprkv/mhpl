@@ -41,14 +41,16 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   cBitmapData::~cBitmapData() {
-    if (mpData) hplDeleteArray(mpData);
+    if (mpData)
+      hplDeleteArray(mpData);
   }
 
 
   //-----------------------------------------------------------------------
 
   void cBitmapData::SetData(const unsigned char* apData, int alSize) {
-    if (mpData && mlSize != alSize) hplDelete(mpData);
+    if (mpData && mlSize != alSize)
+      hplDelete(mpData);
 
     mlSize = alSize;
     mpData = hplNewArray(unsigned char, mlSize);
@@ -67,18 +69,13 @@ namespace hpl {
 
   cBitmap::cBitmap() {
     mvImages.resize(1);
-
     mbDataIsCompressed = false;
-
-    mvSize       = 0;
-    mPixelFormat = ePixelFormat_Unknown;
-
-    mlBytesPerPixel = 0;
-
-    msFileName = _W("");
-
-    mlNumOfMipMaps = 1;
-    mlNumOfImages  = 1;
+    mvSize             = 0;
+    mPixelFormat       = ePixelFormat_Unknown;
+    mlBytesPerPixel    = 0;
+    msFileName         = _W("");
+    mlNumOfMipMaps     = 1;
+    mlNumOfImages      = 1;
   }
 
   //-----------------------------------------------------------------------
@@ -95,9 +92,12 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   cBitmapData* cBitmap::GetData(int alImage, int alMipMapLevel) {
-    if (alImage >= mlNumOfImages) return NULL;
-    if (alMipMapLevel >= mlNumOfMipMaps) return NULL;
-
+    if (alImage >= mlNumOfImages) {
+      return nullptr;
+    }
+    if (alMipMapLevel >= mlNumOfMipMaps) {
+      return nullptr;
+    }
     return &mvImages[alImage * mlNumOfMipMaps + alMipMapLevel];
   }
 
@@ -106,7 +106,6 @@ namespace hpl {
   void cBitmap::SetUpData(int alNumOfImages, int alNumOfMipmaps) {
     mlNumOfImages  = alNumOfImages;
     mlNumOfMipMaps = alNumOfMipmaps;
-
     mvImages.resize(mlNumOfImages * mlNumOfMipMaps);
   }
 
@@ -114,9 +113,15 @@ namespace hpl {
 
   void cBitmap::CreateData(const cVector3l& avSize, ePixelFormat aFormat, int alImage, int alMipMap) {
     mvSize = avSize;
-    if (mvSize.x <= 0) mvSize.x = 1;
-    if (mvSize.y <= 0) mvSize.y = 1;
-    if (mvSize.z <= 0) mvSize.z = 1;
+    if (mvSize.x <= 0) {
+      mvSize.x = 1;
+    }
+    if (mvSize.y <= 0) {
+      mvSize.y = 1;
+    }
+    if (mvSize.z <= 0) {
+      mvSize.z = 1;
+    }
 
     mPixelFormat    = aFormat;
     mlBytesPerPixel = GetChannelsInPixelFormat(aFormat);
@@ -131,7 +136,9 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   void cBitmap::Clear(const cColor& aColor, int alImage, int alMipMap) {
-    if (mbDataIsCompressed) return; //Cannot draw to compressed data!
+    if (mbDataIsCompressed) {
+      return; //Cannot draw to compressed data!
+    }
 
     int lDataCount = mvSize.x * mvSize.y * mvSize.z;
 
@@ -159,7 +166,9 @@ namespace hpl {
                      const cVector3l& avSrcPosition,
                      int alDestImage, int alDestMipMap,
                      int alSrcImage, int alSrcMipMap) {
-    if (mbDataIsCompressed) return; //Cannot blit compressed data!
+    if (mbDataIsCompressed) {
+      return; //Cannot blit compressed data!
+    }
 
     ////////////////////////////////////////
     //Check so positions are in bounds
@@ -181,9 +190,15 @@ namespace hpl {
     int lSrcHeight = avSrcSize.y > apSrcBmp->GetSize().y ? apSrcBmp->GetSize().y : avSrcSize.y;
     int lSrcDepth  = avSrcSize.z > apSrcBmp->GetSize().z ? apSrcBmp->GetSize().z : avSrcSize.z;
 
-    if (lSrcWidth <= 0) lSrcWidth = 1;
-    if (lSrcHeight <= 0) lSrcHeight = 1;
-    if (lSrcDepth <= 0) lSrcDepth = 1;
+    if (lSrcWidth <= 0) {
+      lSrcWidth = 1;
+    }
+    if (lSrcHeight <= 0) {
+      lSrcHeight = 1;
+    }
+    if (lSrcDepth <= 0) {
+      lSrcDepth = 1;
+    }
 
     // Get coordinates and check for negative source coordinates
     cVector3l vSrcPos = avSrcPosition;
@@ -201,9 +216,15 @@ namespace hpl {
     }
 
     // Check if image is outside of bounds in source
-    if (vSrcPos.x + lSrcWidth > apSrcBmp->GetSize().x) lSrcWidth = apSrcBmp->GetSize().x - vSrcPos.x;
-    if (vSrcPos.y + lSrcHeight > apSrcBmp->GetSize().y) lSrcHeight = apSrcBmp->GetSize().y - vSrcPos.y;
-    if (vSrcPos.z + lSrcDepth > apSrcBmp->GetSize().z) lSrcDepth = apSrcBmp->GetSize().z - vSrcPos.z;
+    if (vSrcPos.x + lSrcWidth > apSrcBmp->GetSize().x) {
+      lSrcWidth = apSrcBmp->GetSize().x - vSrcPos.x;
+    }
+    if (vSrcPos.y + lSrcHeight > apSrcBmp->GetSize().y) {
+      lSrcHeight = apSrcBmp->GetSize().y - vSrcPos.y;
+    }
+    if (vSrcPos.z + lSrcDepth > apSrcBmp->GetSize().z) {
+      lSrcDepth = apSrcBmp->GetSize().z - vSrcPos.z;
+    }
 
     ////////////////////////////////////////
     //Check so source size is not too large for destination
@@ -227,9 +248,15 @@ namespace hpl {
     }
 
     // Check if image is outside of bounds in destination
-    if (vDestPos.x + lSrcWidth > mvSize.x) lSrcWidth = mvSize.x - vDestPos.x;
-    if (vDestPos.y + lSrcHeight > mvSize.y) lSrcHeight = mvSize.y - vDestPos.y;
-    if (vDestPos.z + lSrcDepth > mvSize.z) lSrcDepth = mvSize.z - vDestPos.z;
+    if (vDestPos.x + lSrcWidth > mvSize.x) {
+      lSrcWidth = mvSize.x - vDestPos.x;
+    }
+    if (vDestPos.y + lSrcHeight > mvSize.y) {
+      lSrcHeight = mvSize.y - vDestPos.y;
+    }
+    if (vDestPos.z + lSrcDepth > mvSize.z) {
+      lSrcDepth = mvSize.z - vDestPos.z;
+    }
 
     //If any size dimension is zero, then we skip drawing
     if (lSrcWidth <= 0 || lSrcHeight <= 0 || lSrcDepth <= 0) {
@@ -293,15 +320,13 @@ namespace hpl {
       }
     }
 
-    /*if(bOutOfBounds)
-		{
-				Log(" (%d, %d, %d) (%d, %d, %d) (%dx%dx%d) (%dx%dx%d) (%dx%dx%d)\n",	avDestPosition.x,avDestPosition.y, avDestPosition.z,
-																					avSrcPosition.x,avSrcPosition.y, avSrcPosition.z,
-																					avSrcSize.x, avSrcSize.y, avSrcSize.z,
-																					apSrcBmp->GetSize().x, apSrcBmp->GetSize().y, apSrcBmp->GetSize().z,
-																					GetSize().x, GetSize().y, GetSize().z
-													);
-		}*/
+    //    if (bOutOfBounds) {
+    //      Log(" (%d, %d, %d) (%d, %d, %d) (%dx%dx%d) (%dx%dx%d) (%dx%dx%d)\n", avDestPosition.x, avDestPosition.y, avDestPosition.z,
+    //          avSrcPosition.x, avSrcPosition.y, avSrcPosition.z,
+    //          avSrcSize.x, avSrcSize.y, avSrcSize.z,
+    //          apSrcBmp->GetSize().x, apSrcBmp->GetSize().y, apSrcBmp->GetSize().z,
+    //          GetSize().x, GetSize().y, GetSize().z);
+    //    }
   }
 
   //-----------------------------------------------------------------------
@@ -325,8 +350,11 @@ namespace hpl {
   //TODO: Make this inline?
   static unsigned char gvTempPixelData1[4];
   static unsigned char gvTempPixelData2[4];
-  unsigned char*       cBitmap::ConvertDataToFormat(unsigned char* apPixelData, ePixelFormat aSrcFormat, ePixelFormat aDestFormat) {
-    if (aSrcFormat == aDestFormat) return apPixelData;
+
+  unsigned char* cBitmap::ConvertDataToFormat(unsigned char* apPixelData, ePixelFormat aSrcFormat, ePixelFormat aDestFormat) {
+    if (aSrcFormat == aDestFormat) {
+      return apPixelData;
+    }
 
     // Make it into a general RGBA format
     unsigned char* pSrcPixel  = ConvertDataToRGBA(apPixelData, aSrcFormat);

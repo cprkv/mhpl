@@ -45,242 +45,227 @@
 
 namespace hpl {
 
-	bool cRendererSimple::mbUseShaders = true;
+  bool cRendererSimple::mbUseShaders = true;
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cRendererSimple::cRendererSimple(cGraphics *apGraphics,cResources* apResources) 
-		: iRenderer("Simple",apGraphics, apResources,0)
-	{
-		////////////////////////////////////
-		// Set up render specific things
-		mbSetFrameBufferAtBeginRendering = true;
-		mbClearFrameBufferAtBeginRendering = true;
-	}
+  cRendererSimple::cRendererSimple(cGraphics* apGraphics, cResources* apResources)
+      : iRenderer("Simple", apGraphics, apResources, 0) {
+    ////////////////////////////////////
+    // Set up render specific things
+    mbSetFrameBufferAtBeginRendering   = true;
+    mbClearFrameBufferAtBeginRendering = true;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cRendererSimple::~cRendererSimple()
-	{
-	}
+  cRendererSimple::~cRendererSimple() {
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	bool cRendererSimple::LoadData()
-	{
-		cParserVarContainer programVars;
+  //-----------------------------------------------------------------------
 
-		////////////////////////
-		// Z shader
-		programVars.Clear();
-		programVars.Add("UseUv");
-		
-		mpFlatProgram = mpGraphics->CreateGpuProgramFromShaders("DiffuseShader","deferred_base_vtx.glsl", "deferred_base_frag.glsl",  &programVars);
+  bool cRendererSimple::LoadData() {
+    cParserVarContainer programVars;
 
-		////////////////////////
-		// Diffuse shader
-		programVars.Clear();
-		programVars.Add("UseUv");
-		programVars.Add("UseNormals");
-		programVars.Add("UseColor");
-		programVars.Add("UseDiffuse");
+    ////////////////////////
+    // Z shader
+    programVars.Clear();
+    programVars.Add("UseUv");
 
-		mpDiffuseProgram = mpGraphics->CreateGpuProgramFromShaders("DiffuseShader","deferred_base_vtx.glsl", "deferred_base_frag.glsl",  &programVars);
-        
+    mpFlatProgram = mpGraphics->CreateGpuProgramFromShaders("DiffuseShader", "deferred_base_vtx.glsl", "deferred_base_frag.glsl", &programVars);
 
-		return true;
-	}
+    ////////////////////////
+    // Diffuse shader
+    programVars.Clear();
+    programVars.Add("UseUv");
+    programVars.Add("UseNormals");
+    programVars.Add("UseColor");
+    programVars.Add("UseDiffuse");
 
-	//-----------------------------------------------------------------------
-
-	
-	void cRendererSimple::DestroyData()
-	{
-		mpGraphics->DestroyGpuProgram(mpFlatProgram);
-		mpGraphics->DestroyGpuProgram(mpDiffuseProgram);
-	}
-
-	//-----------------------------------------------------------------------
-
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
-
-	//-----------------------------------------------------------------------
-
-	void cRendererSimple::CopyToFrameBuffer()
-	{
-		//Do Nothing
-	}
-
-	
-	//-----------------------------------------------------------------------
-	
-	void cRendererSimple::SetupRenderList()
-	{
-		mpCurrentRenderList->Setup(mfCurrentFrameTime,mpCurrentFrustum);
-
-		CheckForVisibleAndAddToList(mpCurrentWorld->GetRenderableContainer(eWorldContainerType_Static),0);
-		CheckForVisibleAndAddToList(mpCurrentWorld->GetRenderableContainer(eWorldContainerType_Dynamic),0);
-
-		mpCurrentRenderList->Compile(	eRenderListCompileFlag_Z |
-										eRenderListCompileFlag_Diffuse |
-										eRenderListCompileFlag_Decal |
-										eRenderListCompileFlag_Translucent);
-
-	}
-
-	//-----------------------------------------------------------------------
-	
-	void cRendererSimple::RenderObjects()
-	{
-		START_RENDER_PASS(Simple);
-
-		////////////////////////////////////////////
-		// Z pre pass, only render to z buffer
-		{
-			SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
-			SetDepthTest(true);
-			SetDepthWrite(true);
-			SetBlendMode(eMaterialBlendMode_None);
-			SetAlphaMode(eMaterialAlphaMode_Trans);
-			SetChannelMode(eMaterialChannelMode_None); //This turns of all color writing
-			SetTextureRange(NULL,0);
-
-			cRenderableVecIterator diffIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Z);
-			while(diffIt.HasNext())
-			{
-				iRenderable *pObject = diffIt.Next();
-				cMaterial *pMaterial = pObject->GetMaterial();
-				iTexture *pTex = pMaterial->GetTexture(eMaterialTexture_Alpha);
-
-				//If shaders and an alpha channel, use a program that handles textures.
-				if(mbUseShaders)
-				{
-					if(pTex)	SetProgram(mpDiffuseProgram);
-					else		SetProgram(mpFlatProgram);
-				}
-
-				SetTexture(0,pTex);
-
-				SetMatrix(pObject->GetModelMatrixPtr());
-
-				SetVertexBuffer(pObject->GetVertexBuffer());
-
-				DrawCurrent();
-			}
-		}
+    mpDiffuseProgram = mpGraphics->CreateGpuProgramFromShaders("DiffuseShader", "deferred_base_vtx.glsl", "deferred_base_frag.glsl", &programVars);
 
 
-		////////////////////////////////////////////
-		// Diffuse Objects
-		{
-			SetDepthTestFunc(eDepthTestFunc_Equal); //Setting equal here so that alpha works. It only draws on pixel that he Z prepass drew to.
-			SetDepthWrite(false);
-			SetChannelMode(eMaterialChannelMode_RGBA);
-			SetAlphaMode(eMaterialAlphaMode_Solid);
-			SetTextureRange(NULL,0);
+    return true;
+  }
 
-			if(mbUseShaders)
-			{
-				SetProgram(mpDiffuseProgram);
-			}
-
-			cRenderableVecIterator diffIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Diffuse);
-			while(diffIt.HasNext())
-			{
-				iRenderable *pObject = diffIt.Next();
-				cMaterial *pMaterial = pObject->GetMaterial();
-
-				SetTexture(0,pMaterial->GetTexture(eMaterialTexture_Diffuse));
-			
-				SetMatrix(pObject->GetModelMatrixPtr());
-
-				SetVertexBuffer(pObject->GetVertexBuffer());
-
-				DrawCurrent();
-			}
-		}
-
-		////////////////////////////////////////////
-		// Decal Objects
-		{
-			SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
-			SetDepthWrite(false);
-
-			if(mbUseShaders)
-			{
-				SetProgram(mpDiffuseProgram);
-			}
-
-			cRenderableVecIterator decalIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Decal);
-			while(decalIt.HasNext())
-			{
-				iRenderable *pObject = decalIt.Next();
-				cMaterial *pMaterial = pObject->GetMaterial();
-
-				SetBlendMode(pMaterial->GetBlendMode());
-
-				SetTexture(0,pMaterial->GetTexture(eMaterialTexture_Diffuse));
-
-				SetMatrix(pObject->GetModelMatrixPtr());
-
-				SetVertexBuffer(pObject->GetVertexBuffer());
-
-				DrawCurrent();
-			}
-		}
-
-		RunCallback(eRendererMessage_PostSolid);
+  //-----------------------------------------------------------------------
 
 
-		////////////////////////////////////////////
-		// Trans Objects
-		{
-			SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
-			SetDepthWrite(false);
+  void cRendererSimple::DestroyData() {
+    mpGraphics->DestroyGpuProgram(mpFlatProgram);
+    mpGraphics->DestroyGpuProgram(mpDiffuseProgram);
+  }
 
-			if(mbUseShaders)
-			{
-				SetProgram(mpDiffuseProgram);
-			}
-			
-			cRenderableVecIterator transIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Translucent);
-			while(transIt.HasNext())
-			{
-				iRenderable *pObject = transIt.Next();
-				cMaterial *pMaterial = pObject->GetMaterial();
+  //-----------------------------------------------------------------------
 
-				pObject->UpdateGraphicsForViewport(mpCurrentFrustum, mfCurrentFrameTime);
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-				SetBlendMode(pMaterial->GetBlendMode());
+  //-----------------------------------------------------------------------
 
-				SetTexture(0,pMaterial->GetTexture(eMaterialTexture_Diffuse));
+  void cRendererSimple::CopyToFrameBuffer() {
+    //Do Nothing
+  }
 
-				SetMatrix(pObject->GetModelMatrix(mpCurrentFrustum));
 
-				SetVertexBuffer(pObject->GetVertexBuffer());
+  //-----------------------------------------------------------------------
 
-				DrawCurrent();
-			}
-		}
-		
-		RunCallback(eRendererMessage_PostTranslucent);
-		
-		
-		END_RENDER_PASS();
-	}
+  void cRendererSimple::SetupRenderList() {
+    mpCurrentRenderList->Setup(mfCurrentFrameTime, mpCurrentFrustum);
 
-	//-----------------------------------------------------------------------
-	
-}
+    CheckForVisibleAndAddToList(mpCurrentWorld->GetRenderableContainer(eWorldContainerType_Static), 0);
+    CheckForVisibleAndAddToList(mpCurrentWorld->GetRenderableContainer(eWorldContainerType_Dynamic), 0);
+
+    mpCurrentRenderList->Compile(eRenderListCompileFlag_Z |
+                                 eRenderListCompileFlag_Diffuse |
+                                 eRenderListCompileFlag_Decal |
+                                 eRenderListCompileFlag_Translucent);
+  }
+
+  //-----------------------------------------------------------------------
+
+  void cRendererSimple::RenderObjects() {
+    START_RENDER_PASS(Simple);
+
+    ////////////////////////////////////////////
+    // Z pre pass, only render to z buffer
+    {
+      SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+      SetDepthTest(true);
+      SetDepthWrite(true);
+      SetBlendMode(eMaterialBlendMode_None);
+      SetAlphaMode(eMaterialAlphaMode_Trans);
+      SetChannelMode(eMaterialChannelMode_None); //This turns of all color writing
+      SetTextureRange(NULL, 0);
+
+      cRenderableVecIterator diffIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Z);
+      while (diffIt.HasNext()) {
+        iRenderable* pObject   = diffIt.Next();
+        cMaterial*   pMaterial = pObject->GetMaterial();
+        iTexture*    pTex      = pMaterial->GetTexture(eMaterialTexture_Alpha);
+
+        //If shaders and an alpha channel, use a program that handles textures.
+        if (mbUseShaders) {
+          if (pTex) SetProgram(mpDiffuseProgram);
+          else
+            SetProgram(mpFlatProgram);
+        }
+
+        SetTexture(0, pTex);
+
+        SetMatrix(pObject->GetModelMatrixPtr());
+
+        SetVertexBuffer(pObject->GetVertexBuffer());
+
+        DrawCurrent();
+      }
+    }
+
+
+    ////////////////////////////////////////////
+    // Diffuse Objects
+    {
+      SetDepthTestFunc(eDepthTestFunc_Equal); //Setting equal here so that alpha works. It only draws on pixel that he Z prepass drew to.
+      SetDepthWrite(false);
+      SetChannelMode(eMaterialChannelMode_RGBA);
+      SetAlphaMode(eMaterialAlphaMode_Solid);
+      SetTextureRange(NULL, 0);
+
+      if (mbUseShaders) {
+        SetProgram(mpDiffuseProgram);
+      }
+
+      cRenderableVecIterator diffIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Diffuse);
+      while (diffIt.HasNext()) {
+        iRenderable* pObject   = diffIt.Next();
+        cMaterial*   pMaterial = pObject->GetMaterial();
+
+        SetTexture(0, pMaterial->GetTexture(eMaterialTexture_Diffuse));
+
+        SetMatrix(pObject->GetModelMatrixPtr());
+
+        SetVertexBuffer(pObject->GetVertexBuffer());
+
+        DrawCurrent();
+      }
+    }
+
+    ////////////////////////////////////////////
+    // Decal Objects
+    {
+      SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+      SetDepthWrite(false);
+
+      if (mbUseShaders) {
+        SetProgram(mpDiffuseProgram);
+      }
+
+      cRenderableVecIterator decalIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Decal);
+      while (decalIt.HasNext()) {
+        iRenderable* pObject   = decalIt.Next();
+        cMaterial*   pMaterial = pObject->GetMaterial();
+
+        SetBlendMode(pMaterial->GetBlendMode());
+
+        SetTexture(0, pMaterial->GetTexture(eMaterialTexture_Diffuse));
+
+        SetMatrix(pObject->GetModelMatrixPtr());
+
+        SetVertexBuffer(pObject->GetVertexBuffer());
+
+        DrawCurrent();
+      }
+    }
+
+    RunCallback(eRendererMessage_PostSolid);
+
+
+    ////////////////////////////////////////////
+    // Trans Objects
+    {
+      SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+      SetDepthWrite(false);
+
+      if (mbUseShaders) {
+        SetProgram(mpDiffuseProgram);
+      }
+
+      cRenderableVecIterator transIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Translucent);
+      while (transIt.HasNext()) {
+        iRenderable* pObject   = transIt.Next();
+        cMaterial*   pMaterial = pObject->GetMaterial();
+
+        pObject->UpdateGraphicsForViewport(mpCurrentFrustum, mfCurrentFrameTime);
+
+        SetBlendMode(pMaterial->GetBlendMode());
+
+        SetTexture(0, pMaterial->GetTexture(eMaterialTexture_Diffuse));
+
+        SetMatrix(pObject->GetModelMatrix(mpCurrentFrustum));
+
+        SetVertexBuffer(pObject->GetVertexBuffer());
+
+        DrawCurrent();
+      }
+    }
+
+    RunCallback(eRendererMessage_PostTranslucent);
+
+
+    END_RENDER_PASS();
+  }
+
+  //-----------------------------------------------------------------------
+
+} // namespace hpl

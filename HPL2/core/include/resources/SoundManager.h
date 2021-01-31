@@ -24,38 +24,36 @@
 
 namespace hpl {
 
-	class cSound;
-	class cResources;
-	class iSoundData;
+  class cSound;
+  class cResources;
+  class iSoundData;
 
-	typedef std::list<iSoundData*> tSoundDataList;
-	typedef tSoundDataList::iterator tSoundDataListIt;
+  typedef std::list<iSoundData*>   tSoundDataList;
+  typedef tSoundDataList::iterator tSoundDataListIt;
 
-	class cSoundManager : public iResourceManager
-	{
-	public:
-		cSoundManager(cSound* apSound,cResources *apResources);
-		~cSoundManager();
+  class cSoundManager : public iResourceManager {
+  public:
+    cSoundManager(cSound* apSound, cResources* apResources);
+    ~cSoundManager();
 
-		iSoundData* CreateSoundData(const tString& asName, bool abStream, bool abLoopStream=false);
+    iSoundData* CreateSoundData(const tString& asName, bool abStream, bool abLoopStream = false);
 
-		void Destroy(iResourceBase* apResource);
-		void Unload(iResourceBase* apResource);
+    void Destroy(iResourceBase* apResource);
+    void Unload(iResourceBase* apResource);
 
-		void DestroyAll();
+    void DestroyAll();
 
-	private:
-		cSound* mpSound;
-		cResources *mpResources;
+  private:
+    cSound*     mpSound;
+    cResources* mpResources;
 
-		tStringList mlstFileFormats;
+    tStringList mlstFileFormats;
 
-		tSoundDataList mlstStreamData;
+    tSoundDataList mlstStreamData;
 
-		iSoundData *FindSampleData(const tString &asName, tWString &asFilePath);
-		void FindStreamPath(const tString &asName, tWString &asFilePath);
+    iSoundData* FindSampleData(const tString& asName, tWString& asFilePath);
+    void        FindStreamPath(const tString& asName, tWString& asFilePath);
+  };
 
-	};
-
-};
+};     // namespace hpl
 #endif // HPL_SOUND_MANAGER_H

@@ -45,162 +45,151 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cRendererWireFrame::cRendererWireFrame(cGraphics *apGraphics,cResources* apResources) 
-		: iRenderer("WireFrame",apGraphics, apResources,0)
-	{
-		////////////////////////////////////
-		// Set up render specific things
-		mbSetFrameBufferAtBeginRendering = true;
-		mbClearFrameBufferAtBeginRendering = true;
-	}
+  cRendererWireFrame::cRendererWireFrame(cGraphics* apGraphics, cResources* apResources)
+      : iRenderer("WireFrame", apGraphics, apResources, 0) {
+    ////////////////////////////////////
+    // Set up render specific things
+    mbSetFrameBufferAtBeginRendering   = true;
+    mbClearFrameBufferAtBeginRendering = true;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cRendererWireFrame::~cRendererWireFrame()
-	{
-	}
+  cRendererWireFrame::~cRendererWireFrame() {
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	bool cRendererWireFrame::LoadData()
-	{
-		return true;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  bool cRendererWireFrame::LoadData() {
+    return true;
+  }
 
-	
-	void cRendererWireFrame::DestroyData()
-	{
-	}
-
-	//-----------------------------------------------------------------------
-
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
-
-	//-----------------------------------------------------------------------
-
-	void cRendererWireFrame::CopyToFrameBuffer()
-	{
-		//Do Nothing
-	}
-
-	
-	//-----------------------------------------------------------------------
-	
-	void cRendererWireFrame::SetupRenderList()
-	{
-		mpCurrentRenderList->Setup(mfCurrentFrameTime,mpCurrentFrustum);
-
-		CheckForVisibleAndAddToList(mpCurrentWorld->GetRenderableContainer(eWorldContainerType_Static),0);
-		CheckForVisibleAndAddToList(mpCurrentWorld->GetRenderableContainer(eWorldContainerType_Dynamic),0);
-
-		mpCurrentRenderList->Compile(	eRenderListCompileFlag_Diffuse |
-										eRenderListCompileFlag_Decal |
-										eRenderListCompileFlag_Translucent);
-
-	}
-
-	//-----------------------------------------------------------------------
-	
-	void cRendererWireFrame::RenderObjects()
-	{
-		START_RENDER_PASS(WireFrame);
-
-		////////////////////////////////////////////
-		// Diffuse Objects
-		SetDepthTest(true);
-		SetDepthWrite(true);
-		SetBlendMode(eMaterialBlendMode_None);
-		SetAlphaMode(eMaterialAlphaMode_Solid);
-		SetChannelMode(eMaterialChannelMode_RGBA);
-
-		SetTextureRange(NULL,0);
-
-		int lCount =0;
-		cRenderableVecIterator diffIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Diffuse);
-		while(diffIt.HasNext())
-		{
-			iRenderable *pObject = diffIt.Next();
-			cMaterial *pMaterial = pObject->GetMaterial();
-
-			SetTexture(0,pMaterial->GetTexture(eMaterialTexture_Diffuse));
-		
-			SetMatrix(pObject->GetModelMatrixPtr());
-
-			SetVertexBuffer(pObject->GetVertexBuffer());
-
-			DrawCurrent(eVertexBufferDrawType_LineStrip);
-			lCount++;
-		}
-
-		////////////////////////////////////////////
-		// Decal Objects
-		SetDepthWrite(false);
-
-		cRenderableVecIterator decalIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Decal);
-		while(decalIt.HasNext())
-		{
-			iRenderable *pObject = decalIt.Next();
-			cMaterial *pMaterial = pObject->GetMaterial();
-
-			SetBlendMode(pMaterial->GetBlendMode());
-
-			SetTexture(0,pMaterial->GetTexture(eMaterialTexture_Diffuse));
-
-			SetMatrix(pObject->GetModelMatrixPtr());
-
-			SetVertexBuffer(pObject->GetVertexBuffer());
-
-			DrawCurrent(eVertexBufferDrawType_LineStrip);
-		}
-
-		RunCallback(eRendererMessage_PostSolid);
+  //-----------------------------------------------------------------------
 
 
-		////////////////////////////////////////////
-		// Trans Objects
-		SetDepthWrite(false);
-		
-		cRenderableVecIterator transIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Translucent);
-		while(transIt.HasNext())
-		{
-			iRenderable *pObject = transIt.Next();
-			cMaterial *pMaterial = pObject->GetMaterial();
+  void cRendererWireFrame::DestroyData() {
+  }
 
-			pObject->UpdateGraphicsForViewport(mpCurrentFrustum, mfCurrentFrameTime);
+  //-----------------------------------------------------------------------
 
-			SetBlendMode(pMaterial->GetBlendMode());
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-			SetTexture(0,pMaterial->GetTexture(eMaterialTexture_Diffuse));
+  //-----------------------------------------------------------------------
 
-			SetMatrix(pObject->GetModelMatrix(mpCurrentFrustum));
+  void cRendererWireFrame::CopyToFrameBuffer() {
+    //Do Nothing
+  }
 
-			SetVertexBuffer(pObject->GetVertexBuffer());
 
-			DrawCurrent(eVertexBufferDrawType_LineStrip);
-		}
-		
-		RunCallback(eRendererMessage_PostTranslucent);
-		
-		
-		END_RENDER_PASS();
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-	
-}
+  void cRendererWireFrame::SetupRenderList() {
+    mpCurrentRenderList->Setup(mfCurrentFrameTime, mpCurrentFrustum);
+
+    CheckForVisibleAndAddToList(mpCurrentWorld->GetRenderableContainer(eWorldContainerType_Static), 0);
+    CheckForVisibleAndAddToList(mpCurrentWorld->GetRenderableContainer(eWorldContainerType_Dynamic), 0);
+
+    mpCurrentRenderList->Compile(eRenderListCompileFlag_Diffuse |
+                                 eRenderListCompileFlag_Decal |
+                                 eRenderListCompileFlag_Translucent);
+  }
+
+  //-----------------------------------------------------------------------
+
+  void cRendererWireFrame::RenderObjects() {
+    START_RENDER_PASS(WireFrame);
+
+    ////////////////////////////////////////////
+    // Diffuse Objects
+    SetDepthTest(true);
+    SetDepthWrite(true);
+    SetBlendMode(eMaterialBlendMode_None);
+    SetAlphaMode(eMaterialAlphaMode_Solid);
+    SetChannelMode(eMaterialChannelMode_RGBA);
+
+    SetTextureRange(NULL, 0);
+
+    int                    lCount = 0;
+    cRenderableVecIterator diffIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Diffuse);
+    while (diffIt.HasNext()) {
+      iRenderable* pObject   = diffIt.Next();
+      cMaterial*   pMaterial = pObject->GetMaterial();
+
+      SetTexture(0, pMaterial->GetTexture(eMaterialTexture_Diffuse));
+
+      SetMatrix(pObject->GetModelMatrixPtr());
+
+      SetVertexBuffer(pObject->GetVertexBuffer());
+
+      DrawCurrent(eVertexBufferDrawType_LineStrip);
+      lCount++;
+    }
+
+    ////////////////////////////////////////////
+    // Decal Objects
+    SetDepthWrite(false);
+
+    cRenderableVecIterator decalIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Decal);
+    while (decalIt.HasNext()) {
+      iRenderable* pObject   = decalIt.Next();
+      cMaterial*   pMaterial = pObject->GetMaterial();
+
+      SetBlendMode(pMaterial->GetBlendMode());
+
+      SetTexture(0, pMaterial->GetTexture(eMaterialTexture_Diffuse));
+
+      SetMatrix(pObject->GetModelMatrixPtr());
+
+      SetVertexBuffer(pObject->GetVertexBuffer());
+
+      DrawCurrent(eVertexBufferDrawType_LineStrip);
+    }
+
+    RunCallback(eRendererMessage_PostSolid);
+
+
+    ////////////////////////////////////////////
+    // Trans Objects
+    SetDepthWrite(false);
+
+    cRenderableVecIterator transIt = mpCurrentRenderList->GetArrayIterator(eRenderListType_Translucent);
+    while (transIt.HasNext()) {
+      iRenderable* pObject   = transIt.Next();
+      cMaterial*   pMaterial = pObject->GetMaterial();
+
+      pObject->UpdateGraphicsForViewport(mpCurrentFrustum, mfCurrentFrameTime);
+
+      SetBlendMode(pMaterial->GetBlendMode());
+
+      SetTexture(0, pMaterial->GetTexture(eMaterialTexture_Diffuse));
+
+      SetMatrix(pObject->GetModelMatrix(mpCurrentFrustum));
+
+      SetVertexBuffer(pObject->GetVertexBuffer());
+
+      DrawCurrent(eVertexBufferDrawType_LineStrip);
+    }
+
+    RunCallback(eRendererMessage_PostTranslucent);
+
+
+    END_RENDER_PASS();
+  }
+
+  //-----------------------------------------------------------------------
+
+} // namespace hpl

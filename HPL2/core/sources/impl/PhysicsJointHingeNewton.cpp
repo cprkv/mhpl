@@ -28,224 +28,201 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cPhysicsJointHingeNewton::cPhysicsJointHingeNewton(const tString &asName, 
-		iPhysicsBody *apParentBody, iPhysicsBody *apChildBody, 
-		iPhysicsWorld *apWorld,const cVector3f &avPivotPoint, const cVector3f &avPinDir)
-		: iPhysicsJointNewton<iPhysicsJointHinge>(asName,apParentBody,apChildBody,apWorld,avPivotPoint, avPinDir)
-	{
-		mfMaxAngle = 0;
-		mfMinAngle = 0;
+  cPhysicsJointHingeNewton::cPhysicsJointHingeNewton(const tString& asName,
+                                                     iPhysicsBody* apParentBody, iPhysicsBody* apChildBody,
+                                                     iPhysicsWorld* apWorld, const cVector3f& avPivotPoint, const cVector3f& avPinDir)
+      : iPhysicsJointNewton<iPhysicsJointHinge>(asName, apParentBody, apChildBody, apWorld, avPivotPoint, avPinDir) {
+    mfMaxAngle = 0;
+    mfMinAngle = 0;
 
-		mfPreviousAngle =0;
+    mfPreviousAngle = 0;
 
-		CreateCustomJoint(6);
-		
-		cMatrixf mtxPinAndPivot = GetMatrixFromPinAndPivot(mvPinDir, mvPivotPoint);
-		CalculateLocalMatrix (mtxPinAndPivot, m_mtxLocalPinPivot0, m_mtxLocalPinPivot1);
-	}
+    CreateCustomJoint(6);
 
-	//-----------------------------------------------------------------------
+    cMatrixf mtxPinAndPivot = GetMatrixFromPinAndPivot(mvPinDir, mvPivotPoint);
+    CalculateLocalMatrix(mtxPinAndPivot, m_mtxLocalPinPivot0, m_mtxLocalPinPivot1);
+  }
 
-	cPhysicsJointHingeNewton::~cPhysicsJointHingeNewton()
-	{
+  //-----------------------------------------------------------------------
 
-	}
+  cPhysicsJointHingeNewton::~cPhysicsJointHingeNewton() {
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	void cPhysicsJointHingeNewton::SetMaxAngle(float afAngle)
-	{
-		mfMaxAngle = afAngle;
-	}
-	void cPhysicsJointHingeNewton::SetMinAngle(float afAngle)
-	{
-		mfMinAngle = afAngle;
-	}
-	float cPhysicsJointHingeNewton::GetMaxAngle()
-	{
-		return mfMaxAngle;
-	}
-	float cPhysicsJointHingeNewton::GetMinAngle()
-	{
-		return mfMinAngle;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void cPhysicsJointHingeNewton::SetMaxAngle(float afAngle) {
+    mfMaxAngle = afAngle;
+  }
+  void cPhysicsJointHingeNewton::SetMinAngle(float afAngle) {
+    mfMinAngle = afAngle;
+  }
+  float cPhysicsJointHingeNewton::GetMaxAngle() {
+    return mfMaxAngle;
+  }
+  float cPhysicsJointHingeNewton::GetMinAngle() {
+    return mfMinAngle;
+  }
 
-	cVector3f cPhysicsJointHingeNewton::GetVelocity()
-	{
-		return cVector3f(0,0,0);
-	}
+  //-----------------------------------------------------------------------
 
-	cVector3f cPhysicsJointHingeNewton::GetAngularVelocity()
-	{
-		if(mpParentBody)
-		{
-			cVector3f vAngularVel0 = mpChildBody->GetAngularVelocity();
-			cVector3f vAngularVel1 = mpParentBody->GetAngularVelocity();
-			
-			return GetPinDir() * cMath::Vector3Dot(vAngularVel0 - vAngularVel1, GetPinDir());
-		}
-		else
-		{
-			return GetPinDir() * cMath::Vector3Dot(mpChildBody->GetAngularVelocity(), GetPinDir());
-		}
-	}
+  cVector3f cPhysicsJointHingeNewton::GetVelocity() {
+    return cVector3f(0, 0, 0);
+  }
 
-	//-----------------------------------------------------------------------
+  cVector3f cPhysicsJointHingeNewton::GetAngularVelocity() {
+    if (mpParentBody) {
+      cVector3f vAngularVel0 = mpChildBody->GetAngularVelocity();
+      cVector3f vAngularVel1 = mpParentBody->GetAngularVelocity();
 
-	float cPhysicsJointHingeNewton::GetForceSize()
-	{
-		float fSize = 0;
-		
-		//Only get for the linear rows!
-		for(int i=0; i<3; ++i)
-			fSize += fabs(NewtonUserJointGetRowForce(mpNewtonJoint, i));
-		return fSize;
-	}
+      return GetPinDir() * cMath::Vector3Dot(vAngularVel0 - vAngularVel1, GetPinDir());
+    } else {
+      return GetPinDir() * cMath::Vector3Dot(mpChildBody->GetAngularVelocity(), GetPinDir());
+    }
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	float cPhysicsJointHingeNewton::GetDistance()
-	{
-		return 0;
-	}
-	float cPhysicsJointHingeNewton::GetAngle()
-	{
-		cMatrixf mtxPinPivot0;
-		cMatrixf mtxPinPivot1;
+  float cPhysicsJointHingeNewton::GetForceSize() {
+    float fSize = 0;
 
-		CalculateGlobalMatrix (	m_mtxLocalPinPivot0, m_mtxLocalPinPivot1, mtxPinPivot0, mtxPinPivot1);
+    //Only get for the linear rows!
+    for (int i = 0; i < 3; ++i)
+      fSize += fabs(NewtonUserJointGetRowForce(mpNewtonJoint, i));
+    return fSize;
+  }
 
-		cMatrixf mtxPinPivot0Inv = mtxPinPivot0.GetTranspose();
-		cMatrixf mtxPinPivot1Inv = mtxPinPivot1.GetTranspose();
+  //-----------------------------------------------------------------------
 
-		float fSinAngle = cMath::Vector3Dot( cMath::Vector3Cross(mtxPinPivot0Inv.GetRight(), mtxPinPivot1Inv.GetRight()), 
-											mtxPinPivot0Inv.GetUp());
-		float fCosAngle = cMath::Vector3Dot(mtxPinPivot0Inv.GetRight(), mtxPinPivot1Inv.GetRight());
-		float fAngle = atan2(fSinAngle, fCosAngle);
+  float cPhysicsJointHingeNewton::GetDistance() {
+    return 0;
+  }
+  float cPhysicsJointHingeNewton::GetAngle() {
+    cMatrixf mtxPinPivot0;
+    cMatrixf mtxPinPivot1;
 
-		return fAngle;
-	}
+    CalculateGlobalMatrix(m_mtxLocalPinPivot0, m_mtxLocalPinPivot1, mtxPinPivot0, mtxPinPivot1);
 
-	
-	//-----------------------------------------------------------------------
-	
-	//////////////////////////////////////////////////////////////////////////
-	// STATIC CALLBACKS
-	//////////////////////////////////////////////////////////////////////////
+    cMatrixf mtxPinPivot0Inv = mtxPinPivot0.GetTranspose();
+    cMatrixf mtxPinPivot1Inv = mtxPinPivot1.GetTranspose();
 
-	//-----------------------------------------------------------------------
-	
-	void cPhysicsJointHingeNewton::SubmitConstraints (dFloat afTimestep, int alThreadIndex)
-	{
-		//OnPhysicsUpdate();
+    float fSinAngle = cMath::Vector3Dot(cMath::Vector3Cross(mtxPinPivot0Inv.GetRight(), mtxPinPivot1Inv.GetRight()),
+                                        mtxPinPivot0Inv.GetUp());
+    float fCosAngle = cMath::Vector3Dot(mtxPinPivot0Inv.GetRight(), mtxPinPivot1Inv.GetRight());
+    float fAngle    = atan2(fSinAngle, fCosAngle);
 
-		cMatrixf mtxPinPivot0;
-		cMatrixf mtxPinPivot1;
-		
-		// calculate the position of the pivot point and the Jacobian direction vectors, in global space. 
-		CalculateGlobalMatrix (	m_mtxLocalPinPivot0, m_mtxLocalPinPivot1, mtxPinPivot0, mtxPinPivot1);
+    return fAngle;
+  }
 
-		cVector3f vPinPivot0Pos = mtxPinPivot0.GetTranslation();
-		cVector3f vPinPivot1Pos = mtxPinPivot1.GetTranslation();
 
-		cMatrixf mtxPinPivot0Inv = mtxPinPivot0.GetTranspose();
-		cMatrixf mtxPinPivot1Inv = mtxPinPivot1.GetTranspose();
+  //-----------------------------------------------------------------------
 
-		// Restrict the movement on the pivot point along all tree orthonormal direction
-		NewtonUserJointAddLinearRow (mpNewtonJoint, vPinPivot0Pos.v, vPinPivot1Pos.v, mtxPinPivot0Inv.GetRight().v);
-		NewtonUserJointAddLinearRow (mpNewtonJoint, vPinPivot0Pos.v, vPinPivot1Pos.v, mtxPinPivot0Inv.GetUp().v);
-		NewtonUserJointAddLinearRow (mpNewtonJoint, vPinPivot0Pos.v, vPinPivot1Pos.v, mtxPinPivot0Inv.GetForward().v);
+  //////////////////////////////////////////////////////////////////////////
+  // STATIC CALLBACKS
+  //////////////////////////////////////////////////////////////////////////
 
-		// get a point along the pin axis at some reasonable large distance from the pivot
-		cVector3f vQ0 (vPinPivot0Pos + mtxPinPivot0Inv.GetUp() * 50.0f);
-		cVector3f vQ1 (vPinPivot1Pos + mtxPinPivot1Inv.GetUp() * 50.0f);
+  //-----------------------------------------------------------------------
 
-		// two constraints row perpendicular to the pin vector
-		NewtonUserJointAddLinearRow (mpNewtonJoint, vQ0.v, vQ1.v, mtxPinPivot0Inv.GetRight().v);
-		NewtonUserJointAddLinearRow (mpNewtonJoint, vQ0.v, vQ1.v, mtxPinPivot0Inv.GetForward().v);
+  void cPhysicsJointHingeNewton::SubmitConstraints(dFloat afTimestep, int alThreadIndex) {
+    //OnPhysicsUpdate();
 
-		
-		//////////////////////////
-		//Check limits
-		if (mfMinAngle != 0 || mfMaxAngle != 0)
-		{
-			/////////////////////////7
-			// Get Angle
-			//  the joint angle can be determine by getting the angle between any two non parallel vectors
-			float fSinAngle = cMath::Vector3Dot( cMath::Vector3Cross(mtxPinPivot0Inv.GetRight(), mtxPinPivot1Inv.GetRight()), 
-												mtxPinPivot0Inv.GetUp());
-			float fCosAngle = cMath::Vector3Dot(mtxPinPivot0Inv.GetRight(), mtxPinPivot1Inv.GetRight());
-			float fAngle = atan2(fSinAngle, fCosAngle);
+    cMatrixf mtxPinPivot0;
+    cMatrixf mtxPinPivot1;
 
-			///////////////////////////
-			//Avoid oscillation
-			CheckLimitAutoSleep(this, mfMinAngle,mfMaxAngle,fAngle);
-			
-			bool bSkipLimitCheck = false;
-			if(std::abs(mfPreviousAngle - fAngle) > cMath::ToRad(300)) bSkipLimitCheck = true;
+    // calculate the position of the pivot point and the Jacobian direction vectors, in global space.
+    CalculateGlobalMatrix(m_mtxLocalPinPivot0, m_mtxLocalPinPivot1, mtxPinPivot0, mtxPinPivot1);
 
-			///////////////
-			//Min
-			if (fAngle < mfMinAngle && bSkipLimitCheck ==false)
-			{
-				OnMinLimit();
-				
-				float fRelAngle = fAngle - mfMinAngle;
+    cVector3f vPinPivot0Pos = mtxPinPivot0.GetTranslation();
+    cVector3f vPinPivot1Pos = mtxPinPivot1.GetTranslation();
 
-				// tell joint error will minimize the exceeded angle error
-				NewtonUserJointAddAngularRow (mpNewtonJoint, fRelAngle, mtxPinPivot0Inv.GetUp().v);
+    cMatrixf mtxPinPivot0Inv = mtxPinPivot0.GetTranspose();
+    cMatrixf mtxPinPivot1Inv = mtxPinPivot1.GetTranspose();
 
-				// need high stiffness here
-				NewtonUserJointSetRowStiffness (mpNewtonJoint, 1.0f);
+    // Restrict the movement on the pivot point along all tree orthonormal direction
+    NewtonUserJointAddLinearRow(mpNewtonJoint, vPinPivot0Pos.v, vPinPivot1Pos.v, mtxPinPivot0Inv.GetRight().v);
+    NewtonUserJointAddLinearRow(mpNewtonJoint, vPinPivot0Pos.v, vPinPivot1Pos.v, mtxPinPivot0Inv.GetUp().v);
+    NewtonUserJointAddLinearRow(mpNewtonJoint, vPinPivot0Pos.v, vPinPivot1Pos.v, mtxPinPivot0Inv.GetForward().v);
 
-				// allow the joint to move back freely 
-				NewtonUserJointSetRowMaximumFriction (mpNewtonJoint, 0.0f);
-			} 
-			///////////////
-			//Max
-			else if (fAngle > mfMaxAngle  && bSkipLimitCheck ==false)
-			{
-				OnMaxLimit();
+    // get a point along the pin axis at some reasonable large distance from the pivot
+    cVector3f vQ0(vPinPivot0Pos + mtxPinPivot0Inv.GetUp() * 50.0f);
+    cVector3f vQ1(vPinPivot1Pos + mtxPinPivot1Inv.GetUp() * 50.0f);
 
-				float fRelAngle = fAngle - mfMaxAngle;
+    // two constraints row perpendicular to the pin vector
+    NewtonUserJointAddLinearRow(mpNewtonJoint, vQ0.v, vQ1.v, mtxPinPivot0Inv.GetRight().v);
+    NewtonUserJointAddLinearRow(mpNewtonJoint, vQ0.v, vQ1.v, mtxPinPivot0Inv.GetForward().v);
 
-				// tell joint error will minimize the exceeded angle error
-				NewtonUserJointAddAngularRow (mpNewtonJoint, fRelAngle, mtxPinPivot0Inv.GetUp().v);
 
-				// need high stiffness here
-				NewtonUserJointSetRowStiffness (mpNewtonJoint, 1.0f);
+    //////////////////////////
+    //Check limits
+    if (mfMinAngle != 0 || mfMaxAngle != 0) {
+      /////////////////////////7
+      // Get Angle
+      //  the joint angle can be determine by getting the angle between any two non parallel vectors
+      float fSinAngle = cMath::Vector3Dot(cMath::Vector3Cross(mtxPinPivot0Inv.GetRight(), mtxPinPivot1Inv.GetRight()),
+                                          mtxPinPivot0Inv.GetUp());
+      float fCosAngle = cMath::Vector3Dot(mtxPinPivot0Inv.GetRight(), mtxPinPivot1Inv.GetRight());
+      float fAngle    = atan2(fSinAngle, fCosAngle);
 
-				// allow the joint to move back freely
-				NewtonUserJointSetRowMinimumFriction (mpNewtonJoint, 0.0f);
+      ///////////////////////////
+      //Avoid oscillation
+      CheckLimitAutoSleep(this, mfMinAngle, mfMaxAngle, fAngle);
 
-			}
-			else
-			{
-				if(mpParentBody ==NULL || mpParentBody->GetMass()==0)
-				{
-					if( bSkipLimitCheck==false && 
-						( (mbStickyMaxLimit && mfPreviousAngle > mfMaxAngle) || 
-						  (mbStickyMinLimit && mfPreviousAngle < mfMinAngle) ) )
-					{
-						mpChildBody->SetAngularVelocity(0);
-						mpChildBody->SetLinearVelocity(0);
-					}
+      bool bSkipLimitCheck = false;
+      if (std::abs(mfPreviousAngle - fAngle) > cMath::ToRad(300)) bSkipLimitCheck = true;
 
-					/*if(	(mfStickyMaxDistance != 0 && fabs(fAngle - mfMaxAngle) < mfStickyMaxDistance) 
+      ///////////////
+      //Min
+      if (fAngle < mfMinAngle && bSkipLimitCheck == false) {
+        OnMinLimit();
+
+        float fRelAngle = fAngle - mfMinAngle;
+
+        // tell joint error will minimize the exceeded angle error
+        NewtonUserJointAddAngularRow(mpNewtonJoint, fRelAngle, mtxPinPivot0Inv.GetUp().v);
+
+        // need high stiffness here
+        NewtonUserJointSetRowStiffness(mpNewtonJoint, 1.0f);
+
+        // allow the joint to move back freely
+        NewtonUserJointSetRowMaximumFriction(mpNewtonJoint, 0.0f);
+      }
+      ///////////////
+      //Max
+      else if (fAngle > mfMaxAngle && bSkipLimitCheck == false) {
+        OnMaxLimit();
+
+        float fRelAngle = fAngle - mfMaxAngle;
+
+        // tell joint error will minimize the exceeded angle error
+        NewtonUserJointAddAngularRow(mpNewtonJoint, fRelAngle, mtxPinPivot0Inv.GetUp().v);
+
+        // need high stiffness here
+        NewtonUserJointSetRowStiffness(mpNewtonJoint, 1.0f);
+
+        // allow the joint to move back freely
+        NewtonUserJointSetRowMinimumFriction(mpNewtonJoint, 0.0f);
+
+      } else {
+        if (mpParentBody == NULL || mpParentBody->GetMass() == 0) {
+          if (bSkipLimitCheck == false &&
+              ((mbStickyMaxLimit && mfPreviousAngle > mfMaxAngle) ||
+               (mbStickyMinLimit && mfPreviousAngle < mfMinAngle))) {
+            mpChildBody->SetAngularVelocity(0);
+            mpChildBody->SetLinearVelocity(0);
+          }
+
+          /*if(	(mfStickyMaxDistance != 0 && fabs(fAngle - mfMaxAngle) < mfStickyMaxDistance)
 						||
 						(mfStickyMinDistance != 0 && fabs(fAngle - mfMinAngle) < mfStickyMinDistance)
 						)
@@ -253,26 +230,23 @@ namespace hpl {
 						mpChildBody->SetAngularVelocity(0);
 						mpChildBody->SetLinearVelocity(0);
 					}*/
-				}
+        }
 
-				OnNoLimit();
-			}
+        OnNoLimit();
+      }
 
-			mfPreviousAngle = fAngle;
-		}
-		
-	}
-	
-	//-----------------------------------------------------------------------
+      mfPreviousAngle = fAngle;
+    }
+  }
 
-	void cPhysicsJointHingeNewton::GetInfo (NewtonJointRecord* apInfo)
-	{
+  //-----------------------------------------------------------------------
 
-	}
+  void cPhysicsJointHingeNewton::GetInfo(NewtonJointRecord* apInfo) {
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	/*unsigned cPhysicsJointHingeNewton::LimitCallback(const NewtonJoint* pHinge, NewtonHingeSliderUpdateDesc* pDesc)
+  /*unsigned cPhysicsJointHingeNewton::LimitCallback(const NewtonJoint* pHinge, NewtonHingeSliderUpdateDesc* pDesc)
 	{
 		cPhysicsJointHingeNewton* pHingeJoint = (cPhysicsJointHingeNewton*)NewtonJointGetUserData(pHinge);
 		
@@ -333,6 +307,6 @@ namespace hpl {
 		return 0;
 	}*/
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-}
+} // namespace hpl

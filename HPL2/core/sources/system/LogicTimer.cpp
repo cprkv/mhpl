@@ -24,110 +24,99 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cLogicTimer::cLogicTimer(int alUpdatesPerSec, iLowLevelSystem *apLowLevelSystem)
-	{
-		mlMaxUpdates = alUpdatesPerSec/10;
-		mlUpdateCount =0;
-		
-		mpLowLevelSystem = apLowLevelSystem;
+  cLogicTimer::cLogicTimer(int alUpdatesPerSec, iLowLevelSystem* apLowLevelSystem) {
+    mlMaxUpdates  = alUpdatesPerSec / 10;
+    mlUpdateCount = 0;
 
-		mfSpeedMul = 1.0f;
+    mpLowLevelSystem = apLowLevelSystem;
 
-		SetUpdatesPerSec(alUpdatesPerSec);
-	}
+    mfSpeedMul = 1.0f;
 
-	//-----------------------------------------------------------------------
+    SetUpdatesPerSec(alUpdatesPerSec);
+  }
 
-	cLogicTimer::~cLogicTimer()
-	{
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  cLogicTimer::~cLogicTimer() {
+  }
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-	void cLogicTimer::Reset()
-	{
-		mlLocalTime = (double)cPlatform::GetApplicationTime();
-	}
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
+  void cLogicTimer::Reset() {
+    mlLocalTime = (double) cPlatform::GetApplicationTime();
+  }
 
-	bool cLogicTimer::WantUpdate()
-	{
-		++mlUpdateCount;
-		if(mlUpdateCount > mlMaxUpdates) return false;
+  //-----------------------------------------------------------------------
 
-		if(mlLocalTime< (double)cPlatform::GetApplicationTime())
-		{
-			Update();
-			return true;
-		}
-		return false;
-	}
-	
-	//-----------------------------------------------------------------------
+  bool cLogicTimer::WantUpdate() {
+    ++mlUpdateCount;
+    if (mlUpdateCount > mlMaxUpdates) return false;
 
-	void cLogicTimer::EndUpdateLoop()
-	{
-		if(mlUpdateCount > mlMaxUpdates){
-			Reset();
-		}
+    if (mlLocalTime < (double) cPlatform::GetApplicationTime()) {
+      Update();
+      return true;
+    }
+    return false;
+  }
 
-		mlUpdateCount=0;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void cLogicTimer::EndUpdateLoop() {
+    if (mlUpdateCount > mlMaxUpdates) {
+      Reset();
+    }
 
-	void cLogicTimer::SetUpdatesPerSec(int alUpdatesPerSec)
-	{
-		mlLocalTimeAdd = 1000.0/((double)alUpdatesPerSec);
-		Reset();
-	}
+    mlUpdateCount = 0;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cLogicTimer::SetMaxUpdates(int alMax)
-	{
-		mlMaxUpdates = alMax;
-	}
+  void cLogicTimer::SetUpdatesPerSec(int alUpdatesPerSec) {
+    mlLocalTimeAdd = 1000.0 / ((double) alUpdatesPerSec);
+    Reset();
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	int cLogicTimer::GetUpdatesPerSec()
-	{
-		return (int)(1000.0 / ((double)mlLocalTimeAdd));
-	}
-	
-	//-----------------------------------------------------------------------
+  void cLogicTimer::SetMaxUpdates(int alMax) {
+    mlMaxUpdates = alMax;
+  }
 
-	float cLogicTimer::GetStepSize()
-	{
-		return ((float)mlLocalTimeAdd)/1000.0f;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
-	
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+  int cLogicTimer::GetUpdatesPerSec() {
+    return (int) (1000.0 / ((double) mlLocalTimeAdd));
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cLogicTimer::Update()
-	{
-		mlLocalTime += mlLocalTimeAdd/mfSpeedMul;
-	}
+  float cLogicTimer::GetStepSize() {
+    return ((float) mlLocalTimeAdd) / 1000.0f;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-}
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
+
+  //-----------------------------------------------------------------------
+
+  void cLogicTimer::Update() {
+    mlLocalTime += mlLocalTimeAdd / mfSpeedMul;
+  }
+
+  //-----------------------------------------------------------------------
+
+} // namespace hpl

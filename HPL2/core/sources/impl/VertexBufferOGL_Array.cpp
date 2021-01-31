@@ -28,169 +28,154 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cVertexBufferOGL_Array::cVertexBufferOGL_Array(	iLowLevelGraphics* apLowLevelGraphics,
-										eVertexBufferDrawType aDrawType,eVertexBufferUsageType aUsageType,
-										int alReserveVtxSize,int alReserveIdxSize) :
-	iVertexBufferOpenGL(apLowLevelGraphics,eVertexBufferType_Software, aDrawType,aUsageType, alReserveVtxSize, alReserveIdxSize)
-	{
-		
-	}
+  cVertexBufferOGL_Array::cVertexBufferOGL_Array(iLowLevelGraphics*    apLowLevelGraphics,
+                                                 eVertexBufferDrawType aDrawType, eVertexBufferUsageType aUsageType,
+                                                 int alReserveVtxSize, int alReserveIdxSize)
+      : iVertexBufferOpenGL(apLowLevelGraphics, eVertexBufferType_Software, aDrawType, aUsageType, alReserveVtxSize, alReserveIdxSize) {
+  }
 
-	cVertexBufferOGL_Array::~cVertexBufferOGL_Array()
-	{
-	}
+  cVertexBufferOGL_Array::~cVertexBufferOGL_Array() {
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cVertexBufferOGL_Array::UpdateData(tVertexElementFlag aTypes, bool abIndices)
-	{
-		
-	}
-	//-----------------------------------------------------------------------
+  void cVertexBufferOGL_Array::UpdateData(tVertexElementFlag aTypes, bool abIndices) {
+  }
+  //-----------------------------------------------------------------------
 
-	void cVertexBufferOGL_Array::Draw(eVertexBufferDrawType aDrawType)
-	{
-		;
+  void cVertexBufferOGL_Array::Draw(eVertexBufferDrawType aDrawType) {
+    ;
 
-		eVertexBufferDrawType drawType = aDrawType == eVertexBufferDrawType_LastEnum ? mDrawType : aDrawType;
+    eVertexBufferDrawType drawType = aDrawType == eVertexBufferDrawType_LastEnum ? mDrawType : aDrawType;
 
-		///////////////////////////////
-		//Get the draw type
-		GLenum mode = GetDrawModeFromDrawType(drawType);
-		
-		int lSize = mlElementNum;
-		if(mlElementNum<0) lSize = GetIndexNum();
-		
-		glDrawElements(mode,lSize,GL_UNSIGNED_INT, &mvIndexArray[0]);
-	}
+    ///////////////////////////////
+    //Get the draw type
+    GLenum mode = GetDrawModeFromDrawType(drawType);
 
-	void cVertexBufferOGL_Array::DrawIndices(	unsigned int *apIndices, int alCount,
-												eVertexBufferDrawType aDrawType)
-	{
-		;
+    int lSize = mlElementNum;
+    if (mlElementNum < 0) lSize = GetIndexNum();
 
-		eVertexBufferDrawType drawType = aDrawType == eVertexBufferDrawType_LastEnum ? mDrawType : aDrawType;
+    glDrawElements(mode, lSize, GL_UNSIGNED_INT, &mvIndexArray[0]);
+  }
 
-		///////////////////////////////
-		//Get the draw type
-		GLenum mode = GetDrawModeFromDrawType(drawType);
+  void cVertexBufferOGL_Array::DrawIndices(unsigned int* apIndices, int alCount,
+                                           eVertexBufferDrawType aDrawType) {
+    ;
 
-		//////////////////////////////////
-		//Bind and draw the buffer
-		glDrawElements(mode, alCount, GL_UNSIGNED_INT, apIndices);
-	}
+    eVertexBufferDrawType drawType = aDrawType == eVertexBufferDrawType_LastEnum ? mDrawType : aDrawType;
+
+    ///////////////////////////////
+    //Get the draw type
+    GLenum mode = GetDrawModeFromDrawType(drawType);
+
+    //////////////////////////////////
+    //Bind and draw the buffer
+    glDrawElements(mode, alCount, GL_UNSIGNED_INT, apIndices);
+  }
 
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cVertexBufferOGL_Array::Bind()
-	{
-		;
+  void cVertexBufferOGL_Array::Bind() {
+    ;
 
-		SetVertexStates();
-	}
+    SetVertexStates();
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cVertexBufferOGL_Array::UnBind()
-	{
-		;
+  void cVertexBufferOGL_Array::UnBind() {
+    ;
 
-		glBindBufferARB(GL_ARRAY_BUFFER_ARB,0);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 
-		for(size_t i=0; i<mvElementArrays.size(); ++i)
-		{
-			cVtxBufferGLElementArray *pElement = mvElementArrays[i];
+    for (size_t i = 0; i < mvElementArrays.size(); ++i) {
+      cVtxBufferGLElementArray* pElement = mvElementArrays[i];
 
-			int lTextureUnit = GetVertexElementTextureUnit(pElement->mType);
-			if(lTextureUnit >=0) glClientActiveTextureARB(GL_TEXTURE0_ARB + lTextureUnit);
+      int lTextureUnit = GetVertexElementTextureUnit(pElement->mType);
+      if (lTextureUnit >= 0) glClientActiveTextureARB(GL_TEXTURE0_ARB + lTextureUnit);
 
-			glDisableClientState( GetGLArrayFromVertexElement(pElement->mType) );
-		}
-		glClientActiveTextureARB(GL_TEXTURE0_ARB);
-	}
+      glDisableClientState(GetGLArrayFromVertexElement(pElement->mType));
+    }
+    glClientActiveTextureARB(GL_TEXTURE0_ARB);
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	/////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	/////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  /////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cVertexBufferOGL_Array::CompileSpecific()
-	{
-	}
+  void cVertexBufferOGL_Array::CompileSpecific() {
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	iVertexBufferOpenGL* cVertexBufferOGL_Array::CreateDataCopy(tVertexElementFlag aFlags, eVertexBufferDrawType aDrawType,
-																eVertexBufferUsageType aUsageType,
-																int alReserveVtxSize,int alReserveIdxSize)
-	{
-		return hplNew(cVertexBufferOGL_Array, (mpLowLevelGraphics,aDrawType,aUsageType,alReserveVtxSize,alReserveIdxSize));
-	}
+  iVertexBufferOpenGL* cVertexBufferOGL_Array::CreateDataCopy(tVertexElementFlag aFlags, eVertexBufferDrawType aDrawType,
+                                                              eVertexBufferUsageType aUsageType,
+                                                              int alReserveVtxSize, int alReserveIdxSize) {
+    return hplNew(cVertexBufferOGL_Array, (mpLowLevelGraphics, aDrawType, aUsageType, alReserveVtxSize, alReserveIdxSize));
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cVertexBufferOGL_Array::SetVertexStates()
-	{
-		for(size_t i=0; i<mvElementArrays.size(); ++i)
-		{
-			cVtxBufferGLElementArray *pElement = mvElementArrays[i];
+  void cVertexBufferOGL_Array::SetVertexStates() {
+    for (size_t i = 0; i < mvElementArrays.size(); ++i) {
+      cVtxBufferGLElementArray* pElement = mvElementArrays[i];
 
-			GLenum GLType = GetGLTypeFromVertexFormat(pElement->mFormat);
-			int lSize = pElement->mlElementNum;
+      GLenum GLType = GetGLTypeFromVertexFormat(pElement->mFormat);
+      int    lSize  = pElement->mlElementNum;
 
-			int lTextureUnit = GetVertexElementTextureUnit(pElement->mType);
-			if(lTextureUnit >=0) glClientActiveTextureARB(GL_TEXTURE0_ARB + lTextureUnit);
+      int lTextureUnit = GetVertexElementTextureUnit(pElement->mType);
+      if (lTextureUnit >= 0) glClientActiveTextureARB(GL_TEXTURE0_ARB + lTextureUnit);
 
-			glEnableClientState( GetGLArrayFromVertexElement(pElement->mType) );
+      glEnableClientState(GetGLArrayFromVertexElement(pElement->mType));
 
-			switch(pElement->mType)
-			{
-			case eVertexBufferElement_Normal:
-				glNormalPointer(GLType, 0, pElement->GetArrayPtr());
-				break;
+      switch (pElement->mType) {
+        case eVertexBufferElement_Normal:
+          glNormalPointer(GLType, 0, pElement->GetArrayPtr());
+          break;
 
-			case eVertexBufferElement_Position:	
-				glVertexPointer(lSize,GLType, 0, pElement->GetArrayPtr());
-				break;
+        case eVertexBufferElement_Position:
+          glVertexPointer(lSize, GLType, 0, pElement->GetArrayPtr());
+          break;
 
-			case eVertexBufferElement_Color0:
-				glColorPointer(lSize,GLType, 0, pElement->GetArrayPtr());
-				break;
+        case eVertexBufferElement_Color0:
+          glColorPointer(lSize, GLType, 0, pElement->GetArrayPtr());
+          break;
 
-			case eVertexBufferElement_Color1:
-				glSecondaryColorPointerEXT(lSize,GLType, 0, pElement->GetArrayPtr());
-				break;
+        case eVertexBufferElement_Color1:
+          glSecondaryColorPointerEXT(lSize, GLType, 0, pElement->GetArrayPtr());
+          break;
 
-			case eVertexBufferElement_Texture1Tangent:	
-			case eVertexBufferElement_Texture0:			
-			case eVertexBufferElement_Texture1:			
-			case eVertexBufferElement_Texture2:			
-			case eVertexBufferElement_Texture3:			
-			case eVertexBufferElement_Texture4:			
-				glTexCoordPointer(lSize,GLType,0, pElement->GetArrayPtr());
-				break;					
-			//TODO: User types
-			}
-		}
-		glClientActiveTextureARB(GL_TEXTURE0_ARB);
+        case eVertexBufferElement_Texture1Tangent:
+        case eVertexBufferElement_Texture0:
+        case eVertexBufferElement_Texture1:
+        case eVertexBufferElement_Texture2:
+        case eVertexBufferElement_Texture3:
+        case eVertexBufferElement_Texture4:
+          glTexCoordPointer(lSize, GLType, 0, pElement->GetArrayPtr());
+          break;
+          //TODO: User types
+      }
+    }
+    glClientActiveTextureARB(GL_TEXTURE0_ARB);
 
-		/*/// POSITION /////////////////////////
+    /*/// POSITION /////////////////////////
 		if(aFlags & eVertexElementFlag_Position){
 			glEnableClientState(GL_VERTEX_ARRAY );
 			int idx = cMath::Log2ToInt(eVertexElementFlag_Position);
@@ -288,8 +273,8 @@ namespace hpl {
 			glClientActiveTextureARB(GL_TEXTURE4_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY );
 		}*/
-	}
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-}
+} // namespace hpl

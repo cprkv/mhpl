@@ -150,8 +150,8 @@ namespace hpl {
 		bool GetBlocksLight(){ return mbBlocksLight;}
 
 		/**
-		 * Must be true with both bodies in a collision if any effect is to be played.
-		 */
+     * Must be true with both bodies in a collision if any effect is to be played.
+     */
 		void SetUseSurfaceEffects(bool abX){ mbUseSurfaceEffects = abX;}
 		bool GetUseSurfaceEffects(){ return mbUseSurfaceEffects;}
 		

@@ -27,87 +27,71 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	cMeshLoaderHandler::cMeshLoaderHandler(cResources* apResources, cScene *apScene)
-	{
-		mpResources = apResources;
-		mpScene = apScene;
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cMeshLoaderHandler::~cMeshLoaderHandler()
-	{
-		
-	}
+  cMeshLoaderHandler::cMeshLoaderHandler(cResources* apResources, cScene* apScene) {
+    mpResources = apResources;
+    mpScene     = apScene;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  cMeshLoaderHandler::~cMeshLoaderHandler() {
+  }
 
-	//-----------------------------------------------------------------------
-	
-	cMesh* cMeshLoaderHandler::LoadMesh(const tWString& asFile,tMeshLoadFlag aFlags)
-	{
-		iMeshLoader *pMeshLoader = static_cast<iMeshLoader*>(GetLoaderForFile(asFile));
+  //-----------------------------------------------------------------------
 
-		if(pMeshLoader)
-		{
-				return pMeshLoader->LoadMesh(asFile,aFlags);
-		}
-		return NULL;
-	}
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	bool cMeshLoaderHandler::SaveMesh(cMesh* apMesh,const tWString& asFile)
-	{
-		iMeshLoader *pMeshLoader = static_cast<iMeshLoader*>(GetLoaderForFile(asFile));
+  cMesh* cMeshLoaderHandler::LoadMesh(const tWString& asFile, tMeshLoadFlag aFlags) {
+    auto* pMeshLoader = static_cast<iMeshLoader*>(GetLoaderForFile(asFile));
+    if (pMeshLoader) {
+      return pMeshLoader->LoadMesh(asFile, aFlags);
+    }
+    return nullptr;
+  }
 
-		if(pMeshLoader)
-		{
-				return pMeshLoader->SaveMesh(apMesh,asFile);
-		}
-		return false;
-	}
-	
-	//-----------------------------------------------------------------------
-	cAnimation* cMeshLoaderHandler::LoadAnimation(const tWString& asFile)
-	{
-		iMeshLoader *pMeshLoader = static_cast<iMeshLoader*>(GetLoaderForFile(asFile));
+  //-----------------------------------------------------------------------
 
-		if(pMeshLoader)
-		{
-				return pMeshLoader->LoadAnimation(asFile);
-		}
-		else
-		{
-			return NULL;
-		}
-	}
+  bool cMeshLoaderHandler::SaveMesh(cMesh* apMesh, const tWString& asFile) {
+    auto* pMeshLoader = static_cast<iMeshLoader*>(GetLoaderForFile(asFile));
+    if (pMeshLoader != nullptr) {
+      return pMeshLoader->SaveMesh(apMesh, asFile);
+    }
+    return false;
+  }
 
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //-----------------------------------------------------------------------
+  cAnimation* cMeshLoaderHandler::LoadAnimation(const tWString& asFile) {
+    auto* pMeshLoader = static_cast<iMeshLoader*>(GetLoaderForFile(asFile));
+    if (pMeshLoader) {
+      return pMeshLoader->LoadAnimation(asFile);
+    }
+    return nullptr;
+  }
 
-	//-----------------------------------------------------------------------
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	
-	void cMeshLoaderHandler::SetupLoader(iResourceLoader *apLoader)
-	{
-		iMeshLoader *pMeshLoader = static_cast<iMeshLoader*>(apLoader);
+  //-----------------------------------------------------------------------
 
-		pMeshLoader->mpMaterialManager = mpResources->GetMaterialManager();
-		pMeshLoader->mpMeshManager = mpResources->GetMeshManager();
-		pMeshLoader->mpAnimationManager = mpResources->GetAnimationManager();
-	}
 
-	//-----------------------------------------------------------------------
-}
+  void cMeshLoaderHandler::SetupLoader(iResourceLoader* apLoader) {
+    iMeshLoader* pMeshLoader = static_cast<iMeshLoader*>(apLoader);
+
+    pMeshLoader->mpMaterialManager  = mpResources->GetMaterialManager();
+    pMeshLoader->mpMeshManager      = mpResources->GetMeshManager();
+    pMeshLoader->mpAnimationManager = mpResources->GetAnimationManager();
+  }
+
+  //-----------------------------------------------------------------------
+} // namespace hpl

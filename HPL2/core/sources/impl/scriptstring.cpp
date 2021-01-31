@@ -604,7 +604,8 @@ void RegisterScriptString_Native(asIScriptEngine* engine) {
   } else {
     r = engine->RegisterObjectMethod("string", "uint64 length() const", asMETHOD(string, size), asCALL_THISCALL);
     assert(r >= 0);
-    r = engine->RegisterObjectMethod("string", "void resize(uint64, char)", asMETHODPR(string, resize, (size_t, char), void), asCALL_THISCALL);
+    r                   = engine->RegisterObjectMethod("string", "void resize(uint64, char)", asMETHODPR(string, resize, (size_t, char), void), asCALL_THISCALL);
+    const char* message = asErrorCodeStr(r);
     assert(r >= 0);
   }
 
@@ -763,10 +764,11 @@ void RegisterScriptString_Generic(asIScriptEngine* engine) {
 }
 
 void RegisterScriptString(asIScriptEngine* engine) {
-  if (strstr(asGetLibraryOptions(), "AS_MAX_PORTABILITY"))
-    RegisterScriptString_Generic(engine);
-  else
-    RegisterScriptString_Native(engine);
+  // TODO mhpl: RegisterScriptString_Native is broken
+  //  if (strstr(asGetLibraryOptions(), "AS_MAX_PORTABILITY"))
+  RegisterScriptString_Generic(engine);
+  //  else
+  //    RegisterScriptString_Native(engine);
 }
 
 END_AS_NAMESPACE

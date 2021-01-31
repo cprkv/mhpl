@@ -24,32 +24,31 @@
 
 namespace hpl {
 
-	class iResourceLoader;
+  class iResourceLoader;
 
-	typedef std::list<iResourceLoader*> tResourceLoaderList;
-	typedef tResourceLoaderList::iterator tResourceLoaderListIt;
-	
-	//------------------------------------
+  typedef std::list<iResourceLoader*>   tResourceLoaderList;
+  typedef tResourceLoaderList::iterator tResourceLoaderListIt;
 
-	class iResourceLoaderHandler
-	{
-	public:
-		virtual ~iResourceLoaderHandler();
+  //------------------------------------
 
-		void AddLoader(iResourceLoader *apLoader);
+  class iResourceLoaderHandler {
+  public:
+    virtual ~iResourceLoaderHandler();
 
-		tStringVec* GetSupportedTypes(){ return &mvSupportedTypes;}
-		
-		iResourceLoader* GetLoaderForFile(const tString& asFileName);
-		iResourceLoader* GetLoaderForFile(const tWString& asFileName);
+    void AddLoader(iResourceLoader* apLoader);
 
-	protected:
-		virtual void SetupLoader(iResourceLoader *apLoader)=0;
+    tStringVec* GetSupportedTypes() { return &mvSupportedTypes; }
 
-		tStringVec mvSupportedTypes;
+    iResourceLoader* GetLoaderForFile(const tString& asFileName);
+    iResourceLoader* GetLoaderForFile(const tWString& asFileName);
 
-		tResourceLoaderList mlstLoaders;
-	};
+  protected:
+    virtual void SetupLoader(iResourceLoader* apLoader) = 0;
 
-};
+    tStringVec mvSupportedTypes;
+
+    tResourceLoaderList mlstLoaders;
+  };
+
+};     // namespace hpl
 #endif // HPL_RESOURCE_LOADER_HANDLER_H

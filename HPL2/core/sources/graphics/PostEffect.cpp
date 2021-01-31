@@ -28,218 +28,212 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// POST EFFECT BASE
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // POST EFFECT BASE
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	iPostEffectType::iPostEffectType(const tString& asName, cGraphics *apGraphics, cResources *apResources)
-	{
-		mpGraphics = apGraphics;
-		mpResources = apResources;
+  //-----------------------------------------------------------------------
 
-		msName = asName;
-	}
-	
-	//-----------------------------------------------------------------------
+  iPostEffectType::iPostEffectType(const tString& asName, cGraphics* apGraphics, cResources* apResources) {
+    mpGraphics  = apGraphics;
+    mpResources = apResources;
+    msName      = asName;
+  }
 
-	iPostEffectType::~iPostEffectType()
-	{
+  //-----------------------------------------------------------------------
 
-	}
-	
-	//-----------------------------------------------------------------------
+  iPostEffectType::~iPostEffectType() {
+  }
 
-	//////////////////////////////////////////////////////////////////////////
-	// POST EFFECT
-	//////////////////////////////////////////////////////////////////////////
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  //////////////////////////////////////////////////////////////////////////
+  // POST EFFECT
+  //////////////////////////////////////////////////////////////////////////
 
-	iPostEffect::iPostEffect(cGraphics *apGraphics,cResources *apResources, iPostEffectType *apType)
-	{
-		mpGraphics = apGraphics;
-		mpResources = apResources;
-		mpType = apType;
+  //-----------------------------------------------------------------------
 
-		mbFinalFrameBufferUsed = false;
+  iPostEffect::iPostEffect(cGraphics* apGraphics, cResources* apResources, iPostEffectType* apType) {
+    mpGraphics  = apGraphics;
+    mpResources = apResources;
+    mpType      = apType;
 
-		mpLowLevelGraphics = mpGraphics->GetLowLevel();
+    mbFinalFrameBufferUsed = false;
 
-		mbActive = true;
-		mbDisabled = false;
-	}
+    mpLowLevelGraphics = mpGraphics->GetLowLevel();
 
-	//-----------------------------------------------------------------------
+    mbActive   = true;
+    mbDisabled = false;
+  }
 
-	iPostEffect::~iPostEffect()
-	{
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  iPostEffect::~iPostEffect() {
+  }
 
-	iTexture* iPostEffect::Render(cPostEffectComposite *apComposite, iTexture *apInputTexture, iFrameBuffer *apFinalTempBuffer, bool abLastEffect)
-	{
-		///////////////////////////
-		// Set up variables and data
-		mpCurrentComposite = apComposite;
-		mbIsLastEffect = abLastEffect;
+  //-----------------------------------------------------------------------
 
-		mbFinalFrameBufferUsed = false;
+  iTexture* iPostEffect::Render(cPostEffectComposite* apComposite, iTexture* apInputTexture, iFrameBuffer* apFinalTempBuffer, bool abLastEffect) {
+    ///////////////////////////
+    // Set up variables and data
+    mpCurrentComposite = apComposite;
+    mbIsLastEffect     = abLastEffect;
 
-		///////////////////////////
-		// Render
-		iTexture *pOutputTex = RenderEffect(apInputTexture, apFinalTempBuffer);
-		
-		//////////////////////////
-		// If last effect and final frame buffer has not been called, copy o rendertarget
-		if(mbIsLastEffect && mbFinalFrameBufferUsed == false)
-		{
-			mpCurrentComposite->SetProgram(NULL);
-			mpCurrentComposite->SetBlendMode(eMaterialBlendMode_None);
+    mbFinalFrameBufferUsed = false;
 
-			cRenderTarget *pRenderTarget = mpCurrentComposite->GetCurrentRenderTarget();
-			mpCurrentComposite->SetFrameBuffer(pRenderTarget->mpFrameBuffer, true);
+    ///////////////////////////
+    // Render
+    iTexture* pOutputTex = RenderEffect(apInputTexture, apFinalTempBuffer);
 
-			mpCurrentComposite->SetTexture(0, pOutputTex);
+    //////////////////////////
+    // If last effect and final frame buffer has not been called, copy o rendertarget
+    if (mbIsLastEffect && mbFinalFrameBufferUsed == false) {
+      mpCurrentComposite->SetProgram(NULL);
+      mpCurrentComposite->SetBlendMode(eMaterialBlendMode_None);
 
-			DrawQuad(0, 1, pOutputTex, true);
-		}
+      cRenderTarget* pRenderTarget = mpCurrentComposite->GetCurrentRenderTarget();
+      mpCurrentComposite->SetFrameBuffer(pRenderTarget->mpFrameBuffer, true);
 
-		return pOutputTex;
-	}
-	
-	//-----------------------------------------------------------------------
+      mpCurrentComposite->SetTexture(0, pOutputTex);
 
-	void iPostEffect::SetActive(bool abX)
-	{
-		if(mbActive == abX) return;
+      DrawQuad(0, 1, pOutputTex, true);
+    }
 
-		mbActive = abX;
+    return pOutputTex;
+  }
 
-		OnSetActive(abX);
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void iPostEffect::SetParams(iPostEffectParams *apSrcParams)
-	{
-		if(mpType==NULL) return;
+  void iPostEffect::SetActive(bool abX) {
+    if (mbActive == abX) {
+      return;
+    }
 
-		//Make sure the type is correct!
-		if(apSrcParams->GetName() != mpType->GetName()) return;
+    mbActive = abX;
 
-        GetTypeSpecificParams()->LoadFrom(apSrcParams);
-		OnSetParams();
-	}
-	
-	void iPostEffect::GetParams(iPostEffectParams *apDestParams)
-	{
-		if(mpType==NULL) return;
+    OnSetActive(abX);
+  }
 
-		//Make sure the type is correct!
-		if(apDestParams->GetName() != mpType->GetName()) return;
+  //-----------------------------------------------------------------------
 
-		GetTypeSpecificParams()->CopyTo(apDestParams);
-	}
+  void iPostEffect::SetParams(iPostEffectParams* apSrcParams) {
+    if (mpType == nullptr) {
+      return;
+    }
 
-	//-----------------------------------------------------------------------
+    //Make sure the type is correct!
+    if (apSrcParams->GetName() != mpType->GetName()) {
+      return;
+    }
 
-	void iPostEffect::SetFinalFrameBuffer(iFrameBuffer *apOutputBuffer)
-	{
-		mbFinalFrameBufferUsed = true;
+    GetTypeSpecificParams()->LoadFrom(apSrcParams);
+    OnSetParams();
+  }
 
-		///////////////////////
-		// Set the frame buffer
-		if(mbIsLastEffect)
-		{
-			cRenderTarget *pRenderTarget = mpCurrentComposite->GetCurrentRenderTarget();
-			mpCurrentComposite->SetFrameBuffer(pRenderTarget->mpFrameBuffer, true);
-		}
-		else
-		{
-			mpCurrentComposite->SetFrameBuffer(apOutputBuffer, true);
-		}
-	}
+  void iPostEffect::GetParams(iPostEffectParams* apDestParams) {
+    if (mpType == nullptr) {
+      return;
+    }
 
-	//-----------------------------------------------------------------------
+    //Make sure the type is correct!
+    if (apDestParams->GetName() != mpType->GetName()) {
+      return;
+    }
 
-	void iPostEffect::GetTextureUvPosAndSize(const cVector2f& avTexSize, cVector2f& avUvPos,  cVector2f& avUvSize)
-	{
-		cVector2f vScreenSizeFloat = mpLowLevelGraphics->GetScreenSizeFloat();
-		cRenderTarget *pRenderTarget = mpCurrentComposite->GetCurrentRenderTarget();
-		cVector2l vRenderTargetSize = mpCurrentComposite->GetRenderTargetSize();
-		cVector2f vViewportSize((float)vRenderTargetSize.x, (float)vRenderTargetSize.y);
-		cVector2f vViewportPos((float)pRenderTarget->mvPos.x, (float)pRenderTarget->mvPos.y);
+    GetTypeSpecificParams()->CopyTo(apDestParams);
+  }
 
-		cVector2f vRelPos = vViewportPos / vScreenSizeFloat;
-		cVector2f vRelSize = vViewportSize / vScreenSizeFloat;
+  //-----------------------------------------------------------------------
 
-		avUvPos = vRelPos * avTexSize;
-		avUvSize = vRelSize * avTexSize;
-	}
+  void iPostEffect::SetFinalFrameBuffer(iFrameBuffer* apOutputBuffer) {
+    mbFinalFrameBufferUsed = true;
 
-	//-----------------------------------------------------------------------
+    ///////////////////////
+    // Set the frame buffer
+    if (mbIsLastEffect) {
+      cRenderTarget* pRenderTarget = mpCurrentComposite->GetCurrentRenderTarget();
+      mpCurrentComposite->SetFrameBuffer(pRenderTarget->mpFrameBuffer, true);
+    } else {
+      mpCurrentComposite->SetFrameBuffer(apOutputBuffer, true);
+    }
+  }
 
-	void iPostEffect::SetFrameBuffer(iFrameBuffer *apFrameBuffer)
-	{
-		iTexture *pTex = apFrameBuffer->GetColorBuffer(0)->ToTexture();
+  //-----------------------------------------------------------------------
 
-		/////////////////////
-		//Check if texture is same size as screen, if so no need do any extra calcs
-		if(pTex->GetSizeInt2D() == mpLowLevelGraphics->GetScreenSizeInt())
-		{
-			mpCurrentComposite->SetFrameBuffer(apFrameBuffer,true);
-		}
-		/////////////////////
-		//Texture does not have same size as screen, need to do extra calculations
-		else
-		{
-			cVector2f vTexSize = pTex->GetSizeFloat2D();
-			cVector2f vUvPos, vUvSize;
-			GetTextureUvPosAndSize(vTexSize,vUvPos, vUvSize);
+  void iPostEffect::GetTextureUvPosAndSize(const cVector2f& avTexSize, cVector2f& avUvPos, cVector2f& avUvSize) {
+    cVector2f      vScreenSizeFloat  = mpLowLevelGraphics->GetScreenSizeFloat();
+    cRenderTarget* pRenderTarget     = mpCurrentComposite->GetCurrentRenderTarget();
+    cVector2l      vRenderTargetSize = mpCurrentComposite->GetRenderTargetSize();
+    cVector2f      vViewportSize((float) vRenderTargetSize.x, (float) vRenderTargetSize.y);
+    cVector2f      vViewportPos((float) pRenderTarget->mvPos.x, (float) pRenderTarget->mvPos.y);
 
-			cVector2l vTargetPos((int)(vUvPos.x+0.5f), (int)(vUvPos.y+0.5f));		
-			cVector2l vTargetSize((int)(vUvSize.x+0.5f), (int)(vUvSize.y+0.5f));
+    cVector2f vRelPos  = vViewportPos / vScreenSizeFloat;
+    cVector2f vRelSize = vViewportSize / vScreenSizeFloat;
 
-			mpLowLevelGraphics->SetCurrentFrameBuffer(apFrameBuffer, vTargetPos, vTargetSize);
-		}
-	}
+    avUvPos  = vRelPos * avTexSize;
+    avUvSize = vRelSize * avTexSize;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void iPostEffect::DrawQuad(const cVector3f& avPos,  const cVector2f& avSize, iTexture *apTexture, bool abFlipY)
-	{
-		cVector2f vTexSize = apTexture->GetSizeFloat2D();
-		cVector2f vUvPos, vUvSize;
-		GetTextureUvPosAndSize(vTexSize,vUvPos,vUvSize);
+  void iPostEffect::SetFrameBuffer(iFrameBuffer* apFrameBuffer) {
+    iTexture* pTex = apFrameBuffer->GetColorBuffer(0)->ToTexture();
 
-		mpCurrentComposite->DrawQuad(avPos,avSize,
-									cVector2f(vUvPos.x, (vTexSize.y - vUvSize.y)-vUvPos.y), 
-									cVector2f(vUvPos.x + vUvSize.x,vTexSize.y - vUvPos.y),
-									abFlipY);
-	}
+    /////////////////////
+    //Check if texture is same size as screen, if so no need do any extra calcs
+    if (pTex->GetSizeInt2D() == mpLowLevelGraphics->GetScreenSizeInt()) {
+      mpCurrentComposite->SetFrameBuffer(apFrameBuffer, true);
+    }
+    /////////////////////
+    //Texture does not have same size as screen, need to do extra calculations
+    else {
+      cVector2f vTexSize = pTex->GetSizeFloat2D();
+      cVector2f vUvPos, vUvSize;
+      GetTextureUvPosAndSize(vTexSize, vUvPos, vUvSize);
 
-	//-----------------------------------------------------------------------
+      cVector2l vTargetPos((int) (vUvPos.x + 0.5f), (int) (vUvPos.y + 0.5f));
+      cVector2l vTargetSize((int) (vUvSize.x + 0.5f), (int) (vUvSize.y + 0.5f));
 
-	void iPostEffect::DrawQuad(	const cVector3f& avPos,  const cVector2f& avSize, iTexture *apTexture0, iTexture *apTexture1, 
-								bool abFlipY0,bool abFlipY1)
-	{
-		cVector2f vTexSize[2] = {apTexture0->GetSizeFloat2D(), apTexture1->GetSizeFloat2D()};
-		cVector2f vTexMin[2], vTexMax[2];
-		
-		for(int i=0; i<2; ++i)
-		{
-			cVector2f vUvPos, vUvSize;
-			GetTextureUvPosAndSize(vTexSize[i],vUvPos,vUvSize);
-			vTexMin[i] = cVector2f(vUvPos.x, (vTexSize[i].y - vUvSize.y)-vUvPos.y); 
-			vTexMax[i] = cVector2f(vUvPos.x + vUvSize.x,vTexSize[i].y - vUvPos.y);
-		}
+      mpLowLevelGraphics->SetCurrentFrameBuffer(apFrameBuffer, vTargetPos, vTargetSize);
+    }
+  }
 
-		mpCurrentComposite->DrawQuad(cVector2f(0,0),1,vTexMin[0],vTexMax[0],vTexMin[1],vTexMax[1],abFlipY0,abFlipY1);
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void iPostEffect::DrawQuad(const cVector3f& avPos, const cVector2f& avSize, iTexture* apTexture, bool abFlipY) {
+    cVector2f vTexSize = apTexture->GetSizeFloat2D();
+    cVector2f vUvPos, vUvSize;
+    GetTextureUvPosAndSize(vTexSize, vUvPos, vUvSize);
 
-}
+    mpCurrentComposite->DrawQuad(avPos, avSize,
+                                 cVector2f(vUvPos.x, (vTexSize.y - vUvSize.y) - vUvPos.y),
+                                 cVector2f(vUvPos.x + vUvSize.x, vTexSize.y - vUvPos.y),
+                                 abFlipY);
+  }
+
+  //-----------------------------------------------------------------------
+
+  void iPostEffect::DrawQuad(const cVector3f& avPos, const cVector2f& avSize, iTexture* apTexture0, iTexture* apTexture1,
+                             bool abFlipY0, bool abFlipY1) {
+    cVector2f vTexSize[2] = { apTexture0->GetSizeFloat2D(), apTexture1->GetSizeFloat2D() };
+    cVector2f vTexMin[2], vTexMax[2];
+
+    for (int i = 0; i < 2; ++i) {
+      cVector2f vUvPos, vUvSize;
+      GetTextureUvPosAndSize(vTexSize[i], vUvPos, vUvSize);
+      vTexMin[i] = cVector2f(vUvPos.x, (vTexSize[i].y - vUvSize.y) - vUvPos.y);
+      vTexMax[i] = cVector2f(vUvPos.x + vUvSize.x, vTexSize[i].y - vUvPos.y);
+    }
+
+    mpCurrentComposite->DrawQuad(cVector2f(0, 0),
+                                 1,
+                                 vTexMin[0],
+                                 vTexMax[0],
+                                 vTexMin[1],
+                                 vTexMax[1],
+                                 abFlipY0, abFlipY1);
+  }
+
+  //-----------------------------------------------------------------------
+
+} // namespace hpl

@@ -28,117 +28,107 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// ENT FILE
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // ENT FILE
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	cEntFile::cEntFile(const tString& asName, const tWString& asFullPath, cResources *apResources) : iResourceBase(asName, asFullPath, 0)
-	{
-		mpXmlDoc = apResources->GetLowLevel()->CreateXmlDocument(asName);
-	}
-	cEntFile::~cEntFile()
-	{
-		hplDelete(mpXmlDoc);
-	}
+  //-----------------------------------------------------------------------
 
-	bool cEntFile::CreateFromFile()
-	{
-		return mpXmlDoc->CreateFromFile(GetFullPath());
-	}
+  cEntFile::cEntFile(const tString& asName, const tWString& asFullPath, cResources* apResources)
+      : iResourceBase(asName, asFullPath, 0) {
+    mpXmlDoc = apResources->GetLowLevel()->CreateXmlDocument(asName);
+  }
+  cEntFile::~cEntFile() {
+    hplDelete(mpXmlDoc);
+  }
 
-	//-----------------------------------------------------------------------
+  bool cEntFile::CreateFromFile() {
+    return mpXmlDoc->CreateFromFile(GetFullPath());
+  }
+
+  //-----------------------------------------------------------------------
 
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cEntFileManager::cEntFileManager(cResources *apResources)
-		: iResourceManager(apResources->GetFileSearcher(), apResources->GetLowLevel(), apResources->GetLowLevelSystem())
-	{
-		mpResources = apResources;
-	}
+  cEntFileManager::cEntFileManager(cResources* apResources)
+      : iResourceManager(apResources->GetFileSearcher(), apResources->GetLowLevel(), apResources->GetLowLevelSystem()) {
+    mpResources = apResources;
+  }
 
-	cEntFileManager::~cEntFileManager()
-	{
-		DestroyAll();
-		Log(" Done with ent files\n");
-	}
+  cEntFileManager::~cEntFileManager() {
+    DestroyAll();
+    Log(" Done with ent files\n");
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cEntFile* cEntFileManager::CreateEntFile(const tString& asName)
-	{
-		tWString sPath;
-		cEntFile* pEntFile;
-		tString asNewName = cString::SetFileExt(cString::ToLowerCase(asName), "ent");
+  cEntFile* cEntFileManager::CreateEntFile(const tString& asName) {
+    tWString  sPath;
+    cEntFile* pEntFile;
+    tString   asNewName = cString::SetFileExt(cString::ToLowerCase(asName), "ent");
 
-		BeginLoad(asName);
-		
-		pEntFile = static_cast<cEntFile*>(this->FindLoadedResource(asNewName,sPath));
+    BeginLoad(asName);
 
-		if(pEntFile==NULL && sPath!=_W(""))
-		{
-			pEntFile = hplNew(cEntFile, (asNewName, sPath.c_str(), mpResources));
-			if(pEntFile->CreateFromFile()==false)
-			{
-				Error("Couldn't load entity file '%s'!\n",cString::To8Char(sPath).c_str());
-				hplDelete(pEntFile);
+    pEntFile = static_cast<cEntFile*>(this->FindLoadedResource(asNewName, sPath));
 
-				EndLoad();
-				return NULL;
-			}
-			
-			AddResource(pEntFile);
-		}
-		
-		if(pEntFile)
-			pEntFile->IncUserCount();
-		else
-			Error("Couldn't create ent file '%s'\n",asNewName.c_str());
-		
-		EndLoad();
-		return pEntFile;
-	}
+    if (pEntFile == NULL && sPath != _W("")) {
+      pEntFile = hplNew(cEntFile, (asNewName, sPath.c_str(), mpResources));
+      if (pEntFile->CreateFromFile() == false) {
+        Error("Couldn't load entity file '%s'!\n", cString::To8Char(sPath).c_str());
+        hplDelete(pEntFile);
 
-	//-----------------------------------------------------------------------
+        EndLoad();
+        return NULL;
+      }
 
-	void cEntFileManager::Unload(iResourceBase* apResource)
-	{
+      AddResource(pEntFile);
+    }
 
-	}
-	//-----------------------------------------------------------------------
+    if (pEntFile)
+      pEntFile->IncUserCount();
+    else
+      Error("Couldn't create ent file '%s'\n", asNewName.c_str());
 
-	void cEntFileManager::Destroy(iResourceBase* apResource)
-	{
-		apResource->DecUserCount();
+    EndLoad();
+    return pEntFile;
+  }
 
-		if(apResource->HasUsers()==false){
-			RemoveResource(apResource);
-			hplDelete(apResource);
-		}
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void cEntFileManager::Unload(iResourceBase* apResource) {
+  }
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void cEntFileManager::Destroy(iResourceBase* apResource) {
+    apResource->DecUserCount();
 
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+    if (apResource->HasUsers() == false) {
+      RemoveResource(apResource);
+      hplDelete(apResource);
+    }
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
+
+  //-----------------------------------------------------------------------
+
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
+
+  //-----------------------------------------------------------------------
 
 
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+} // namespace hpl

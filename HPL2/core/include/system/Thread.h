@@ -23,53 +23,50 @@
 
 namespace hpl {
 
-	enum eThreadPrio
-	{
-		eThreadPrio_Low,
-		eThreadPrio_Normal,
-		eThreadPrio_High,
+  enum eThreadPrio {
+    eThreadPrio_Low,
+    eThreadPrio_Normal,
+    eThreadPrio_High,
 
-		eThreadPrio_LastEnum,
-	};
+    eThreadPrio_LastEnum,
+  };
 
-	class iThreadClass
-	{
-	public:
-		virtual ~iThreadClass() {}
-		virtual void UpdateThread()=0;
-	};
+  class iThreadClass {
+  public:
+    virtual ~iThreadClass() {}
+    virtual void UpdateThread() = 0;
+  };
 
-	class iThread
-	{
-	public:
-		iThread();
-		virtual ~iThread(){}
+  class iThread {
+  public:
+    iThread();
+    virtual ~iThread() {}
 
-		void SetThreadClass(iThreadClass* apThreadClass) { mpThreadClass = apThreadClass; }
-		void SetUpdateRate(float afUpdateRate);
-		void SetSleepTime(unsigned int alSleepTime) { mlSleepTime = alSleepTime; }
+    void SetThreadClass(iThreadClass* apThreadClass) { mpThreadClass = apThreadClass; }
+    void SetUpdateRate(float afUpdateRate);
+    void SetSleepTime(unsigned int alSleepTime) { mlSleepTime = alSleepTime; }
 
-		bool IsActive() { return mbThreadActive; }
+    bool IsActive() { return mbThreadActive; }
 
-		unsigned long GetSleepTime() { return mlSleepTime; }
-		
-        virtual void Start()=0;
-		virtual void Stop()=0;
-		virtual void Sleep(unsigned int alSleepTime)=0;
+    unsigned long GetSleepTime() { return mlSleepTime; }
 
-		virtual void SetPriority(eThreadPrio aPrio)=0;
-		eThreadPrio GetPriority() { return mPrio; }
+    virtual void Start()                         = 0;
+    virtual void Stop()                          = 0;
+    virtual void Sleep(unsigned int alSleepTime) = 0;
 
-	protected:
-		static int MainThreadFunc(void* apThread);
-		virtual int TranslateEnginePrio(eThreadPrio aPrio)=0;
+    virtual void SetPriority(eThreadPrio aPrio) = 0;
+    eThreadPrio  GetPriority() { return mPrio; }
 
-		unsigned long mlSleepTime;
-		bool mbThreadActive;
+  protected:
+    static int  MainThreadFunc(void* apThread);
+    virtual int TranslateEnginePrio(eThreadPrio aPrio) = 0;
 
-	private:
-		iThreadClass* mpThreadClass;
-		eThreadPrio mPrio;
-	};
-};
+    unsigned long mlSleepTime;
+    bool          mbThreadActive;
+
+  private:
+    iThreadClass* mpThreadClass;
+    eThreadPrio   mPrio;
+  };
+};     // namespace hpl
 #endif // HPL_THREAD_H

@@ -32,110 +32,107 @@
 
 namespace hpl {
 
-	class cMaterialManager;
-	class cMeshManager;
-	class cMesh;
-	class cSubMesh;
-	class cMeshEntity;
-	class cAnimationState;
-	class cNodeState;
-	class cBone;
-	class cNode3D;
-	class iPhysicsBody;
-	class cMaterial;
-	class cBoneState;
+  class cMaterialManager;
+  class cMeshManager;
+  class cMesh;
+  class cSubMesh;
+  class cMeshEntity;
+  class cAnimationState;
+  class cNodeState;
+  class cBone;
+  class cNode3D;
+  class iPhysicsBody;
+  class cMaterial;
+  class cBoneState;
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	
-	
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	class cSubMeshEntityBodyUpdate : public iEntityCallback
-	{
-	public:
-		void OnTransformUpdate(iEntity3D * apEntity);
-	};
+  class cSubMeshEntityBodyUpdate : public iEntityCallback {
+  public:
+    void OnTransformUpdate(iEntity3D* apEntity);
+  };
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	class cSubMeshEntity : public iRenderable
-	{
-	#ifdef __GNUC__
-		typedef iRenderable __super;
-	#endif
-		friend class cMeshEntity;
-	public:
-		cSubMeshEntity(const tString &asName,cMeshEntity *apMeshEntity, cSubMesh * apSubMesh,cMaterialManager* apMaterialManager);
-		~cSubMeshEntity();
+  class cSubMeshEntity : public iRenderable {
+#ifdef __GNUC__
+    typedef iRenderable __super;
+#endif
+    friend class cMeshEntity;
 
-		cMaterial *GetMaterial();
+  public:
+    cSubMeshEntity(const tString& asName, cMeshEntity* apMeshEntity, cSubMesh* apSubMesh, cMaterialManager* apMaterialManager);
+    ~cSubMeshEntity();
 
-		void UpdateGraphicsForFrame(float afFrameTime);
+    cMaterial* GetMaterial();
 
-		iVertexBuffer* GetVertexBuffer();
+    void UpdateGraphicsForFrame(float afFrameTime);
 
-		cBoundingVolume* GetBoundingVolume();
+    iVertexBuffer* GetVertexBuffer();
 
-		cMatrixf* GetModelMatrix(cFrustum *apFrustum);
+    cBoundingVolume* GetBoundingVolume();
 
-		int GetMatrixUpdateCount();
+    cMatrixf* GetModelMatrix(cFrustum* apFrustum);
 
-		eRenderableType GetRenderType(){ return eRenderableType_SubMesh;}
+    int GetMatrixUpdateCount();
 
-		cSubMesh* GetSubMesh() const { return mpSubMesh;}
+    eRenderableType GetRenderType() { return eRenderableType_SubMesh; }
 
-		void SetLocalNode(cNode3D *apNode);
-		cNode3D* GetLocalNode();
+    cSubMesh* GetSubMesh() const { return mpSubMesh; }
 
-		void* GetUserData(){ return mpUserData;}
-		void SetUserData(void *apData){ mpUserData = apData;}
+    void     SetLocalNode(cNode3D* apNode);
+    cNode3D* GetLocalNode();
 
-		//Entity implementation
-		tString GetEntityType(){ return "SubMesh";}
-		
-		void UpdateLogic(float afTimeStep);
+    void* GetUserData() { return mpUserData; }
+    void  SetUserData(void* apData) { mpUserData = apData; }
 
-		cTriangleData& GetTriangle(int alIndex);
-		int GetTriangleNum();
-		tTriangleDataVec* GetTriangleVecPtr();
+    //Entity implementation
+    tString GetEntityType() { return "SubMesh"; }
 
-		void SetUpdateBody(bool abX);
-		bool GetUpdateBody();
+    void UpdateLogic(float afTimeStep);
 
-		void SetCustomMaterial(cMaterial *apMaterial, bool abDestroyOldCustom=true);
-		cMaterial* GetCustomMaterial(){ return mpMaterial;}
+    cTriangleData&    GetTriangle(int alIndex);
+    int               GetTriangleNum();
+    tTriangleDataVec* GetTriangleVecPtr();
 
-	private:
-		void OnTransformUpdated();
+    void SetUpdateBody(bool abX);
+    bool GetUpdateBody();
 
-		cSubMesh *mpSubMesh;
-		cMeshEntity *mpMeshEntity;
+    void       SetCustomMaterial(cMaterial* apMaterial, bool abDestroyOldCustom = true);
+    cMaterial* GetCustomMaterial() { return mpMaterial; }
 
-		cMaterial *mpMaterial;
+  private:
+    void OnTransformUpdated();
 
-		cNode3D *mpLocalNode;
+    cSubMesh*    mpSubMesh;
+    cMeshEntity* mpMeshEntity;
 
-		cMaterialManager* mpMaterialManager;
+    cMaterial* mpMaterial;
 
-		iVertexBuffer* mpDynVtxBuffer;
-		tTriangleDataVec mvDynTriangles;
+    cNode3D* mpLocalNode;
 
-		cSubMeshEntityBodyUpdate* mpEntityCallback;
-		bool mbUpdateBody;
+    cMaterialManager* mpMaterialManager;
 
-		bool mbGraphicsUpdated;
+    iVertexBuffer*   mpDynVtxBuffer;
+    tTriangleDataVec mvDynTriangles;
 
-		char mlStaticNullMatrixCount;
-		void *mpUserData;
-	};
+    cSubMeshEntityBodyUpdate* mpEntityCallback;
+    bool                      mbUpdateBody;
 
-	typedef std::vector<cSubMeshEntity*> tSubMeshEntityVec;
-	typedef std::vector<cSubMeshEntity*>::iterator tSubMeshEntityVecIt;
+    bool mbGraphicsUpdated;
 
-	typedef std::multimap<tString,cSubMeshEntity*> tSubMeshEntityMap;
-	typedef tSubMeshEntityMap::iterator tSubMeshEntityMapIt;
+    char  mlStaticNullMatrixCount;
+    void* mpUserData;
+  };
 
-};
+  typedef std::vector<cSubMeshEntity*>           tSubMeshEntityVec;
+  typedef std::vector<cSubMeshEntity*>::iterator tSubMeshEntityVecIt;
+
+  typedef std::multimap<tString, cSubMeshEntity*> tSubMeshEntityMap;
+  typedef tSubMeshEntityMap::iterator             tSubMeshEntityMapIt;
+
+};     // namespace hpl
 #endif // HPL_SUB_MESH_ENTITY_H

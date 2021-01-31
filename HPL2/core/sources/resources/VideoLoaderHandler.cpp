@@ -29,61 +29,55 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	cVideoLoaderHandler::cVideoLoaderHandler(cResources* apResources,cGraphics *apGraphics)
-	{
-		mpResources = apResources;
-		mpGraphics = apGraphics;
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cVideoLoaderHandler::~cVideoLoaderHandler()
-	{
-		
-	}
+  cVideoLoaderHandler::cVideoLoaderHandler(cResources* apResources, cGraphics* apGraphics) {
+    mpResources = apResources;
+    mpGraphics  = apGraphics;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  cVideoLoaderHandler::~cVideoLoaderHandler() {
+  }
 
-	//-----------------------------------------------------------------------
-	
-	iVideoStream* cVideoLoaderHandler::LoadVideo(const tWString& asFile)
-	{
-		iVideoLoader *pVideoLoader = static_cast<iVideoLoader*>(GetLoaderForFile(asFile));
+  //-----------------------------------------------------------------------
 
-		if(pVideoLoader)
-		{
-				return pVideoLoader->LoadVideo(asFile);
-		}
-		
-		return NULL;
-	}
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+  iVideoStream* cVideoLoaderHandler::LoadVideo(const tWString& asFile) {
+    iVideoLoader* pVideoLoader = static_cast<iVideoLoader*>(GetLoaderForFile(asFile));
 
-	//-----------------------------------------------------------------------
+    if (pVideoLoader) {
+      return pVideoLoader->LoadVideo(asFile);
+    }
 
-	
-	void cVideoLoaderHandler::SetupLoader(iResourceLoader *apLoader)
-	{
-		iVideoLoader *pVideoLoader = static_cast<iVideoLoader*>(apLoader);
-		
-		pVideoLoader->mpLowLevelGraphics = mpGraphics->GetLowLevel();
-	}
+    return NULL;
+  }
 
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+
+
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
+
+  //-----------------------------------------------------------------------
+
+
+  void cVideoLoaderHandler::SetupLoader(iResourceLoader* apLoader) {
+    iVideoLoader* pVideoLoader = static_cast<iVideoLoader*>(apLoader);
+
+    pVideoLoader->mpLowLevelGraphics = mpGraphics->GetLowLevel();
+  }
+
+  //-----------------------------------------------------------------------
+} // namespace hpl

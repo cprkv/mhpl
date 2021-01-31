@@ -28,21 +28,21 @@
 
 namespace hpl {
 
-	class iLowLevelGraphics;
-	class cBitmap;
+  class iLowLevelGraphics;
+  class cBitmap;
 
-	class iBitmapLoader : public iResourceLoader
-	{
-	friend class cBitmapLoaderHandler;
-	public:
-		virtual ~iBitmapLoader() {}
-					
-		virtual cBitmap* LoadBitmap(const tWString& asFile, tBitmapLoadFlag aFlags)=0;
-		virtual bool SaveBitmap(cBitmap* apBitmap,const tWString& asFile, tBitmapLoadFlag aFlags)=0;
-		
-	protected:
-		iLowLevelGraphics *mpLowLevelGraphics;
-	};
+  class iBitmapLoader : public iResourceLoader {
+    friend class cBitmapLoaderHandler;
 
-};
+  public:
+    virtual ~iBitmapLoader() {}
+
+    virtual cBitmap* LoadBitmap(const tWString& asFile, tBitmapLoadFlag aFlags)                    = 0;
+    virtual bool     SaveBitmap(cBitmap* apBitmap, const tWString& asFile, tBitmapLoadFlag aFlags) = 0;
+
+  protected:
+    iLowLevelGraphics* mpLowLevelGraphics;
+  };
+
+};     // namespace hpl
 #endif // HPL_BITMAP_LOADER_H

@@ -24,39 +24,38 @@
 
 namespace hpl {
 
-    //---------------------------------------------
-	
-	class iFrameBuffer;
-	class iDepthStencilBuffer;
-	class iTexture;
-	class iLight;
-	
-	//---------------------------------------------
-	
-	class cRendererSimple : public  iRenderer
-	{
-	public:
-		cRendererSimple(cGraphics *apGraphics,cResources* apResources);
-		~cRendererSimple();
-		
-		bool LoadData();
-		void DestroyData();
+  //---------------------------------------------
 
-		static void SetUseShaders(bool abX){mbUseShaders = abX; }
-		static bool GetUseShaders(){return mbUseShaders; }
+  class iFrameBuffer;
+  class iDepthStencilBuffer;
+  class iTexture;
+  class iLight;
 
-	private:
-		void CopyToFrameBuffer();
-		void SetupRenderList();
-		void RenderObjects();
+  //---------------------------------------------
 
-		static bool mbUseShaders;
+  class cRendererSimple : public iRenderer {
+  public:
+    cRendererSimple(cGraphics* apGraphics, cResources* apResources);
+    ~cRendererSimple();
 
-		iGpuProgram *mpFlatProgram;
-		iGpuProgram *mpDiffuseProgram;
-	};
+    bool LoadData();
+    void DestroyData();
 
-	//---------------------------------------------
+    static void SetUseShaders(bool abX) { mbUseShaders = abX; }
+    static bool GetUseShaders() { return mbUseShaders; }
 
-};
+  private:
+    void CopyToFrameBuffer();
+    void SetupRenderList();
+    void RenderObjects();
+
+    static bool mbUseShaders;
+
+    iGpuProgram* mpFlatProgram;
+    iGpuProgram* mpDiffuseProgram;
+  };
+
+  //---------------------------------------------
+
+};     // namespace hpl
 #endif // HPL_RENDERER_WIRE_FRAME_H

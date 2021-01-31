@@ -24,192 +24,189 @@
 
 namespace hpl {
 
-	//---------------------------------------
+  //---------------------------------------
 
-	typedef std::map<tString, tString> tParseVarMap;
-	typedef tParseVarMap::iterator tParseVarMapIt;
+  typedef std::map<tString, tString> tParseVarMap;
+  typedef tParseVarMap::iterator     tParseVarMapIt;
 
-	
-	class cParserVarContainer
-	{
-	public:
-		void Add(const tString& asName, const tString& asVal="");
-		void Add(const tString& asName, int alVal);
-		void Add(const tString& asName, float afVal);
-		bool Remove(const tString& asName);
-		tString* Get(const tString& asName);
-		
-		tParseVarMap* GetMapPtr(){ return &m_mapVars;}
 
-		void Clear();
+  class cParserVarContainer {
+  public:
+    void     Add(const tString& asName, const tString& asVal = "");
+    void     Add(const tString& asName, int alVal);
+    void     Add(const tString& asName, float afVal);
+    bool     Remove(const tString& asName);
+    tString* Get(const tString& asName);
 
-	private:
-		tParseVarMap m_mapVars;
-	};
+    tParseVarMap* GetMapPtr() { return &m_mapVars; }
 
-	//---------------------------------------
+    void Clear();
 
-	enum eParserSymbol
-	{
-		eParserSymbol_Text,
-		eParserSymbol_Keyword,
-		eParserSymbol_Operator,
-		eParserSymbol_Variable,
-		eParserSymbol_LastEnum,
-	};
+  private:
+    tParseVarMap m_mapVars;
+  };
 
-	enum eParserKeyword
-	{
-		eParserKeyword_Define,
-		eParserKeyword_Ifdef,
-		eParserKeyword_Else,
-		eParserKeyword_Elseif,
-		eParserKeyword_Endif,
-		eParserKeyword_Include,
-		eParserKeyword_LastEnum,
-	};
+  //---------------------------------------
 
-	enum eParserOperator
-	{
-		eParserOperator_And,
-		eParserOperator_Or,
-		eParserOperator_LastEnum
-	};
+  enum eParserSymbol {
+    eParserSymbol_Text,
+    eParserSymbol_Keyword,
+    eParserSymbol_Operator,
+    eParserSymbol_Variable,
+    eParserSymbol_LastEnum,
+  };
 
-	//---------------------------------------
+  enum eParserKeyword {
+    eParserKeyword_Define,
+    eParserKeyword_Ifdef,
+    eParserKeyword_Else,
+    eParserKeyword_Elseif,
+    eParserKeyword_Endif,
+    eParserKeyword_Include,
+    eParserKeyword_LastEnum,
+  };
 
-	class cParserSymbolText;
-	class cParserSymbolKeyword;
-	class cParserSymbolOperator;
-	class cParserSymbolVariable;
-	
-	class iParserSymbol
-	{
-	public:
-		iParserSymbol(int alRow) : mlRow(alRow){}
+  enum eParserOperator {
+    eParserOperator_And,
+    eParserOperator_Or,
+    eParserOperator_LastEnum
+  };
 
-		virtual eParserSymbol GetType()=0;
+  //---------------------------------------
 
-		cParserSymbolText* ToText();
-		cParserSymbolKeyword* ToKeyword();
-		cParserSymbolOperator* ToOperator();
-		cParserSymbolVariable* ToVariable();
+  class cParserSymbolText;
+  class cParserSymbolKeyword;
+  class cParserSymbolOperator;
+  class cParserSymbolVariable;
 
-		int mlRow;
-	};
+  class iParserSymbol {
+  public:
+    iParserSymbol(int alRow)
+        : mlRow(alRow) {}
 
-	//---------------------------------------
+    virtual eParserSymbol GetType() = 0;
 
-	class cParserSymbolText : public iParserSymbol
-	{
-	public:
-		cParserSymbolText(const tString& asText, int alRow) : msText(asText), iParserSymbol(alRow){}
+    cParserSymbolText*     ToText();
+    cParserSymbolKeyword*  ToKeyword();
+    cParserSymbolOperator* ToOperator();
+    cParserSymbolVariable* ToVariable();
 
-		eParserSymbol GetType(){ return eParserSymbol_Text;}
+    int mlRow;
+  };
 
-		tString msText;
-	};
+  //---------------------------------------
 
-	class cParserSymbolKeyword : public iParserSymbol
-	{
-	public:
-		cParserSymbolKeyword(eParserKeyword aKeyword, int alRow) : mKeyword(aKeyword), iParserSymbol(alRow){}
+  class cParserSymbolText : public iParserSymbol {
+  public:
+    cParserSymbolText(const tString& asText, int alRow)
+        : msText(asText)
+        , iParserSymbol(alRow) {}
 
-		eParserSymbol GetType(){ return eParserSymbol_Keyword;}
+    eParserSymbol GetType() { return eParserSymbol_Text; }
 
-		eParserKeyword mKeyword;
-	};
-	
-	class cParserSymbolOperator : public iParserSymbol
-	{
-	public:
-		cParserSymbolOperator(eParserOperator aOp, int alRow) : mOp(aOp), iParserSymbol(alRow) {}
+    tString msText;
+  };
 
-		eParserSymbol GetType(){ return eParserSymbol_Operator;}
+  class cParserSymbolKeyword : public iParserSymbol {
+  public:
+    cParserSymbolKeyword(eParserKeyword aKeyword, int alRow)
+        : mKeyword(aKeyword)
+        , iParserSymbol(alRow) {}
 
-		eParserOperator mOp;
-	};
+    eParserSymbol GetType() { return eParserSymbol_Keyword; }
 
-	class cParserSymbolVariable : public iParserSymbol
-	{
-	public:
-		cParserSymbolVariable(const tString& asName, int alRow) : msName(asName), iParserSymbol(alRow) {}
+    eParserKeyword mKeyword;
+  };
 
-		eParserSymbol GetType(){ return eParserSymbol_Variable;}
+  class cParserSymbolOperator : public iParserSymbol {
+  public:
+    cParserSymbolOperator(eParserOperator aOp, int alRow)
+        : mOp(aOp)
+        , iParserSymbol(alRow) {}
 
-		tString msName;
-	};
+    eParserSymbol GetType() { return eParserSymbol_Operator; }
 
-	//---------------------------------------
+    eParserOperator mOp;
+  };
 
-	enum eSymbolProcess
-	{
-		eSymbolProcess_PureText,
-		eSymbolProcess_Line,
-		eSymbolProcess_Variable,
-		eSymbolProcess_LastEnum,
-	};
-	
-	//---------------------------------------
-	
-	typedef std::list<iParserSymbol*> tParserSymbolList;
-	typedef tParserSymbolList::iterator tParserSymbolListIt;
+  class cParserSymbolVariable : public iParserSymbol {
+  public:
+    cParserSymbolVariable(const tString& asName, int alRow)
+        : msName(asName)
+        , iParserSymbol(alRow) {}
 
-	//---------------------------------------
+    eParserSymbol GetType() { return eParserSymbol_Variable; }
 
-	class cPreprocessParser
-	{
-	public:
-		cPreprocessParser();
-		~cPreprocessParser();
+    tString msName;
+  };
 
-        bool Parse(	const tString* apInput, tString *apOutput, cParserVarContainer *apVarContainer,
-					const tWString& asDir=_W(""));
+  //---------------------------------------
 
-		cParserVarContainer* GetEnvVarContainer(){ return &mEnvironmentVars;}
-		cParserVarContainer* GetParsingVarContainer(){ return &mParsingVars;}
-		
-	private:
-		bool CharIsVariableValid(char alChar);
-		bool VariableExists(const tString &asName);
-		tString* GetVar(const tString &asName);
+  enum eSymbolProcess {
+    eSymbolProcess_PureText,
+    eSymbolProcess_Line,
+    eSymbolProcess_Variable,
+    eSymbolProcess_LastEnum,
+  };
 
-		bool EndOfInput();
-		void GetNextString();
-		eParserKeyword StringToKeyword(const tString& asString);
-		eParserOperator StringToOperator(const tString& asString);
-		bool ParseStringToSymbol(eSymbolProcess aProcess, const tString& asString);
-		
-		bool EndOfSymbols();
-		void GetNextSymbol();
-		bool ParseBooleanDefineStatement(bool& abStatmentValue);
-		void AddSymbol(iParserSymbol* apSymbol);
-		bool ParseSymbol(iParserSymbol *apSymbol);
-		bool ParseText(cParserSymbolText *apText);
-		bool ParseVariable(cParserSymbolVariable *apVar);
-		bool ParseOperator(cParserSymbolOperator *apOp);
-		bool ParseKeyword(cParserSymbolKeyword *apKeyword);
+  //---------------------------------------
 
-		cParserVarContainer *mpCurrentVars;
-		cParserVarContainer mEnvironmentVars;
-		cParserVarContainer mParsingVars;
-		
-		tWString msCurrentDirectory;
-        const tString *mpCurrentInput;
-		tString *mpCurrentOutput;
-		cParserVarContainer *mpCurrentVarContainer;
+  typedef std::list<iParserSymbol*>   tParserSymbolList;
+  typedef tParserSymbolList::iterator tParserSymbolListIt;
 
-		tString msCurrentString;
-		int mlInputPos;
-		eSymbolProcess mProcess;
-		int mlCurrentRow;
-		int mlRowCount;
-		
-		tParserSymbolList mlstSymbols;
-		iParserSymbol *mpCurrentSymbol;
-		tParserSymbolListIt mSymbolIt;
-	
-	};
+  //---------------------------------------
 
-};
+  class cPreprocessParser {
+  public:
+    cPreprocessParser();
+    ~cPreprocessParser();
+
+    bool Parse(const tString* apInput, tString* apOutput, cParserVarContainer* apVarContainer,
+               const tWString& asDir = _W(""));
+
+    cParserVarContainer* GetEnvVarContainer() { return &mEnvironmentVars; }
+    cParserVarContainer* GetParsingVarContainer() { return &mParsingVars; }
+
+  private:
+    bool     CharIsVariableValid(char alChar);
+    bool     VariableExists(const tString& asName);
+    tString* GetVar(const tString& asName);
+
+    bool            EndOfInput();
+    void            GetNextString();
+    eParserKeyword  StringToKeyword(const tString& asString);
+    eParserOperator StringToOperator(const tString& asString);
+    bool            ParseStringToSymbol(eSymbolProcess aProcess, const tString& asString);
+
+    bool EndOfSymbols();
+    void GetNextSymbol();
+    bool ParseBooleanDefineStatement(bool& abStatmentValue);
+    void AddSymbol(iParserSymbol* apSymbol);
+    bool ParseSymbol(iParserSymbol* apSymbol);
+    bool ParseText(cParserSymbolText* apText);
+    bool ParseVariable(cParserSymbolVariable* apVar);
+    bool ParseOperator(cParserSymbolOperator* apOp);
+    bool ParseKeyword(cParserSymbolKeyword* apKeyword);
+
+    cParserVarContainer* mpCurrentVars;
+    cParserVarContainer  mEnvironmentVars;
+    cParserVarContainer  mParsingVars;
+
+    tWString             msCurrentDirectory;
+    const tString*       mpCurrentInput;
+    tString*             mpCurrentOutput;
+    cParserVarContainer* mpCurrentVarContainer;
+
+    tString        msCurrentString;
+    int            mlInputPos;
+    eSymbolProcess mProcess;
+    int            mlCurrentRow;
+    int            mlRowCount;
+
+    tParserSymbolList   mlstSymbols;
+    iParserSymbol*      mpCurrentSymbol;
+    tParserSymbolListIt mSymbolIt;
+  };
+
+};     // namespace hpl
 #endif // HPL_PREPROCESS_PARSER_H

@@ -25,19 +25,19 @@
 
 namespace hpl {
 
-	class iResourceLoader
-	{
-	friend class iResourceLoaderHandler;
-	public:
-		virtual ~iResourceLoader() {}
+  class iResourceLoader {
+    friend class iResourceLoaderHandler;
 
-		bool IsSupported(const tString& asFileExt);
+  public:
+    virtual ~iResourceLoader() {}
 
-		void AddSupportedExtension(const tString& asExt);
+    bool IsSupported(const tString& asFileExt);
 
-	protected:
-		tStringList mlstExtensions;
-	};
+    void AddSupportedExtension(const tString& asExt);
 
-};
+  protected:
+    tStringList mlstExtensions;
+  };
+
+};     // namespace hpl
 #endif // HPL_RESOURCE_LOADER_H

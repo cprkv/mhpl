@@ -26,68 +26,67 @@
 
 namespace hpl {
 
-	class cGraphics;
-	class cResources;
-	class cMaterial;
-	class iMaterialType;
+  class cGraphics;
+  class cResources;
+  class cMaterial;
+  class iMaterialType;
 
-	class cMaterialManager : public iResourceManager
-	{
-	public:
-		cMaterialManager(cGraphics* apGraphics,cResources *apResources);
-		~cMaterialManager();
+  class cMaterialManager : public iResourceManager {
+  public:
+    cMaterialManager(cGraphics* apGraphics, cResources* apResources);
+    ~cMaterialManager();
 
-		cMaterial* CreateMaterial(const tString& asName);
+    cMaterial* CreateMaterial(const tString& asName);
 
-		void Update(float afTimeStep);
-		
-		void Destroy(iResourceBase* apResource);
-		void Unload(iResourceBase* apResource);
+    void Update(float afTimeStep);
 
-		void SetTextureSizeDownScaleLevel(unsigned int alLevel){ mlTextureSizeDownScaleLevel = alLevel;}
-		int GetTextureSizeDownScaleLevel(){ return mlTextureSizeDownScaleLevel;}
+    void Destroy(iResourceBase* apResource);
+    void Unload(iResourceBase* apResource);
 
-		void SetTextureFilter(eTextureFilter aFilter);
-		eTextureFilter GetTextureFilter(){ return mTextureFilter;}
+    void SetTextureSizeDownScaleLevel(unsigned int alLevel) { mlTextureSizeDownScaleLevel = alLevel; }
+    int  GetTextureSizeDownScaleLevel() { return mlTextureSizeDownScaleLevel; }
 
-		void SetTextureAnisotropy(float afX);
-		float GetTextureAnisotropy(){ return mfTextureAnisotropy;}
+    void           SetTextureFilter(eTextureFilter aFilter);
+    eTextureFilter GetTextureFilter() { return mTextureFilter; }
 
-		tString GetPhysicsMaterialName(const tString& asName);
+    void  SetTextureAnisotropy(float afX);
+    float GetTextureAnisotropy() { return mfTextureAnisotropy; }
 
-		cMaterial* CreateCustomMaterial(const tString& asName, iMaterialType *apMaterialType);
+    tString GetPhysicsMaterialName(const tString& asName);
 
-		tString GetTextureString(eMaterialTexture aType);
+    cMaterial* CreateCustomMaterial(const tString& asName, iMaterialType* apMaterialType);
 
-		void SetDisableRenderDataLoading(bool abX){ mbDisableRenderDataLoading = abX;}
+    tString GetTextureString(eMaterialTexture aType);
 
-		// Useful stuff if public
-		eTextureType GetType(const tString& asType);
-		eTextureWrap GetWrap(const tString& asType);
-		eTextureAnimMode GetAnimMode(const tString& asType);
-		eMaterialBlendMode GetBlendMode(const tString& asType);
+    void SetDisableRenderDataLoading(bool abX) { mbDisableRenderDataLoading = abX; }
 
-		eMaterialUvAnimation GetUvAnimType(const char* apString);
-		eMaterialAnimationAxis GetAnimAxis(const char* apString);
+    // Useful stuff if public
+    eTextureType       GetType(const tString& asType);
+    eTextureWrap       GetWrap(const tString& asType);
+    eTextureAnimMode   GetAnimMode(const tString& asType);
+    eMaterialBlendMode GetBlendMode(const tString& asType);
 
-	private:
-		cMaterial* LoadFromFile(const tString& asName,const tWString& asPath);
+    eMaterialUvAnimation   GetUvAnimType(const char* apString);
+    eMaterialAnimationAxis GetAnimAxis(const char* apString);
 
-		unsigned int mlTextureSizeDownScaleLevel;
-		eTextureFilter mTextureFilter;
-		float mfTextureAnisotropy;
+  private:
+    cMaterial* LoadFromFile(const tString& asName, const tWString& asPath);
 
-		tStringList mlstFileFormats;
+    unsigned int   mlTextureSizeDownScaleLevel;
+    eTextureFilter mTextureFilter;
+    float          mfTextureAnisotropy;
 
-		tStringVec mvCubeSideSuffixes;
+    tStringList mlstFileFormats;
 
-		cGraphics* mpGraphics;
-		cResources* mpResources;
+    tStringVec mvCubeSideSuffixes;
 
-		bool mbDisableRenderDataLoading;
+    cGraphics*  mpGraphics;
+    cResources* mpResources;
 
-		int mlIdCounter;
-	};
+    bool mbDisableRenderDataLoading;
 
-};
+    int mlIdCounter;
+  };
+
+};     // namespace hpl
 #endif // HPL_MATERIAL_MANAGER_H

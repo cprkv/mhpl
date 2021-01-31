@@ -61,21 +61,21 @@ namespace hpl {
     static cDate FileCreationDate(const tWString& asFilePath);
 
     /**
-		* Returns a list of files in a dir
-		* \param &alstStrings list where the files are saved
-		* \param asDir Directory
-		* \param asMask Mask to be used, for example "*.*" to search for all kinds of files.
-		* \param abAddHidden If hidden files should be added
-		*/
+     * Returns a list of files in a dir
+     * \param &alstStrings list where the files are saved
+     * \param asDir Directory
+     * \param asMask Mask to be used, for example "*.*" to search for all kinds of files.
+     * \param abAddHidden If hidden files should be added
+     */
     static void FindFilesInDir(tWStringList& alstStrings, const tWString& asDir, const tWString& asMask, bool abAddHidden = false);
 
     /**
-		* Returns a list of folders in a dir
-		* \param &alstStrings list where the folders are saved
-		* \param asDir Directory
-		* \param abAddHidden If hidden folders should be added
-		* \param abAddUpFolder If the ".." folder should be added
-		*/
+     * Returns a list of folders in a dir
+     * \param &alstStrings list where the folders are saved
+     * \param asDir Directory
+     * \param abAddHidden If hidden folders should be added
+     * \param abAddUpFolder If the ".." folder should be added
+     */
     static void FindFoldersInDir(tWStringList& alstStrings, const tWString& asDir, bool abAddHidden, bool abAddUpFolder = false);
 
 

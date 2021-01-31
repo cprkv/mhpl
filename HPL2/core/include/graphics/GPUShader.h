@@ -28,59 +28,58 @@
 
 namespace hpl {
 
-	class iTexture;
+  class iTexture;
 
-	//---------------------------------------------------
-	
-	class cGpuShader_SamplerUnit
-	{
-	public:
-		tString msName;
-		int mlUnit;
-	};
-	
-	//---------------------------------------------------
+  //---------------------------------------------------
 
-	class iGpuShader : public iResourceBase
-	{
-	public:
-		iGpuShader(const tString& asName, const tWString& asFullPath, eGpuShaderType aType,eGpuProgramFormat aProgramFormat) : iResourceBase(asName, asFullPath,0){
-			mProgramFormat = aProgramFormat; 
-			mShaderType = aType;
-		}
-		virtual ~iGpuShader(){}
+  class cGpuShader_SamplerUnit {
+  public:
+    tString msName;
+    int     mlUnit;
+  };
 
-		static void SetLogDebugInformation(bool abX){mbDebugInfo = abX;}
+  //---------------------------------------------------
 
-		virtual bool SamplerNeedsTextureUnitSetup()=0;
+  class iGpuShader : public iResourceBase {
+  public:
+    iGpuShader(const tString& asName, const tWString& asFullPath, eGpuShaderType aType, eGpuProgramFormat aProgramFormat)
+        : iResourceBase(asName, asFullPath, 0) {
+      mProgramFormat = aProgramFormat;
+      mShaderType    = aType;
+    }
+    virtual ~iGpuShader() {}
 
-		/**
-		* Create a from a file. Used internally
-		* \param asFile 
-		* \param asEntry 
-		* \return 
-		*/
-		virtual bool CreateFromFile(const tWString& asFile, const tString& asEntry="main", bool abPrintInfoIfFail=true)=0;
-		virtual bool CreateFromString(const char *apStringData, const tString& asEntry="main", bool abPrintInfoIfFail=true)=0;
-		
-		eGpuProgramFormat GetFormat(){ return mProgramFormat;}
-		eGpuShaderType GetType() { return mShaderType;}
+    static void SetLogDebugInformation(bool abX) { mbDebugInfo = abX; }
 
-		void AddSamplerUnit(const tString& asSamplerName, int alUnit);
-		int GetSamplerUnitNum(){ return (int)mvSamplerUnits.size(); }
-		cGpuShader_SamplerUnit* GetSamplerUnit(int alIdx){ return &mvSamplerUnits[alIdx];}
+    virtual bool SamplerNeedsTextureUnitSetup() = 0;
 
-		void SetUserId(unsigned int alX){mlUserId = alX;}
-		unsigned int GetUserId(){ return mlUserId;}
+    /**
+     * Create a from a file. Used internally
+     * \param asFile
+     * \param asEntry
+     * \return
+     */
+    virtual bool CreateFromFile(const tWString& asFile, const tString& asEntry = "main", bool abPrintInfoIfFail = true)     = 0;
+    virtual bool CreateFromString(const char* apStringData, const tString& asEntry = "main", bool abPrintInfoIfFail = true) = 0;
 
-	protected:
-		eGpuProgramFormat mProgramFormat;
-		eGpuShaderType mShaderType;
-		unsigned int mlUserId;
+    eGpuProgramFormat GetFormat() { return mProgramFormat; }
+    eGpuShaderType    GetType() { return mShaderType; }
 
-		std::vector<cGpuShader_SamplerUnit> mvSamplerUnits;
+    void                    AddSamplerUnit(const tString& asSamplerName, int alUnit);
+    int                     GetSamplerUnitNum() { return (int) mvSamplerUnits.size(); }
+    cGpuShader_SamplerUnit* GetSamplerUnit(int alIdx) { return &mvSamplerUnits[alIdx]; }
 
-		static bool mbDebugInfo;
-	};
-};
+    void         SetUserId(unsigned int alX) { mlUserId = alX; }
+    unsigned int GetUserId() { return mlUserId; }
+
+  protected:
+    eGpuProgramFormat mProgramFormat;
+    eGpuShaderType    mShaderType;
+    unsigned int      mlUserId;
+
+    std::vector<cGpuShader_SamplerUnit> mvSamplerUnits;
+
+    static bool mbDebugInfo;
+  };
+};     // namespace hpl
 #endif // HPL_GPU_SHADER_H
