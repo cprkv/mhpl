@@ -1,5 +1,11 @@
 /build/
-HPL2/core/sources/BuildID_*
 cmake-build-*
 .DS_Store
 .idea
+
+# generated files
+HPL2/core/sources/BuildID_*.cpp
+HPL2/tools/editors/leveleditor/BuildID_LevelEditor_*.cpp
+HPL2/tools/editors/materialeditor/BuildID_MaterialEditor_*.cpp
+HPL2/tools/editors/modeleditor/BuildID_ModelEditor_*.cpp
+HPL2/tools/editors/particleeditor/BuildID_ParticleEditor_*.cpp
