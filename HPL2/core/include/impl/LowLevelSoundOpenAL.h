@@ -25,74 +25,71 @@
 class cOAL_Effect_Reverb;
 
 
-namespace hpl 
-{
+namespace hpl {
 
-	class cSoundDeviceIdentifierOpenAL : public iSoundDeviceIdentifier
-	{
-	public:
-		cSoundDeviceIdentifierOpenAL(int alID, const tString& asName, bool abDefault);
+  class cSoundDeviceIdentifierOpenAL : public iSoundDeviceIdentifier {
+  public:
+    cSoundDeviceIdentifierOpenAL(int alID, const tString& asName, bool abDefault);
 
-		int GetID() { return mlID; }
-		const tString& GetName() { return msName; }
-		bool IsDefault() { return mbDefault; }
-	private:
-		int mlID;
-		tString msName;
-		bool mbDefault;
-	};
+    int            GetID() { return mlID; }
+    const tString& GetName() { return msName; }
+    bool           IsDefault() { return mbDefault; }
 
-	class cLowLevelSoundOpenAL : public iLowLevelSound
-	{
-	public:
-		cLowLevelSoundOpenAL();
-		~cLowLevelSoundOpenAL();
+  private:
+    int     mlID;
+    tString msName;
+    bool    mbDefault;
+  };
 
-		void GetSupportedFormats(tStringList &alstFormats);
+  class cLowLevelSoundOpenAL : public iLowLevelSound {
+  public:
+    cLowLevelSoundOpenAL();
+    ~cLowLevelSoundOpenAL();
 
-		iSoundData* LoadSoundData(const tString& asName,const tWString& asFilePath,
-									const tString& asType, bool abStream,bool abLoopStream);
+    void GetSupportedFormats(tStringList& alstFormats);
 
-		void UpdateSound(float afTimeStep);
+    iSoundData* LoadSoundData(const tString& asName, const tWString& asFilePath,
+                              const tString& asType, bool abStream, bool abLoopStream);
 
-		void SetListenerAttributes (const cVector3f &avPos,const cVector3f &avVel,
-								const cVector3f &avForward,const cVector3f &avUp);
-		void SetListenerPosition(const cVector3f &avPos);
+    void UpdateSound(float afTimeStep);
 
-		void SetSetRolloffFactor(float afFactor);
+    void SetListenerAttributes(const cVector3f& avPos, const cVector3f& avVel,
+                               const cVector3f& avForward, const cVector3f& avUp);
+    void SetListenerPosition(const cVector3f& avPos);
 
-		void SetListenerAttenuation (bool abEnabled);
+    void SetSetRolloffFactor(float afFactor);
 
-//		void LogSoundStatus();
+    void SetListenerAttenuation(bool abEnabled);
 
-		void Init(int alSoundDeviceID, bool abUseEnvAudio,int alMaxChannels, 
-					int alStreamUpdateFreq, bool abUseThreading, bool abUseVoiceManagement,
-					int alMaxMonoSourceHint, int alMaxStereoSourceHint,
-					int alStreamingBufferSize, int alStreamingBufferCount, bool abEnableLowLevelLog);
+    //		void LogSoundStatus();
 
-		void SetVolume(float afVolume);
+    void Init(int alSoundDeviceID, bool abUseEnvAudio, int alMaxChannels,
+              int alStreamUpdateFreq, bool abUseThreading, bool abUseVoiceManagement,
+              int alMaxMonoSourceHint, int alMaxStereoSourceHint,
+              int alStreamingBufferSize, int alStreamingBufferCount, bool abEnableLowLevelLog);
 
-		void SetEnvVolume( float afEnvVolume );
+    void SetVolume(float afVolume);
 
-		iSoundEnvironment* LoadSoundEnvironment (const tString& asFilePath);
-		void SetSoundEnvironment ( iSoundEnvironment* apSoundEnv );
-		void FadeSoundEnvironment( iSoundEnvironment* apSourceSoundEnv, iSoundEnvironment* apDestSoundEnv, float afT );
+    void SetEnvVolume(float afEnvVolume);
 
-		iSoundDeviceIdentifier* GetCurrentSoundDevice();
+    iSoundEnvironment* LoadSoundEnvironment(const tString& asFilePath);
+    void               SetSoundEnvironment(iSoundEnvironment* apSoundEnv);
+    void               FadeSoundEnvironment(iSoundEnvironment* apSourceSoundEnv, iSoundEnvironment* apDestSoundEnv, float afT);
 
-	private:
-		iSoundDeviceIdentifier* GetFirstValidDefaultDevice();
-		iSoundDeviceIdentifier* GetFirstDefaultDevice();
+    iSoundDeviceIdentifier* GetCurrentSoundDevice();
 
-		tString mvFormats[30];
-		bool	mbLogSounds;
-		bool	mbInitialized;
-		int		mlEffectSlotId;
-		bool	mbNullEffectAttached;
+  private:
+    iSoundDeviceIdentifier* GetFirstValidDefaultDevice();
+    iSoundDeviceIdentifier* GetFirstDefaultDevice();
 
-		cOAL_Effect_Reverb* mpEffect;
-		int mlCurrentSoundDevID;
-	};
-};
+    tString mvFormats[30];
+    bool    mbLogSounds;
+    bool    mbInitialized;
+    int     mlEffectSlotId;
+    bool    mbNullEffectAttached;
+
+    cOAL_Effect_Reverb* mpEffect;
+    int                 mlCurrentSoundDevID;
+  };
+};     // namespace hpl
 #endif // HPL_LOWLEVELSOUND_OPENAL_H
-

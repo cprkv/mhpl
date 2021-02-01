@@ -22,19 +22,18 @@
 
 #include "physics/LowLevelPhysics.h"
 #if defined(__linux__) || defined(__APPLE__)
-#include <unistd.h>
+  #include <unistd.h>
 #endif
 #include <Newton.h>
 
 namespace hpl {
 
-	class cLowLevelPhysicsNewton : public iLowLevelPhysics
-	{
-	public:
-		cLowLevelPhysicsNewton();
-		~cLowLevelPhysicsNewton();
+  class cLowLevelPhysicsNewton : public iLowLevelPhysics {
+  public:
+    cLowLevelPhysicsNewton();
+    ~cLowLevelPhysicsNewton();
 
-		iPhysicsWorld* CreateWorld();
-	};
-};
+    iPhysicsWorld* CreateWorld();
+  };
+};     // namespace hpl
 #endif // HPL_LOWLEVELPHYSICS_NEWTON_H

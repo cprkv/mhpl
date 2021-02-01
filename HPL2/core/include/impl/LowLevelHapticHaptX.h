@@ -27,139 +27,135 @@
 #include <vector>
 
 namespace hpl {
-	
-	class cMesh;
 
-	//------------------------------------------
+  class cMesh;
 
-	enum eHaptXShapeModelType
-	{
-		eHaptXShapeModelType_Box,
-		eHaptXShapeModelType_Sphere,
-		eHaptXShapeModelType_Capsule,
-		eHaptXShapeModelType_Cylinder,
-		eHaptXShapeModelType_LastEnum
-	};
-	
-	class cHaptXShapeModel
-	{
-	public:
-		
-		std::vector<int> mvIndices;
-		std::vector<cVector3f> mvPositions;
-	};
+  //------------------------------------------
 
-	//------------------------------------------
+  enum eHaptXShapeModelType {
+    eHaptXShapeModelType_Box,
+    eHaptXShapeModelType_Sphere,
+    eHaptXShapeModelType_Capsule,
+    eHaptXShapeModelType_Cylinder,
+    eHaptXShapeModelType_LastEnum
+  };
 
-	class cLowLevelHapticHaptX : public iLowLevelHaptic
-	{
-	public:
-		cLowLevelHapticHaptX();
-		~cLowLevelHapticHaptX();
+  class cHaptXShapeModel {
+  public:
+    std::vector<int>       mvIndices;
+    std::vector<cVector3f> mvPositions;
+  };
 
-		//---------------------------------------------------------
+  //------------------------------------------
 
-		bool InitLowLevel();
-		void UpdateLowLevel(float afTimeStep);
+  class cLowLevelHapticHaptX : public iLowLevelHaptic {
+  public:
+    cLowLevelHapticHaptX();
+    ~cLowLevelHapticHaptX();
 
-		float GetMaxForce();
+    //---------------------------------------------------------
 
-		void SetWorldScale(float afScale);
-		float GetWorldScale();
+    bool InitLowLevel();
+    void UpdateLowLevel(float afTimeStep);
 
-		void SetRenderingActive(bool abX);
-		bool IsRenderingActive();
+    float GetMaxForce();
 
-		bool ShapeIsInContact(iHapticShape *apShape);
-		
-		//---------------------------------------------------------
+    void  SetWorldScale(float afScale);
+    float GetWorldScale();
 
-		bool ButtonIsPressed(int alNum);
+    void SetRenderingActive(bool abX);
+    bool IsRenderingActive();
 
-		cVector3f GetHardwarePosition();
-		cVector3f GetHardwareVelocity();
+    bool ShapeIsInContact(iHapticShape* apShape);
 
-		cVector3f GetHardwareRotation();
+    //---------------------------------------------------------
 
-		cVector3f GetProxyPosition();
-		void SetProxyRadius(float afRadius);
-		float GetProxyRadius();
+    bool ButtonIsPressed(int alNum);
 
-		int GetNumberOfButtons();
+    cVector3f GetHardwarePosition();
+    cVector3f GetHardwareVelocity();
 
-		//---------------------------------------------------------
+    cVector3f GetHardwareRotation();
 
-		iHapticSurface* CreateSimpleSurface(const tString &asName,
-			float afDamping=0.0f, float afStiffness=0.9f);
+    cVector3f GetProxyPosition();
+    void      SetProxyRadius(float afRadius);
+    float     GetProxyRadius();
 
-		iHapticSurface* CreateFrictionalSurface(const tString &asName,
-			float afDamping=0.0f, float afStiffness=0.9f,
-			float afDynamicFriction=0.2f, float afStartingFriction=0.3f,
-			float afTangentStiffness=0.7f, float afStoppingFriction=0.1f);
+    int GetNumberOfButtons();
 
-		iHapticSurface* CreateRoughSurface(const tString &asName, 
-			float afDeviation=0.1f, float afMean=0.5f,
-			float afDamping=0.0f, float afStiffness=0.9f,
-			float afDynamicFriction=0.2f, float afStartingFriction=0.3f,
-			float afTangentStiffness=0.7f, float afStoppingFriction=0.1f);
+    //---------------------------------------------------------
 
-		iHapticSurface* CreateStickySurface(const tString &asName, 
-			float afDeadHeight=0.004f, float afStickyStiffness=0.6f,
-			float afDamping=0.0f, float afStiffness=0.9f,
-			float afDynamicFriction=0.2f, float afStartingFriction=0.3f,
-			float afTangenSttiffness=0.7f, float afStoppingFriction=0.1f);
+    iHapticSurface* CreateSimpleSurface(const tString& asName,
+                                        float afDamping = 0.0f, float afStiffness = 0.9f);
 
-		//---------------------------------------------------------
+    iHapticSurface* CreateFrictionalSurface(const tString& asName,
+                                            float afDamping = 0.0f, float afStiffness = 0.9f,
+                                            float afDynamicFriction = 0.2f, float afStartingFriction = 0.3f,
+                                            float afTangentStiffness = 0.7f, float afStoppingFriction = 0.1f);
 
-		iHapticShape* CreateBoxShape(const tString &asName, const cVector3f &avSize, cMatrixf* apOffsetMtx);
-		iHapticShape* CreateSphereShape(const tString &asName, const cVector3f &avRadii, cMatrixf* apOffsetMtx);
-		iHapticShape* CreateCylinderShape(const tString &asName, float afRadius, float afHeight, cMatrixf* apOffsetMtx);
-		iHapticShape* CreateCapsuleShape(const tString &asName, float afRadius, float afHeight, cMatrixf* apOffsetMtx);
-		iHapticShape* CreateMeshShape(const tString &asName, iVertexBuffer *apVtxBuffer);
-		iHapticShape* CreateCompundShape(const tString &asName, tHapticShapeVec &avShapes);
-		
-		iHapticShape* CreateShapeFromPhysicsBody(const tString &asName, iPhysicsBody *apBody);
+    iHapticSurface* CreateRoughSurface(const tString& asName,
+                                       float afDeviation = 0.1f, float afMean = 0.5f,
+                                       float afDamping = 0.0f, float afStiffness = 0.9f,
+                                       float afDynamicFriction = 0.2f, float afStartingFriction = 0.3f,
+                                       float afTangentStiffness = 0.7f, float afStoppingFriction = 0.1f);
 
-		//---------------------------------------------------------
+    iHapticSurface* CreateStickySurface(const tString& asName,
+                                        float afDeadHeight = 0.004f, float afStickyStiffness = 0.6f,
+                                        float afDamping = 0.0f, float afStiffness = 0.9f,
+                                        float afDynamicFriction = 0.2f, float afStartingFriction = 0.3f,
+                                        float afTangenSttiffness = 0.7f, float afStoppingFriction = 0.1f);
 
-		iHapticForce* CreateImpulseForce(const cVector3f& avForce);
-		iHapticForce* CreateSinusWaveForce(const cVector3f& avDirection, float afAmp, float afFreq);
-		iHapticForce* CreateSawWaveForce(const cVector3f& avDirection, float afAmp, float afFreq);
-		iHapticForce* CreateSpringForce(const cVector3f& avPostition, float afStiffness, float afDamping);
-		iHapticForce* CreateViscosityForce(const cVector3f& avVelocity,float afMass, float afStiffness, float afDamping);
+    //---------------------------------------------------------
 
-		//---------------------------------------------------------
-		
-		//Haptx Specific
-		HaptX::HaptXInterface* GetInterface(){ return mpInterface;}
-		HaptX::iHapticDeviceID GetDeviceID(){ return mDeviceID;}
+    iHapticShape* CreateBoxShape(const tString& asName, const cVector3f& avSize, cMatrixf* apOffsetMtx);
+    iHapticShape* CreateSphereShape(const tString& asName, const cVector3f& avRadii, cMatrixf* apOffsetMtx);
+    iHapticShape* CreateCylinderShape(const tString& asName, float afRadius, float afHeight, cMatrixf* apOffsetMtx);
+    iHapticShape* CreateCapsuleShape(const tString& asName, float afRadius, float afHeight, cMatrixf* apOffsetMtx);
+    iHapticShape* CreateMeshShape(const tString& asName, iVertexBuffer* apVtxBuffer);
+    iHapticShape* CreateCompundShape(const tString& asName, tHapticShapeVec& avShapes);
 
-		HaptX::SurfaceInfo * GetDefaultSurface(){ return mpDefaultSurfaceInfo;}
-	
-	private:
-		void cLowLevelHapticHaptX::ShapeModelToHaptXData(	eHaptXShapeModelType aType,
-															const cVector3f& avSize,
-															const cMatrixf& a_mtxTransform,
-															int *apIndices,int alIndexAdd,
-															HaptX::Vectors::Vec3f *apPostions);
-		
-		cHaptXShapeModel* CreateShapeModelFromMesh(cMesh *apMesh);
-		void CreateShapeModels();
+    iHapticShape* CreateShapeFromPhysicsBody(const tString& asName, iPhysicsBody* apBody);
+
+    //---------------------------------------------------------
+
+    iHapticForce* CreateImpulseForce(const cVector3f& avForce);
+    iHapticForce* CreateSinusWaveForce(const cVector3f& avDirection, float afAmp, float afFreq);
+    iHapticForce* CreateSawWaveForce(const cVector3f& avDirection, float afAmp, float afFreq);
+    iHapticForce* CreateSpringForce(const cVector3f& avPostition, float afStiffness, float afDamping);
+    iHapticForce* CreateViscosityForce(const cVector3f& avVelocity, float afMass, float afStiffness, float afDamping);
+
+    //---------------------------------------------------------
+
+    //Haptx Specific
+    HaptX::HaptXInterface* GetInterface() { return mpInterface; }
+    HaptX::iHapticDeviceID GetDeviceID() { return mDeviceID; }
+
+    HaptX::SurfaceInfo* GetDefaultSurface() { return mpDefaultSurfaceInfo; }
+
+  private:
+    void cLowLevelHapticHaptX::ShapeModelToHaptXData(eHaptXShapeModelType aType,
+                                                     const cVector3f&     avSize,
+                                                     const cMatrixf&      a_mtxTransform,
+                                                     int* apIndices, int alIndexAdd,
+                                                     HaptX::Vectors::Vec3f* apPostions);
+
+    cHaptXShapeModel* CreateShapeModelFromMesh(cMesh* apMesh);
+    void              CreateShapeModels();
 
 
-		HaptX::HaptXInterface* mpInterface;
-		HaptX::iHapticDeviceID	mDeviceID;
+    HaptX::HaptXInterface* mpInterface;
+    HaptX::iHapticDeviceID mDeviceID;
 
-		std::vector<cHaptXShapeModel*> mvShapeModels;
+    std::vector<cHaptXShapeModel*> mvShapeModels;
 
-		HaptX::SurfaceInfo *mpDefaultSurfaceInfo;
+    HaptX::SurfaceInfo* mpDefaultSurfaceInfo;
 
-		bool mbRenderingActive;
+    bool mbRenderingActive;
 
-		static int HapticDeviceEnumFunc(std::wstring* asDeviceName, std::wstring* asDeviceModel,
-										void *apVendorData);
-		static void HaptXMsgCallback(int alSeverity, std::wstring asMessage);
-	};
+    static int  HapticDeviceEnumFunc(std::wstring* asDeviceName, std::wstring* asDeviceModel,
+                                     void* apVendorData);
+    static void HaptXMsgCallback(int alSeverity, std::wstring asMessage);
+  };
 
-};
+};     // namespace hpl
 #endif // HPL_LOW_LEVEL_HAPTIC_H

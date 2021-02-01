@@ -55,18 +55,20 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   cBitmap* cBitmapLoaderHandler::LoadBitmap(const tWString& asFile, tBitmapLoadFlag aFlags) {
-    iBitmapLoader* pBitmapLoader = static_cast<iBitmapLoader*>(GetLoaderForFile(asFile));
+    auto* pBitmapLoader = static_cast<iBitmapLoader*>(GetLoaderForFile(asFile));
 
     if (pBitmapLoader) {
       cBitmap* pBitmap = pBitmapLoader->LoadBitmap(asFile, aFlags);
 
       //Set name of the file loaded.
-      if (pBitmap) pBitmap->SetFileName(cString::GetFileNameW(asFile));
+      if (pBitmap) {
+        pBitmap->SetFileName(cString::GetFileNameW(asFile));
+      }
 
       return pBitmap;
-    } else {
-      return NULL;
     }
+
+    return nullptr;
   }
 
   //-----------------------------------------------------------------------
@@ -77,6 +79,7 @@ namespace hpl {
     if (pBitmapLoader) {
       return pBitmapLoader->SaveBitmap(apBitmap, asFile, aFlags);
     }
+
     return false;
   }
 

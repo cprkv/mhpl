@@ -25,26 +25,25 @@
 
 namespace hpl {
 
-	//----------------------------------------
+  //----------------------------------------
 
-	class iLowLevelGraphics;
+  class iLowLevelGraphics;
 
-	//----------------------------------------
+  //----------------------------------------
 
-	class cLowLevelResourcesSDL : public iLowLevelResources
-	{
-	public:
-		cLowLevelResourcesSDL(iLowLevelGraphics *apLowLevelGraphics);
-		~cLowLevelResourcesSDL();
+  class cLowLevelResourcesSDL : public iLowLevelResources {
+  public:
+    cLowLevelResourcesSDL(iLowLevelGraphics* apLowLevelGraphics);
+    ~cLowLevelResourcesSDL();
 
-		void AddBitmapLoaders(cBitmapLoaderHandler* apHandler);
-		void AddMeshLoaders(cMeshLoaderHandler* apHandler);
-		void AddVideoLoaders(cVideoLoaderHandler* apHandler);
+    void AddBitmapLoaders(cBitmapLoaderHandler* apHandler);
+    void AddMeshLoaders(cMeshLoaderHandler* apHandler);
+    void AddVideoLoaders(cVideoLoaderHandler* apHandler);
 
-		iXmlDocument* CreateXmlDocument(const tString& asName="");
+    iXmlDocument* CreateXmlDocument(const tString& asName = "");
 
-	private:
-		iLowLevelGraphics *mpLowLevelGraphics;
-	};
-};
+  private:
+    iLowLevelGraphics* mpLowLevelGraphics;
+  };
+};     // namespace hpl
 #endif // HPL_LOWLEVELRESOURCES_SDL_H

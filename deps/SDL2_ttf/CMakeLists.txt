@@ -21,18 +21,6 @@ add_library(SDL2_ttf STATIC SDL_ttf.c SDL_ttf.h)
 target_link_libraries(SDL2_ttf SDL2-static freetype)
 target_include_directories(SDL2_ttf PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL2>)
 
-install(
-  TARGETS SDL2_ttf
-  EXPORT SDL2_ttfTargets
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-install(
-  FILES SDL_ttf.h
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/SDL2
-)
-
 ##### export files #####
 if (APPLE)
   set(PKG_PREFIX "SDL2_ttf.framework/Resources")
@@ -45,20 +33,6 @@ endif ()
 write_basic_package_version_file("${CMAKE_BINARY_DIR}/SDL2_ttfConfigVersion.cmake"
   VERSION ${SDL_TTF_VERSION}
   COMPATIBILITY AnyNewerVersion
-)
-
-install(
-  EXPORT SDL2_ttfTargets
-  FILE SDL2_ttfTargets.cmake
-  NAMESPACE SDL2_ttf::
-  DESTINATION ${PKG_PREFIX}
-)
-install(
-  FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/SDL2_ttfConfig.cmake
-    ${CMAKE_BINARY_DIR}/SDL2_ttfConfigVersion.cmake
-  DESTINATION ${PKG_PREFIX}
-  COMPONENT Devel
 )
 
 ##### pkg-config #####

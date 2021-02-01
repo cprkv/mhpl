@@ -24,101 +24,101 @@
 
 #if USE_XINPUT
 
-#include <windows.h>
-#include <XInput.h>
+  #include <windows.h>
+  #include <XInput.h>
 
-#include <vector>
-#include <list>
-#include "system/SystemTypes.h"
-#include "input/Gamepad.h"
+  #include <vector>
+  #include <list>
+  #include "system/SystemTypes.h"
+  #include "input/Gamepad.h"
 //#include "input/InputTypes.h"
 
 namespace hpl {
 
-	class cGamepadXInput : public iGamepad
-	{
-	public:
-		cGamepadXInput(int alIndex);
+  class cGamepadXInput : public iGamepad {
+  public:
+    cGamepadXInput(int alIndex);
 
-		tString GetGamepadName() { return msGamepadName; }
+    tString GetGamepadName() { return msGamepadName; }
 
-		int GetNumButtons();
-		int GetNumAxes();
-		int GetNumHats();
-		int GetNumBalls();
+    int GetNumButtons();
+    int GetNumAxes();
+    int GetNumHats();
+    int GetNumBalls();
 
-		void Update();
+    void Update();
 
-		//Gamepad specific
-		bool HasInputUpdates();
-		cGamepadInputData GetInputUpdate();
-		
-		bool ButtonIsDown(eGamepadButton aButton);
-		cGamepadInputData GetButton();
-		bool ButtonIsPressed();
-		bool ButtonIsReleased();
-		cGamepadInputData GetReleasedButton();
+    //Gamepad specific
+    bool              HasInputUpdates();
+    cGamepadInputData GetInputUpdate();
 
-		float GetAxisValue(eGamepadAxis aAxis);
-		float GetAxisDeadZoneRadiusValue();
-		void SetAxisDeadZoneRadiusValue(float afValue);
-		bool AxesUpdated();
-		cGamepadInputData GetUpdatedAxis();
+    bool              ButtonIsDown(eGamepadButton aButton);
+    cGamepadInputData GetButton();
+    bool              ButtonIsPressed();
+    bool              ButtonIsReleased();
+    cGamepadInputData GetReleasedButton();
 
-		eGamepadHatState GetHatCurrentState(eGamepadHat aHat);
-		bool HatIsInState(eGamepadHat aHat, eGamepadHatState aState);
-		bool HatsChanged();
-		cGamepadInputData GetHatState();
+    float             GetAxisValue(eGamepadAxis aAxis);
+    float             GetAxisDeadZoneRadiusValue();
+    void              SetAxisDeadZoneRadiusValue(float afValue);
+    bool              AxesUpdated();
+    cGamepadInputData GetUpdatedAxis();
 
-		cVector2l GetBallAbsPos(eGamepadBall aBall);
-		cVector2l GetBallRelPos(eGamepadBall aBall);
+    eGamepadHatState  GetHatCurrentState(eGamepadHat aHat);
+    bool              HatIsInState(eGamepadHat aHat, eGamepadHatState aState);
+    bool              HatsChanged();
+    cGamepadInputData GetHatState();
 
-		static bool IsConnected(int alIndex);
+    cVector2l GetBallAbsPos(eGamepadBall aBall);
+    cVector2l GetBallRelPos(eGamepadBall aBall);
 
-		static bool GetWasConnected(int alIndex) { return mbDeviceConnected[alIndex]; }
-		static void SetWasConnected(int alIndex, bool abVal) { mbDeviceConnected[alIndex] = abVal; }
-	private:
-		void UpdateAxis(int alAxis, float afVal);
-		void UpdateTrigger(float afLVal, float afRVal);
+    static bool IsConnected(int alIndex);
 
-		eGamepadButton		XInputToButton(size_t alButton);
-		float				XInputToAxisValue(SHORT alAxisValue);
-		float				XInputToTriggerValue(BYTE alTriggerValue);
-        //void ClearKeyList();
-		//eKey AsciiToKey(int alChar);
+    static bool GetWasConnected(int alIndex) { return mbDeviceConnected[alIndex]; }
+    static void SetWasConnected(int alIndex, bool abVal) { mbDeviceConnected[alIndex] = abVal; }
 
-		//void AddKeyToList(int alSDLMod, eKey aKey, int alUnicode, std::list<cKeyPress>& alstKeys);
+  private:
+    void UpdateAxis(int alAxis, float afVal);
+    void UpdateTrigger(float afLVal, float afRVal);
 
-		tString msGamepadName;
+    eGamepadButton XInputToButton(size_t alButton);
+    float          XInputToAxisValue(SHORT alAxisValue);
+    float          XInputToTriggerValue(BYTE alTriggerValue);
+    //void ClearKeyList();
+    //eKey AsciiToKey(int alChar);
 
-		std::vector<float>				mvAxisArray;
-		std::vector<eGamepadAxisRange>	mvAxisRange;
-		std::vector<bool>				mvButtonArray;
-		std::vector<eGamepadHatState>	mvHatArray;
-		std::vector<cVector2l>			mvBallAbsPosArray;
-		std::vector<cVector2l>			mvBallRelPosArray;
+    //void AddKeyToList(int alSDLMod, eKey aKey, int alUnicode, std::list<cKeyPress>& alstKeys);
 
-		std::list<cGamepadInputData> mlstInputUpdates;
+    tString msGamepadName;
 
-		std::list<cGamepadInputData> mlstButtonsPressed;
-		std::list<cGamepadInputData> mlstButtonsReleased;
+    std::vector<float>             mvAxisArray;
+    std::vector<eGamepadAxisRange> mvAxisRange;
+    std::vector<bool>              mvButtonArray;
+    std::vector<eGamepadHatState>  mvHatArray;
+    std::vector<cVector2l>         mvBallAbsPosArray;
+    std::vector<cVector2l>         mvBallRelPosArray;
 
-		std::list<cGamepadInputData> mlstAxisChanges;
+    std::list<cGamepadInputData> mlstInputUpdates;
 
-		std::list<cGamepadInputData> mlstHatStateChanges;
+    std::list<cGamepadInputData> mlstButtonsPressed;
+    std::list<cGamepadInputData> mlstButtonsReleased;
 
-		static float mfInvAxisMax;
-		static float mfDeadZoneRadius;
+    std::list<cGamepadInputData> mlstAxisChanges;
 
-		XINPUT_STATE mState;
+    std::list<cGamepadInputData> mlstHatStateChanges;
 
-		float mfLeftTrigger;
-		float mfRightTrigger;
+    static float mfInvAxisMax;
+    static float mfDeadZoneRadius;
 
-		static bool mbDeviceConnected[4];
-	};
+    XINPUT_STATE mState;
 
-};
+    float mfLeftTrigger;
+    float mfRightTrigger;
+
+    static bool mbDeviceConnected[4];
+  };
+
+}; // namespace hpl
 
 #endif // USE_XINPUT
 #endif // HPL_GAMEPAD_XINPUT_H

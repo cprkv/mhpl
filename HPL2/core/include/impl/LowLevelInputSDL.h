@@ -24,46 +24,46 @@
 #include "input/LowLevelInput.h"
 
 #if USE_SDL2
-#include "SDL_events.h"
+  #include "SDL_events.h"
 #else
-#include "SDL/SDL_events.h"
+  #include "SDL/SDL_events.h"
 #endif
 
 namespace hpl {
 
-	class iLowLevelGraphics;
+  class iLowLevelGraphics;
 
-	class cLowLevelInputSDL : public iLowLevelInput
-	{
-	public:
-		cLowLevelInputSDL(iLowLevelGraphics *apLowLevelGraphics);
-		~cLowLevelInputSDL();
+  class cLowLevelInputSDL : public iLowLevelInput {
+  public:
+    cLowLevelInputSDL(iLowLevelGraphics* apLowLevelGraphics);
+    ~cLowLevelInputSDL();
 
-		void LockInput(bool abX);
-		void RelativeMouse(bool abX);
+    void LockInput(bool abX);
+    void RelativeMouse(bool abX);
 
-		void BeginInputUpdate();
-		void EndInputUpdate();
+    void BeginInputUpdate();
+    void EndInputUpdate();
 
-		void InitGamepadSupport();
-		void DropGamepadSupport();
+    void InitGamepadSupport();
+    void DropGamepadSupport();
 
-		int GetPluggedGamepadNum();
+    int GetPluggedGamepadNum();
 
-		iMouse* CreateMouse();
-		iKeyboard* CreateKeyboard();
-		iGamepad* CreateGamepad(int alIndex);
+    iMouse*    CreateMouse();
+    iKeyboard* CreateKeyboard();
+    iGamepad*  CreateGamepad(int alIndex);
 
-		iLowLevelGraphics* GetLowLevelGraphics() { return mpLowLevelGraphics; }
+    iLowLevelGraphics* GetLowLevelGraphics() { return mpLowLevelGraphics; }
 
-		bool isQuitMessagePosted();
-		void resetQuitMessagePosted();
-	public:
-		std::list<SDL_Event> mlstEvents;
+    bool isQuitMessagePosted();
+    void resetQuitMessagePosted();
 
-	private: 
-		iLowLevelGraphics *mpLowLevelGraphics;
-		bool mbQuitMessagePosted;
-	};
-};
+  public:
+    std::list<SDL_Event> mlstEvents;
+
+  private:
+    iLowLevelGraphics* mpLowLevelGraphics;
+    bool               mbQuitMessagePosted;
+  };
+};     // namespace hpl
 #endif // HPL_LOWLEVELINPUT_SDL_H

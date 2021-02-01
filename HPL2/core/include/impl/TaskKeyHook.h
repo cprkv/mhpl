@@ -27,4 +27,3 @@
 
 DLLIMPORT BOOL DisableTaskKeys(BOOL bEnable, BOOL bBeep);
 DLLIMPORT BOOL AreTaskKeysDisabled();
-

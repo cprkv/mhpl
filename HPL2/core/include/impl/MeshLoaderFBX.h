@@ -18,19 +18,19 @@
  */
 
 #if 0
-#ifndef HPL_MESH_LOADER_FBX_H
-#define HPL_MESH_LOADER_FBX_H
+  #ifndef HPL_MESH_LOADER_FBX_H
+    #define HPL_MESH_LOADER_FBX_H
 
-#define K_PLUGIN
-#define K_FBXSDK
-#define K_NODLL
+    #define K_PLUGIN
+    #define K_FBXSDK
+    #define K_NODLL
 
 
-#include <fbxsdk.h>
+    #include <fbxsdk.h>
 
-#include "math/MathTypes.h"
+    #include "math/MathTypes.h"
 
-#include "resources/MeshLoader.h"
+    #include "resources/MeshLoader.h"
 
 using namespace FBXSDK_NAMESPACE;
 
@@ -169,5 +169,5 @@ namespace hpl {
 	};
 
 };
-#endif // HPL_MESH_LOADER_FBX_H
+  #endif // HPL_MESH_LOADER_FBX_H
 #endif

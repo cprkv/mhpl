@@ -26,27 +26,26 @@
 
 namespace hpl {
 
-	class cFmodSoundData : public iSoundData
-	{
-	public:
-		cFmodSoundData(const tString& asName, bool abStream);
-		~cFmodSoundData();
+  class cFmodSoundData : public iSoundData {
+  public:
+    cFmodSoundData(const tString& asName, bool abStream);
+    ~cFmodSoundData();
 
-		bool CreateFromFile(const tWString &asFile);
+    bool CreateFromFile(const tWString& asFile);
 
-		iSoundChannel* CreateChannel(int alPriority);
+    iSoundChannel* CreateChannel(int alPriority);
 
-		bool IsStream(){ return mbStream;}
+    bool IsStream() { return mbStream; }
 
-		bool IsStereo(){ return false;}
+    bool IsStereo() { return false; }
 
-		//FMOD Specific
-		FSOUND_SAMPLE *GetSample(){ return mpSample;}
-		FSOUND_STREAM *GetStream(){ return mpStream;}
-	
-	private:
-		FSOUND_SAMPLE * mpSample;
-		FSOUND_STREAM * mpStream;
-	};
-};
+    //FMOD Specific
+    FSOUND_SAMPLE* GetSample() { return mpSample; }
+    FSOUND_STREAM* GetStream() { return mpStream; }
+
+  private:
+    FSOUND_SAMPLE* mpSample;
+    FSOUND_STREAM* mpStream;
+  };
+};     // namespace hpl
 #endif // HPL_FMOD_SOUND_DATA_H

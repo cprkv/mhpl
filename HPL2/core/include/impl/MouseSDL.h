@@ -25,47 +25,46 @@
 
 
 namespace hpl {
-	
-	class iLowLevelGraphics;
-	class cLowLevelInputSDL;
 
-	class cMouseSDL : public iMouse
-	{
-	public:
-		cMouseSDL(cLowLevelInputSDL *apLowLevelInputSDL);
+  class iLowLevelGraphics;
+  class cLowLevelInputSDL;
 
-		bool ButtonIsDown(eMouseButton);
-		
-		void Update();
-		
-		/**
+  class cMouseSDL : public iMouse {
+  public:
+    cMouseSDL(cLowLevelInputSDL* apLowLevelInputSDL);
+
+    bool ButtonIsDown(eMouseButton);
+
+    void Update();
+
+    /**
 		* \todo Fix so it works and handles screen size
 		* \return 
 		*/
-		cVector2l GetAbsPosition();
-		
-		/**
+    cVector2l GetAbsPosition();
+
+    /**
      * \todo Fix so it works and handles screen size
      * \return
      */
-		cVector2l GetRelPosition();
+    cVector2l GetRelPosition();
 
-		void Reset();
-		
-	private:
-		bool mbFirstTime;
+    void Reset();
 
-		cVector2l mvMouseAbsPos;
-		cVector2l mvMouseRelPos;
+  private:
+    bool mbFirstTime;
 
-		std::vector<bool> mvMButtonArray;
+    cVector2l mvMouseAbsPos;
+    cVector2l mvMouseRelPos;
 
-		cLowLevelInputSDL *mpLowLevelInputSDL;
-		
-		bool mbWheelUpMoved;
-		bool mbWheelDownMoved;
-	};
+    std::vector<bool> mvMButtonArray;
 
-};
+    cLowLevelInputSDL* mpLowLevelInputSDL;
+
+    bool mbWheelUpMoved;
+    bool mbWheelDownMoved;
+  };
+
+}; // namespace hpl
 
 #endif // HPL_MOUSE_SDL_H

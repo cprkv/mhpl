@@ -26,20 +26,17 @@ struct SDL_mutex;
 
 namespace hpl {
 
-	class cMutexSDL : public iMutex
-	{
-	public:
-		
-		cMutexSDL();
-		~cMutexSDL();
+  class cMutexSDL : public iMutex {
+  public:
+    cMutexSDL();
+    ~cMutexSDL();
 
-		bool Lock();
-		bool Unlock();
+    bool Lock();
+    bool Unlock();
 
-	private:
-		SDL_mutex* mpMutexHandle;
+  private:
+    SDL_mutex* mpMutexHandle;
+  };
 
-	};
-
-};
+};     // namespace hpl
 #endif // HPL_MUTEX_SDL_H

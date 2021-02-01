@@ -72,7 +72,7 @@ test_big_endian(WORDS_BIGENDIAN)
 # check availability of optional external libs
 find_package(PNG)
 find_package(TIFF)
-find_package(JPEG)
+#find_package(JPEG) # using our own version and link static
 find_package(Jasper)
 #find_package(Squish)
 find_package(libSquish)
@@ -102,11 +102,11 @@ else(TIFF_FOUND)
     set(IL_NO_TIF 1)
 endif(TIFF_FOUND)
 
-if(JPEG_FOUND)
+#if(JPEG_FOUND)
     option(IL_NO_JPG "Disable JPEG support (libjpeg)" 0)
-else(JPEG_FOUND)
-    set(IL_NO_JPG 1)
-endif(JPEG_FOUND)
+#else(JPEG_FOUND)
+#    set(IL_NO_JPG 1)
+#endif(JPEG_FOUND)
 
 if(OPENEXR_FOUND)
     option(IL_NO_EXR "Disable EXR support (openEXR)" 0)
@@ -178,8 +178,9 @@ if(NOT IL_NO_PNG)
 endif(NOT IL_NO_PNG)
 
 if(NOT IL_NO_JPG)
-    list(APPEND incs ${JPEG_INCLUDE_DIRS} )
-    list(APPEND libs ${JPEG_LIBRARIES} )
+    #list(APPEND incs ${JPEG_INCLUDE_DIRS} )
+    #list(APPEND libs ${JPEG_LIBRARIES} )
+    list(APPEND libs "jpeg")
 endif(NOT IL_NO_JPG)
 
 if(NOT IL_NO_TIF)
@@ -231,7 +232,7 @@ endif(IL_USE_DXTC_SQUISH)
 
 
 include_directories(${incs})
-target_link_libraries(IL ${libs})
+target_link_libraries(IL PUBLIC ${libs})
 target_include_directories(IL PUBLIC ${incs} ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 # generate config.h

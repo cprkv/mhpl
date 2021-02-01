@@ -26,24 +26,21 @@
 
 namespace hpl {
 
-	class cThreadWin32 : public iThread
-	{
-	public:
-		
-		cThreadWin32();
-		~cThreadWin32();
-		
-        void Start();
-		void Stop();
-		void Sleep(unsigned int alSleepTime);
+  class cThreadWin32 : public iThread {
+  public:
+    cThreadWin32();
+    ~cThreadWin32();
 
-		void SetPriority(eThreadPrio aPrio);
+    void Start();
+    void Stop();
+    void Sleep(unsigned int alSleepTime);
 
-	private:
-		int TranslateEnginePrio(eThreadPrio aPrio);
-		HANDLE mpThreadHandle;
+    void SetPriority(eThreadPrio aPrio);
 
-	};
+  private:
+    int    TranslateEnginePrio(eThreadPrio aPrio);
+    HANDLE mpThreadHandle;
+  };
 
-};
+};     // namespace hpl
 #endif // HPL_THREAD_WIN32_H

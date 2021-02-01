@@ -29,39 +29,38 @@
 
 namespace hpl {
 
-	//----------------------------------------------
+  //----------------------------------------------
 
-	class iLowLevelGraphics;
+  class iLowLevelGraphics;
 
-	//----------------------------------------------
-	class cGLSLShader : public iGpuShader
-	{
-	public:
-		cGLSLShader(const tString& asName, eGpuShaderType aType, iLowLevelGraphics *apLowLevelGraphics);
-		~cGLSLShader();
+  //----------------------------------------------
+  class cGLSLShader : public iGpuShader {
+  public:
+    cGLSLShader(const tString& asName, eGpuShaderType aType, iLowLevelGraphics* apLowLevelGraphics);
+    ~cGLSLShader();
 
-		bool Reload();
-		void Unload();
-		void Destroy();
+    bool Reload();
+    void Unload();
+    void Destroy();
 
-		bool SamplerNeedsTextureUnitSetup(){ return true;}
+    bool SamplerNeedsTextureUnitSetup() { return true; }
 
-		tString GetProgramName(){ return msName; }
+    tString GetProgramName() { return msName; }
 
-		bool CreateFromFile(const tWString& asFile, const tString& asEntry="main", bool abPrintInfoIfFail=true);
-		bool CreateFromString(const char *apStringData, const tString& asEntry="main", bool abPrintInfoIfFail=true);
+    bool CreateFromFile(const tWString& asFile, const tString& asEntry = "main", bool abPrintInfoIfFail = true);
+    bool CreateFromString(const char* apStringData, const tString& asEntry = "main", bool abPrintInfoIfFail = true);
 
-		//GLSL Specific
-		GLuint GetHandle(){ return mlHandle;}
-	
-	protected:
-		void LogShaderInfoLog();
-		void LogShaderCode(const char *apStringData);
-		GLenum GetGLShaderType(eGpuShaderType aType);
+    //GLSL Specific
+    GLuint GetHandle() { return mlHandle; }
 
-		iLowLevelGraphics *mpLowLevelGraphics;
-		
-		GLuint mlHandle;
-	};
-};
+  protected:
+    void   LogShaderInfoLog();
+    void   LogShaderCode(const char* apStringData);
+    GLenum GetGLShaderType(eGpuShaderType aType);
+
+    iLowLevelGraphics* mpLowLevelGraphics;
+
+    GLuint mlHandle;
+  };
+};     // namespace hpl
 #endif // HPL_GLSL_SHADER_H

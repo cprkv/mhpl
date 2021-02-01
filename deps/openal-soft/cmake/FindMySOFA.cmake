@@ -39,8 +39,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
-find_package(ZLIB)
-
 find_path(MYSOFA_INCLUDE_DIR NAMES mysofa.h
           DOC "The MySOFA include directory"
 )
@@ -56,12 +54,12 @@ find_library(MYSOFA_M_LIBRARY NAMES m
 # handle the QUIETLY and REQUIRED arguments and set MYSOFA_FOUND to TRUE if
 # all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(MYSOFA REQUIRED_VARS MYSOFA_LIBRARY MYSOFA_INCLUDE_DIR ZLIB_FOUND)
+find_package_handle_standard_args(MYSOFA REQUIRED_VARS MYSOFA_LIBRARY MYSOFA_INCLUDE_DIR)
 
 if(MYSOFA_FOUND)
     set(MYSOFA_INCLUDE_DIRS ${MYSOFA_INCLUDE_DIR})
     set(MYSOFA_LIBRARIES ${MYSOFA_LIBRARY})
-    set(MYSOFA_LIBRARIES ${MYSOFA_LIBRARIES} ZLIB::ZLIB)
+    set(MYSOFA_LIBRARIES ${MYSOFA_LIBRARIES} zlibstatic)
     if(MYSOFA_M_LIBRARY)
         set(MYSOFA_LIBRARIES ${MYSOFA_LIBRARIES} ${MYSOFA_M_LIBRARY})
     endif()
@@ -71,7 +69,7 @@ if(MYSOFA_FOUND)
         IMPORTED_LOCATION ${MYSOFA_LIBRARY})
     set_target_properties(MySOFA::MySOFA PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES ${MYSOFA_INCLUDE_DIRS}
-        INTERFACE_LINK_LIBRARIES ZLIB::ZLIB)
+        INTERFACE_LINK_LIBRARIES zlibstatic)
     if(MYSOFA_M_LIBRARY)
         set_property(TARGET MySOFA::MySOFA APPEND PROPERTY
             INTERFACE_LINK_LIBRARIES ${MYSOFA_M_LIBRARY})

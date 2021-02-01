@@ -160,7 +160,7 @@ SSE3
 #define IL_NO_JP2 1
 
 /* jpeg support (JPEG is most common lossy format. libjpeg powered) */
-#define IL_NO_JPG 1
+/* #undef IL_NO_JPG */
 
 /* lcms support () */
 #define IL_NO_LCMS 1

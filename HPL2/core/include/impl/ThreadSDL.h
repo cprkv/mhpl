@@ -26,25 +26,22 @@ struct SDL_Thread;
 
 namespace hpl {
 
-	class cThreadSDL : public iThread
-	{
-	public:
-		
-		cThreadSDL();
-		~cThreadSDL();
-		
-        void Start();
-		void Stop();
-		void Sleep(unsigned int alSleepTime);
-		void SetPriority(eThreadPrio aPrio);
+  class cThreadSDL : public iThread {
+  public:
+    cThreadSDL();
+    ~cThreadSDL();
 
-	protected:
-		int TranslateEnginePrio(eThreadPrio aPrio);
+    void Start();
+    void Stop();
+    void Sleep(unsigned int alSleepTime);
+    void SetPriority(eThreadPrio aPrio);
 
-	private:
-		SDL_Thread* mpThreadHandle;
+  protected:
+    int TranslateEnginePrio(eThreadPrio aPrio);
 
-	};
+  private:
+    SDL_Thread* mpThreadHandle;
+  };
 
-};
+};     // namespace hpl
 #endif // HPL_THREAD_SDL_H

@@ -131,12 +131,10 @@ mark_as_advanced(BUILDID_SUFFIX BUILDID_BIN)
 function(GenerateBuildID outvar idname includedir sourcedir)
   add_custom_command(
     OUTPUT
-    ${sourcedir}/BuildID_${idname}_${BUILDID_SUFFIX}.cpp
-    ${includedir}/BuildID_${idname}.h
-    COMMAND
-    ${BUILDID_BIN}
-    ARGS
-    ${idname} ${includedir} ${sourcedir}
+      ${sourcedir}/BuildID_${idname}_${BUILDID_SUFFIX}.cpp
+      ${includedir}/BuildID_${idname}.h
+    COMMAND ${BUILDID_BIN}
+    ARGS ${idname} ${includedir} ${sourcedir}
   )
   set(${outvar}
     ${sourcedir}/BuildID_${idname}_${BUILDID_SUFFIX}.cpp
@@ -187,10 +185,10 @@ if (APPLE)
   find_library(SC_LIBRARY SystemConfiguration)
   find_library(COCOA_LIBRARY Cocoa)
   mark_as_advanced(COCOA_LIBRARY THEORA_LIBRARY SC_LIBRARY)
-  set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY} z fltk)
+  set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY} fltk)
 elseif (UNIX)
   add_subdirectory(../../deps/binreloc binreloc)
-  set(PLATFORM_LIBS binreloc pthread dl z fltk)
+  set(PLATFORM_LIBS binreloc pthread dl fltk)
 endif ()
 
 target_link_libraries(HPL2 PUBLIC

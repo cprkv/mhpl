@@ -24,13 +24,12 @@
 
 namespace hpl {
 
-	//------------------------------------------
+  //------------------------------------------
 
-	class cPhysicsRopeNewton : public iPhysicsRope
-	{
-	public:
-		cPhysicsRopeNewton(const tString &asName, iPhysicsWorld *apWorld, const cVector3f &avStartPos, const cVector3f &avEndPos);
-		virtual ~cPhysicsRopeNewton();
-	};
-};
+  class cPhysicsRopeNewton : public iPhysicsRope {
+  public:
+    cPhysicsRopeNewton(const tString& asName, iPhysicsWorld* apWorld, const cVector3f& avStartPos, const cVector3f& avEndPos);
+    virtual ~cPhysicsRopeNewton();
+  };
+};     // namespace hpl
 #endif // HPL_PHYSICS_ROPE_NEWTON_H

@@ -22,48 +22,47 @@
 
 #include <GL/glew.h>
 #ifdef WIN32
-#include <GL/wglew.h>
+  #include <GL/wglew.h>
 #endif
 #include <vector>
 
 
 #include "graphics/GraphicsTypes.h"
 namespace hpl {
-	class iLowLevelGraphics;
+  class iLowLevelGraphics;
 
-	class cPBuffer
-	{
-	public:
-		cPBuffer(iLowLevelGraphics* apLowLevelGraphics,bool abShareObjects,bool abUseMipMaps=false,bool abUseDepth=true,bool abUseStencil=true);
-		~cPBuffer();
+  class cPBuffer {
+  public:
+    cPBuffer(iLowLevelGraphics* apLowLevelGraphics, bool abShareObjects, bool abUseMipMaps = false, bool abUseDepth = true, bool abUseStencil = true);
+    ~cPBuffer();
 
-		bool Init(unsigned int alWidth,unsigned int alHeight, cColor aCol);
+    bool Init(unsigned int alWidth, unsigned int alHeight, cColor aCol);
 
-		int MakeCurrentContext();
+    int MakeCurrentContext();
 
-		void Bind();
-		void UnBind();
+    void Bind();
+    void UnBind();
 
-	private:
-		#ifdef WIN32
-		HDC         mDeviceContext;
-		HGLRC       mGLContext;
-		HPBUFFERARB mPBuffer;
-		#elif defined(__linux__)
-		Display *gDpy;
-		GLXContext glCtx;
-		GLXPbuffer gPBuffer;
-		#endif
+  private:
+#ifdef WIN32
+    HDC         mDeviceContext;
+    HGLRC       mGLContext;
+    HPBUFFERARB mPBuffer;
+#elif defined(__linux__)
+    Display*   gDpy;
+    GLXContext glCtx;
+    GLXPbuffer gPBuffer;
+#endif
 
-		int mlWidth;
-		int mlHeight;
+    int mlWidth;
+    int mlHeight;
 
-		bool mbShareObjects;
-		iLowLevelGraphics* mpLowLevelGraphics;
+    bool               mbShareObjects;
+    iLowLevelGraphics* mpLowLevelGraphics;
 
-		std::vector<int> mvAttribBuffer;
-		std::vector<int> mvAttribFormat;
-	};
+    std::vector<int> mvAttribBuffer;
+    std::vector<int> mvAttribFormat;
+  };
 
-};
+};     // namespace hpl
 #endif // HPL_P_BUFFER_H

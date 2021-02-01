@@ -30,17 +30,16 @@
 
 namespace hpl {
 
-	class cCGProgram : public iGpuProgram
-	{
-	public:
-		cCGProgram();
+  class cCGProgram : public iGpuProgram {
+  public:
+    cCGProgram();
 
-		bool Link();
+    bool Link();
 
-		void Bind();
-		void UnBind();
-		
-	protected:
-    };
-};
+    void Bind();
+    void UnBind();
+
+  protected:
+  };
+};     // namespace hpl
 #endif // HPL_CGPROGRAM_H

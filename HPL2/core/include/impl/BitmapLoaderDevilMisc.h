@@ -24,16 +24,16 @@
 
 namespace hpl {
 
-	class cBitmapLoaderDevilMisc : public iBitmapLoaderDevil
-	{
-	public:
-		cBitmapLoaderDevilMisc();
-		~cBitmapLoaderDevilMisc();
+  class cBitmapLoaderDevilMisc : public iBitmapLoaderDevil {
+  public:
+    cBitmapLoaderDevilMisc();
+    ~cBitmapLoaderDevilMisc();
 
-		cBitmap* LoadBitmap(const tWString& asFile, tBitmapLoadFlag aFlags);
+    cBitmap* LoadBitmap(const tWString& asFile, tBitmapLoadFlag aFlags);
 
-	protected:
-	};
+  protected:
+  };
 
-};
+}; // namespace hpl
+
 #endif // HPL_BITMAP_LOADER_DEVIL_MISC_H

@@ -23,170 +23,157 @@
 #include <cctype>
 
 #ifndef __APPLE__
-#include "FL/fl_ask.H"
+  #include "FL/fl_ask.H"
 #endif
 
 //-----------------------------------------------------------
 
-int cVideoCardSeries::GetNumericDifference(const tString& asCode, int alNumericCount)
-{
-	int lCode = cString::ToInt(cString::Sub(asCode,0, alNumericCount).c_str(), 0);
+int cVideoCardSeries::GetNumericDifference(const tString& asCode, int alNumericCount) {
+  int lCode = cString::ToInt(cString::Sub(asCode, 0, alNumericCount).c_str(), 0);
 
-	int lOwnCode = cString::ToInt(cString::ReplaceCharTo(GetCode(), cString::ToString(cQualityChooser::GetNumWildcard()), "0").c_str(), 0);
+  int lOwnCode = cString::ToInt(cString::ReplaceCharTo(GetCode(), cString::ToString(cQualityChooser::GetNumWildcard()), "0").c_str(), 0);
 
-	return lCode-lOwnCode;
+  return lCode - lOwnCode;
 }
 
 //-----------------------------------------------------------
 
-tString cVideoCardSeries::ToString()
-{
-	return mpModel->GetName() + " " + GetCode();
+tString cVideoCardSeries::ToString() {
+  return mpModel->GetName() + " " + GetCode();
 }
 
 //-----------------------------------------------------------
 //-----------------------------------------------------------
 
-bool ModelComparator(cVideoCardModel* aModel1, cVideoCardModel* aModel2)
-{
-	tStringVec vModel1Name, vModel2Name;
-	cString::GetStringVec(aModel1->GetName(), vModel1Name);
-	cString::GetStringVec(aModel2->GetName(), vModel2Name);
+bool ModelComparator(cVideoCardModel* aModel1, cVideoCardModel* aModel2) {
+  tStringVec vModel1Name, vModel2Name;
+  cString::GetStringVec(aModel1->GetName(), vModel1Name);
+  cString::GetStringVec(aModel2->GetName(), vModel2Name);
 
-	return (vModel2Name.size()<vModel1Name.size());
+  return (vModel2Name.size() < vModel1Name.size());
 }
 
 //-----------------------------------------------------------
 
-cQualityChooser::cQualityChooser(const tString& asDBFile)
-{
-	msDBFile = asDBFile;
+cQualityChooser::cQualityChooser(const tString& asDBFile) {
+  msDBFile = asDBFile;
 
-	mpCurrentManufacturer = NULL;
-	mpCurrentModel = NULL;
-	mpCurrentSeries = NULL;
-	mpCurrentClosestSeries = NULL;
+  mpCurrentManufacturer  = NULL;
+  mpCurrentModel         = NULL;
+  mpCurrentSeries        = NULL;
+  mpCurrentClosestSeries = NULL;
 
-	BuildDatabase();
+  BuildDatabase();
 }
 
 //-----------------------------------------------------------
 
-void cQualityChooser::BuildDatabase()
-{
-	TiXmlDocument pDoc(msDBFile.c_str());
+void cQualityChooser::BuildDatabase() {
+  TiXmlDocument pDoc(msDBFile.c_str());
 
-	if(pDoc.LoadFile()==false)
-	{
+  if (pDoc.LoadFile() == false) {
 #if defined __APPLE__
-		cPlatform::CreateMessageBox(eMsgBoxType_Warning,L"Error Parsing Card Database", L"Could not parse the card database");
+    cPlatform::CreateMessageBox(eMsgBoxType_Warning, L"Error Parsing Card Database", L"Could not parse the card database");
 #else
-        fl_message_title("Error Parsing Card Database");
-		fl_message("Could not parse card database\n");
+    fl_message_title("Error Parsing Card Database");
+    fl_message("Could not parse card database\n");
 #endif
-		return;
-	}
+    return;
+  }
 
-	TiXmlElement* root = pDoc.RootElement();
-	TiXmlNode* pModelParent = root->FirstChildElement("Models");
-	////////////////////////
-	// Get Manufacturers
-	//for(pManufNode = root->FirstChild(); pManufNode != NULL; pManufNode = pManufNode->NextSibling())
-	//{
-	//	if(pManufNode==NULL)
-	//		break;
+  TiXmlElement* root         = pDoc.RootElement();
+  TiXmlNode*    pModelParent = root->FirstChildElement("Models");
+  ////////////////////////
+  // Get Manufacturers
+  //for(pManufNode = root->FirstChild(); pManufNode != NULL; pManufNode = pManufNode->NextSibling())
+  //{
+  //	if(pManufNode==NULL)
+  //		break;
 
-	//	TiXmlElement* pManufElem = pManufNode->ToElement();
-	//	tString sManufName = cString::ToLowerCase(pManufElem->Attribute("Name"));
+  //	TiXmlElement* pManufElem = pManufNode->ToElement();
+  //	tString sManufName = cString::ToLowerCase(pManufElem->Attribute("Name"));
 
-	//	cVideoCardManufacturer* pManufacturer = new cVideoCardManufacturer(sManufName);
-	//	mmapManufacturers.insert(std::pair<tString, cVideoCardManufacturer*>(sManufName, pManufacturer));
+  //	cVideoCardManufacturer* pManufacturer = new cVideoCardManufacturer(sManufName);
+  //	mmapManufacturers.insert(std::pair<tString, cVideoCardManufacturer*>(sManufName, pManufacturer));
 
-		////////////////////////////////////////////////////
-		// Manufacturer created, get models for it now
-		TiXmlNode* pModelNode;
-		for(pModelNode = pModelParent->FirstChild();pModelNode!=NULL; pModelNode = pModelNode->NextSibling())
-		{
-			if(pModelNode==NULL)
-				break;
+  ////////////////////////////////////////////////////
+  // Manufacturer created, get models for it now
+  TiXmlNode* pModelNode;
+  for (pModelNode = pModelParent->FirstChild(); pModelNode != NULL; pModelNode = pModelNode->NextSibling()) {
+    if (pModelNode == NULL)
+      break;
 
-			TiXmlElement* pModelElem = pModelNode->ToElement();
+    TiXmlElement* pModelElem = pModelNode->ToElement();
 
-			tString sModelName = cString::ToLowerCase(pModelElem->Attribute("Name"));
-			cVideoCardModel* pModel = new cVideoCardModel(sModelName);
+    tString          sModelName = cString::ToLowerCase(pModelElem->Attribute("Name"));
+    cVideoCardModel* pModel     = new cVideoCardModel(sModelName);
 
-			mvModels.push_back(pModel);
+    mvModels.push_back(pModel);
 
-			///////////////////////////////////////////////
-			// Get Series for current model
-			TiXmlNode* pSeriesNode;
-			std::vector<cVideoCardSeries*> vSeries;
-			for(pSeriesNode = pModelElem->FirstChild();pSeriesNode!=NULL; pSeriesNode = pSeriesNode->NextSibling())
-			{
-				if(pSeriesNode==NULL)
-					break;
+    ///////////////////////////////////////////////
+    // Get Series for current model
+    TiXmlNode*                     pSeriesNode;
+    std::vector<cVideoCardSeries*> vSeries;
+    for (pSeriesNode = pModelElem->FirstChild(); pSeriesNode != NULL; pSeriesNode = pSeriesNode->NextSibling()) {
+      if (pSeriesNode == NULL)
+        break;
 
-				TiXmlElement* pSeriesElem = pSeriesNode->ToElement();
-				tString sSeriesCode = cString::ToLowerCase(pSeriesElem->Attribute("Code"));
+      TiXmlElement* pSeriesElem = pSeriesNode->ToElement();
+      tString       sSeriesCode = cString::ToLowerCase(pSeriesElem->Attribute("Code"));
 
-				eQRating rating = eQRating_Unknown;
-				pSeriesElem->QueryIntAttribute("Rating", (int*)&rating);
+      eQRating rating = eQRating_Unknown;
+      pSeriesElem->QueryIntAttribute("Rating", (int*) &rating);
 
 
-				vSeries.push_back( new cVideoCardSeries(pModel, sSeriesCode, rating));
-			}
+      vSeries.push_back(new cVideoCardSeries(pModel, sSeriesCode, rating));
+    }
 
-			mmapSeries.insert(std::pair<cVideoCardModel*, std::vector<cVideoCardSeries*> >(pModel, vSeries));
-		}
+    mmapSeries.insert(std::pair<cVideoCardModel*, std::vector<cVideoCardSeries*>>(pModel, vSeries));
+  }
 
-		printf("Pre-Sort\n");
-		for(size_t i=0;i<mvModels.size();++i)
-		{
-			const tString& sModelName = mvModels[i]->GetName();
-			printf("%s\n", sModelName.c_str());
-		}
+  printf("Pre-Sort\n");
+  for (size_t i = 0; i < mvModels.size(); ++i) {
+    const tString& sModelName = mvModels[i]->GetName();
+    printf("%s\n", sModelName.c_str());
+  }
 
-		// Sort models by name length (int words)
-		sort(mvModels.begin(), mvModels.end(), ModelComparator);
-		printf("Post-Sort\n");
+  // Sort models by name length (int words)
+  sort(mvModels.begin(), mvModels.end(), ModelComparator);
+  printf("Post-Sort\n");
 
-		for(size_t i=0;i<mvModels.size();++i)
-		{
-			const tString& sModelName = mvModels[i]->GetName();
-			printf("%s\n", sModelName.c_str());
-		}
-			
-		//mmapModels.insert(std::pair<cVideoCardManufacturer*, std::vector<cVideoCardModel*> >(pManufacturer, vModels));
-	//}
+  for (size_t i = 0; i < mvModels.size(); ++i) {
+    const tString& sModelName = mvModels[i]->GetName();
+    printf("%s\n", sModelName.c_str());
+  }
+
+  //mmapModels.insert(std::pair<cVideoCardManufacturer*, std::vector<cVideoCardModel*> >(pManufacturer, vModels));
+  //}
 }
 
 //-----------------------------------------------------------
 
-eQRating cQualityChooser::GetQualityRatingByCardString(const tString& asCardString, tString& asMsg)
-{
-	///////////////////////////////////////////
-	// Create a vector with the string pieces in lowercase
-	tStringVec vCardStrVec;
-	cString::GetStringVec(cString::ToLowerCase(asCardString), vCardStrVec);
+eQRating cQualityChooser::GetQualityRatingByCardString(const tString& asCardString, tString& asMsg) {
+  ///////////////////////////////////////////
+  // Create a vector with the string pieces in lowercase
+  tStringVec vCardStrVec;
+  cString::GetStringVec(cString::ToLowerCase(asCardString), vCardStrVec);
 
-	ParseSeries(vCardStrVec);
+  ParseSeries(vCardStrVec);
 
-	if(mpCurrentSeries!=NULL)
-		return mpCurrentSeries->GetRating();
-	if(mpCurrentClosestSeries!=NULL)
-	{
-		asMsg = mpCurrentClosestSeries->ToString();
-		return mpCurrentClosestSeries->GetRating();
-	}
+  if (mpCurrentSeries != NULL)
+    return mpCurrentSeries->GetRating();
+  if (mpCurrentClosestSeries != NULL) {
+    asMsg = mpCurrentClosestSeries->ToString();
+    return mpCurrentClosestSeries->GetRating();
+  }
 
-	return eQRating_Unknown;
+  return eQRating_Unknown;
 }
 
 //-----------------------------------------------------------
 
-void cQualityChooser::ParseManufacturer(tStringVec& avCardStringVec)
-{
-	/*
+void cQualityChooser::ParseManufacturer(tStringVec& avCardStringVec) {
+  /*
 	mpCurrentManufacturer = NULL;
 	for(int i=0;i<(int)avCardStringVec.size();++i)
 	{
@@ -206,181 +193,155 @@ void cQualityChooser::ParseManufacturer(tStringVec& avCardStringVec)
 
 //-----------------------------------------------------------
 
-void cQualityChooser::ParseModel(tStringVec& avCardStringVec)
-{
-	mpCurrentModel = NULL;
-	
-	//ParseManufacturer(avCardStringVec);
-	//if(mpCurrentManufacturer==NULL)
-	//	return;
+void cQualityChooser::ParseModel(tStringVec& avCardStringVec) {
+  mpCurrentModel = NULL;
 
-	bool bFound = false;
+  //ParseManufacturer(avCardStringVec);
+  //if(mpCurrentManufacturer==NULL)
+  //	return;
 
-	tString sSep = " ";
-	for(size_t i=0;i<mvModels.size();++i)
-	{
-		cVideoCardModel* pModel = mvModels[i];
-		tStringVec vModelStrVec;
-		int lFoundPieces = 0;
-		cString::GetStringVec(pModel->GetName(),vModelStrVec, &sSep);
+  bool bFound = false;
 
-		tStringVecIt it = vModelStrVec.begin();
-		for(;it!=vModelStrVec.end();++it)
-		{
-			tStringVecIt itCardStr = find(avCardStringVec.begin(),avCardStringVec.end(), *it);
-			if(itCardStr!=avCardStringVec.end())
-				lFoundPieces++;
-		}
+  tString sSep = " ";
+  for (size_t i = 0; i < mvModels.size(); ++i) {
+    cVideoCardModel* pModel = mvModels[i];
+    tStringVec       vModelStrVec;
+    int              lFoundPieces = 0;
+    cString::GetStringVec(pModel->GetName(), vModelStrVec, &sSep);
 
-		if(lFoundPieces == (int)vModelStrVec.size())
-		{
-			mpCurrentModel = pModel;
+    tStringVecIt it = vModelStrVec.begin();
+    for (; it != vModelStrVec.end(); ++it) {
+      tStringVecIt itCardStr = find(avCardStringVec.begin(), avCardStringVec.end(), *it);
+      if (itCardStr != avCardStringVec.end())
+        lFoundPieces++;
+    }
 
-			for(size_t j=0;j<vModelStrVec.size();++j)
-			{
-				size_t lSizeBefore = avCardStringVec.size();
-				tString sPieceToRemove = vModelStrVec[j];
+    if (lFoundPieces == (int) vModelStrVec.size()) {
+      mpCurrentModel = pModel;
 
-				avCardStringVec.erase(remove(avCardStringVec.begin(), avCardStringVec.end(), sPieceToRemove));
-			}
+      for (size_t j = 0; j < vModelStrVec.size(); ++j) {
+        size_t  lSizeBefore    = avCardStringVec.size();
+        tString sPieceToRemove = vModelStrVec[j];
 
-			break;
-		}
-	}
+        avCardStringVec.erase(remove(avCardStringVec.begin(), avCardStringVec.end(), sPieceToRemove));
+      }
+
+      break;
+    }
+  }
 }
 
 //-----------------------------------------------------------
 
-void cQualityChooser::ParseSeries(tStringVec& avCardStringVec)
-{
-	mpCurrentSeries = NULL;
-	mpCurrentClosestSeries = NULL;
+void cQualityChooser::ParseSeries(tStringVec& avCardStringVec) {
+  mpCurrentSeries        = NULL;
+  mpCurrentClosestSeries = NULL;
 
-	ParseModel(avCardStringVec);
-	if(mpCurrentModel==NULL)
-		return;
+  ParseModel(avCardStringVec);
+  if (mpCurrentModel == NULL)
+    return;
 
-	std::vector<cVideoCardSeries*> vSeries = mmapSeries.find(mpCurrentModel)->second;
-	if(avCardStringVec.empty() && vSeries.empty()==false)
-	{
-		mpCurrentSeries = vSeries.front();
+  std::vector<cVideoCardSeries*> vSeries = mmapSeries.find(mpCurrentModel)->second;
+  if (avCardStringVec.empty() && vSeries.empty() == false) {
+    mpCurrentSeries = vSeries.front();
 
-		return;
-	}
+    return;
+  }
 
-	char alphaWildcard = GetAlphaWildcard();
-	char numWildcard = GetNumWildcard();
+  char alphaWildcard = GetAlphaWildcard();
+  char numWildcard   = GetNumWildcard();
 
-	for(size_t i=0;i<avCardStringVec.size() && mpCurrentSeries==NULL;++i)
-	{
-		const tString& sTemp = avCardStringVec[i];
+  for (size_t i = 0; i < avCardStringVec.size() && mpCurrentSeries == NULL; ++i) {
+    const tString& sTemp = avCardStringVec[i];
 
-		int lPrefixCount = 0;
-		int lNumericCount = 0;
-		int lSuffixCount = 0;
+    int lPrefixCount  = 0;
+    int lNumericCount = 0;
+    int lSuffixCount  = 0;
 
-		for(size_t j=0;j<sTemp.size();++j)
-		{
-			if(std::isdigit(sTemp[j]) || sTemp[j]==numWildcard)
-			{
-				if(lSuffixCount==0)
-					++lNumericCount;
-				else
-					break;
-			}
-			else if(std::isalpha(sTemp[j]) || sTemp[j]==alphaWildcard)
-			{
-				if(lNumericCount==0)
-				{
-					++lPrefixCount;
-				}
-				else
-				{
-					++lSuffixCount;
-				}
-			}
-			else
-				break;
-		}
+    for (size_t j = 0; j < sTemp.size(); ++j) {
+      if (std::isdigit(sTemp[j]) || sTemp[j] == numWildcard) {
+        if (lSuffixCount == 0)
+          ++lNumericCount;
+        else
+          break;
+      } else if (std::isalpha(sTemp[j]) || sTemp[j] == alphaWildcard) {
+        if (lNumericCount == 0) {
+          ++lPrefixCount;
+        } else {
+          ++lSuffixCount;
+        }
+      } else
+        break;
+    }
 
-		tStringVec vCardStrings;
-		vCardStrings.push_back(cString::ToLowerCase(cString::Sub(sTemp, 0, lPrefixCount)));
-		vCardStrings.push_back(cString::ToLowerCase(cString::Sub(sTemp, lPrefixCount+lNumericCount,lSuffixCount)));
+    tStringVec vCardStrings;
+    vCardStrings.push_back(cString::ToLowerCase(cString::Sub(sTemp, 0, lPrefixCount)));
+    vCardStrings.push_back(cString::ToLowerCase(cString::Sub(sTemp, lPrefixCount + lNumericCount, lSuffixCount)));
 
-		int lDifferenceRange = (int) (2.0f*pow(10.0f,lNumericCount-1));
-		for(int j=0;j<(int)vSeries.size();++j)
-		{
-			cVideoCardSeries* pSeries = vSeries[j];
-			bool bPrefixSuffixMatch = true;
+    int lDifferenceRange = (int) (2.0f * pow(10.0f, lNumericCount - 1));
+    for (int j = 0; j < (int) vSeries.size(); ++j) {
+      cVideoCardSeries* pSeries            = vSeries[j];
+      bool              bPrefixSuffixMatch = true;
 
-			const tString& sCode = pSeries->GetCode();
-			std::vector<tString> vCodeStrings;
-			vCodeStrings.push_back(cString::ToLowerCase(cString::Sub(sCode, 0, lPrefixCount)));
-			vCodeStrings.push_back(cString::ToLowerCase(cString::Sub(sCode, lPrefixCount+lNumericCount,lSuffixCount)));
-			
-			/////////////////////////////////////////
-			// Check prefix and suffix match
-			for(int k=0;k<(int)vCardStrings.size();++k)
-			{
-				const tString& sCardString = vCardStrings[k];
-				const tString& sCodeString = vCodeStrings[k];
-				
-				if(sCodeString.find(alphaWildcard)==tString::npos && 
-					(sCardString.length()!=sCodeString.length() || sCardString.length()>sCodeString.length()))
-				{
-					bPrefixSuffixMatch = false;
-					break;
-				}
+      const tString&       sCode = pSeries->GetCode();
+      std::vector<tString> vCodeStrings;
+      vCodeStrings.push_back(cString::ToLowerCase(cString::Sub(sCode, 0, lPrefixCount)));
+      vCodeStrings.push_back(cString::ToLowerCase(cString::Sub(sCode, lPrefixCount + lNumericCount, lSuffixCount)));
 
-				for(int c=0;c<(int)sCodeString.size();++c)
-				{
-					if(sCodeString[c]!=alphaWildcard && 
-						sCardString[c]!=sCodeString[c])
-					{
-						bPrefixSuffixMatch = false;
-						break;
-					}
-				}
+      /////////////////////////////////////////
+      // Check prefix and suffix match
+      for (int k = 0; k < (int) vCardStrings.size(); ++k) {
+        const tString& sCardString = vCardStrings[k];
+        const tString& sCodeString = vCodeStrings[k];
 
-				if(bPrefixSuffixMatch==false)
-					break;
-			}
+        if (sCodeString.find(alphaWildcard) == tString::npos &&
+            (sCardString.length() != sCodeString.length() || sCardString.length() > sCodeString.length())) {
+          bPrefixSuffixMatch = false;
+          break;
+        }
 
-			if(bPrefixSuffixMatch==false)
-				continue;
+        for (int c = 0; c < (int) sCodeString.size(); ++c) {
+          if (sCodeString[c] != alphaWildcard &&
+              sCardString[c] != sCodeString[c]) {
+            bPrefixSuffixMatch = false;
+            break;
+          }
+        }
 
-			/////////////////////////////////////////
-			// Check card series number
-			tString sCardNumber = cString::Sub(sTemp, lPrefixCount, lNumericCount);
-			tString sCodeNumber = cString::Sub(sCode, lPrefixCount, lNumericCount);
+        if (bPrefixSuffixMatch == false)
+          break;
+      }
 
-			if(sCardNumber.length()!=sCodeNumber.length())
-				continue;
+      if (bPrefixSuffixMatch == false)
+        continue;
 
-			bool bSeriesFound = true;
+      /////////////////////////////////////////
+      // Check card series number
+      tString sCardNumber = cString::Sub(sTemp, lPrefixCount, lNumericCount);
+      tString sCodeNumber = cString::Sub(sCode, lPrefixCount, lNumericCount);
 
-			for(int c=0;c<(int)sCodeNumber.size();++c)
-			{
-				if(sCodeNumber[c]!=numWildcard && 
-					sCardNumber[c]!=sCodeNumber[c])
-				{
-					bSeriesFound = false;
-					break;
-				}
-			}
+      if (sCardNumber.length() != sCodeNumber.length())
+        continue;
 
-			if(bSeriesFound)
-			{
-				mpCurrentSeries = pSeries;
-				break;
-			}
-			else
-			{
-				if(pSeries->GetNumericDifference(sCardNumber, lNumericCount)<lDifferenceRange)
-					mpCurrentClosestSeries = pSeries;
-			}
-		}
-	}
+      bool bSeriesFound = true;
+
+      for (int c = 0; c < (int) sCodeNumber.size(); ++c) {
+        if (sCodeNumber[c] != numWildcard &&
+            sCardNumber[c] != sCodeNumber[c]) {
+          bSeriesFound = false;
+          break;
+        }
+      }
+
+      if (bSeriesFound) {
+        mpCurrentSeries = pSeries;
+        break;
+      } else {
+        if (pSeries->GetNumericDifference(sCardNumber, lNumericCount) < lDifferenceRange)
+          mpCurrentClosestSeries = pSeries;
+      }
+    }
+  }
 }
 
 //-----------------------------------------------------------

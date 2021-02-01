@@ -3,6 +3,17 @@ Modern HPL
 
 Engine based on Amnesia: The Dark Descent Source Code.
 
+## Todo
+
+- [ ] replace -lpng via png in deps folder
+
+## Install extra dependencies
+
+on ubuntu:
+```shell
+sudo apt install libasound2-data libasound2-dev libasound2 libasound2-plugins libpulse-dev
+```
+
 ## Build
 
 ```shell
