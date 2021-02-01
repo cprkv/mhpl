@@ -18,15 +18,14 @@
  */
 
 #include "system/Platform.h"
-
 #include "system/String.h"
-
 #include "system/LowLevelSystem.h"
 
 #include <sys/stat.h>
 #include <dirent.h>
 #include <sys/param.h>
 #include <fstream>
+#include <algorithm>
 
 #if USE_SDL2
   #include "SDL.h"
@@ -37,13 +36,11 @@
 #ifdef __linux__
   #include <FL/fl_ask.H>
   #include "binreloc.h"
-
   #include <sys/types.h>
 #endif
+
 #include <unistd.h>
 #include <sys/time.h>
-
-#include <algorithm>
 
 namespace hpl {
 
@@ -54,11 +51,11 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   unsigned long cPlatform::GetFileSize(const tWString& asFileName) {
-    struct stat statbuf;
-    if (stat(cString::To8Char(asFileName).c_str(), &statbuf) == -1) {
+    struct stat statBuff;
+    if (stat(cString::To8Char(asFileName).c_str(), &statBuff) == -1) {
       return 0;
     };
-    return statbuf.st_size;
+    return statBuff.st_size;
   }
 
   //-----------------------------------------------------------------------
@@ -113,7 +110,7 @@ namespace hpl {
     if (abDeleteAllFiles) {
       tWStringList lstFiles;
       FindFilesInDir(lstFiles, asPath, _W("*"), true);
-      for (tWStringListIt it = lstFiles.begin(); it != lstFiles.end(); ++it) {
+      for (auto it = lstFiles.begin(); it != lstFiles.end(); ++it) {
         tWString sFilePath = cString::SetFilePathW(*it, asPath);
         RemoveFile(sFilePath);
       }
@@ -124,16 +121,16 @@ namespace hpl {
     if (abDeleteAllSubFolders) {
       tWStringList lstFolders;
       FindFoldersInDir(lstFolders, asPath, true, false);
-      for (tWStringListIt it = lstFolders.begin(); it != lstFolders.end(); ++it) {
+      for (auto it = lstFolders.begin(); it != lstFolders.end(); ++it) {
         tWString sFolderPath = cString::SetFilePathW(*it, asPath);
         RemoveFolder(sFolderPath, abDeleteAllFiles, abDeleteAllSubFolders);
       }
     }
 
     if (rmdir(cString::To8Char(asPath).c_str()) != 0) {
-      //			wchar_t sTempString[2048];
-      //			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,0,GetLastError(),0,sTempString,2048,NULL);
-      //			Error("Could not remove folder: '%s': %s",cString::To8Char(sPath).c_str(), cString::To8Char(sTempString).c_str());
+      //wchar_t sTempString[2048];
+      //FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,0,GetLastError(),0,sTempString,2048,NULL);
+      //Error("Could not remove folder: '%s': %s",cString::To8Char(sPath).c_str(), cString::To8Char(sTempString).c_str());
       return false;
     }
     return true;
@@ -142,11 +139,11 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   bool cPlatform::FolderExists(const tWString& asPath) {
-    struct stat statbuf;
-    if (stat(cString::To8Char(asPath).c_str(), &statbuf) != 0) {
+    struct stat statBuff;
+    if (stat(cString::To8Char(asPath).c_str(), &statBuff) != 0) {
       return false;
     } else {
-      return S_ISDIR(statbuf.st_mode);
+      return S_ISDIR(statBuff.st_mode);
     }
   }
 
@@ -185,10 +182,9 @@ namespace hpl {
   cDate cPlatform::FileModifiedDate(const tWString& asFilePath) {
     struct tm   pClock;
     struct stat attrib;
+
     stat(cString::To8Char(asFilePath).c_str(), &attrib);
-
     gmtime_r(&(attrib.st_mtime), &pClock); // Get the last modified time and put it into the time structure
-
     cDate date = DateFromGMTime(&pClock);
 
     return date;
@@ -197,13 +193,11 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   cDate cPlatform::FileCreationDate(const tWString& asFilePath) {
-    struct tm pClock;
-
+    struct tm   pClock;
     struct stat attrib;
+
     stat(cString::To8Char(asFilePath).c_str(), &attrib);
-
     gmtime_r(&(attrib.st_ctime), &pClock); // Get the last modified time and put it into the time structure
-
     cDate date = DateFromGMTime(&pClock);
 
     return date;
@@ -228,25 +222,19 @@ namespace hpl {
 
   void cPlatform::FindFilesInDir(tWStringList& alstStrings, const tWString& asDir, const tWString& asMask, bool abAddHidden) {
     //Get the search string
-    wchar_t sSpec[256];
-    wchar_t end = asDir[asDir.size() - 1];
-    //The needed structs
-    DIR*        dirhandle;
+    wchar_t     sSpec[256];
+    wchar_t     end = asDir[asDir.size() - 1];
+    DIR*        dirHandle;
     dirent*     _entry;
-    struct stat statbuff;
-    tWString    fileentry;
+    struct stat statBuff;
+    tWString    fileEntry;
     tString     dirUtf8 = cString::To8Char(asDir);
 
-    char cwd[PATH_MAX];
-    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
-      Log("finding files in directory: %s from %s.", dirUtf8.c_str(), cwd);
-    }
-
-    if ((dirhandle = opendir(dirUtf8.c_str())) == nullptr) {
+    if (dirHandle = opendir(dirUtf8.c_str()); dirHandle == nullptr) {
       return;
     }
 
-    while ((_entry = readdir(dirhandle)) != nullptr) {
+    while ((_entry = readdir(dirHandle)) != nullptr) {
       if (end == _W('/')) {
         swprintf(sSpec, 256, _W("%ls%s"), asDir.c_str(), _entry->d_name);
       } else {
@@ -254,22 +242,24 @@ namespace hpl {
       }
 
       // skip unreadable
-      if (stat(cString::To8Char(sSpec).c_str(), &statbuff) == -1) {
+      if (stat(cString::To8Char(sSpec).c_str(), &statBuff) == -1) {
         continue;
       }
       // skip directories
-      if (S_ISDIR(statbuff.st_mode)) {
+      if (S_ISDIR(statBuff.st_mode)) {
         continue;
       }
 
-      fileentry.assign(cString::To16Char(_entry->d_name));
+      fileEntry.assign(cString::To16Char(_entry->d_name));
 
-      if (!patiMatch(asMask.c_str(), fileentry.c_str())) {
+      if (!patiMatch(asMask.c_str(), fileEntry.c_str())) {
         continue;
       }
-      alstStrings.push_back(fileentry);
+
+      alstStrings.push_back(fileEntry);
     }
-    closedir(dirhandle);
+
+    closedir(dirHandle);
     alstStrings.sort();
   }
 
@@ -290,28 +280,34 @@ namespace hpl {
     struct stat statbuff;
     tWString    fileentry;
 
-    if ((dirhandle = opendir(cString::To8Char(asDir).c_str())) == NULL)
+    if ((dirhandle = opendir(cString::To8Char(asDir).c_str())) == nullptr) {
       return;
+    }
 
-    while ((_entry = readdir(dirhandle)) != NULL) {
+    while ((_entry = readdir(dirhandle)) != nullptr) {
       snprintf(sSpec, 256, "%s%s", sDir8.c_str(), _entry->d_name);
 
       // skip unreadable
-      if (stat(sSpec, &statbuff) == -1)
+      if (stat(sSpec, &statbuff) == -1) {
         continue;
+      }
       // skip non-directories
-      if (!S_ISDIR(statbuff.st_mode))
+      if (!S_ISDIR(statbuff.st_mode)) {
         continue;
+      }
 
       // add updir
-      if (!abAddUpFolder && _entry->d_name[0] == '.' && _entry->d_name[1] == '.' && _entry->d_name[2] == '\0')
+      if (!abAddUpFolder && _entry->d_name[0] == '.' && _entry->d_name[1] == '.' && _entry->d_name[2] == '\0') {
         continue;
+      }
       // add hidden
-      if (!abAddHidden && _entry->d_name[0] == '.')
+      if (!abAddHidden && _entry->d_name[0] == '.') {
         continue;
+      }
       // Skip self
-      if (_entry->d_name[0] == '.' && _entry->d_name[1] == '\0')
+      if (_entry->d_name[0] == '.' && _entry->d_name[1] == '\0') {
         continue;
+      }
 
       fileentry.assign(cString::To16Char(_entry->d_name));
 
@@ -322,6 +318,7 @@ namespace hpl {
   }
 
   //-----------------------------------------------------------------------
+
 #ifdef __linux__
   tString cPlatform::GetDataDir() {
     tString temp;
@@ -357,6 +354,7 @@ namespace hpl {
   //////////////////////////////////////////////////////////////////////////
 
   //-----------------------------------------------------------------------
+
 #ifdef __APPLE__
   void OSXAlertBox(eMsgBoxType eType, tString caption, tString message);
 #endif
@@ -364,8 +362,9 @@ namespace hpl {
   void cPlatform::CreateMessageBoxBase(eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, va_list ap) {
     wchar_t text[2048];
 
-    if (fmt == NULL)
+    if (fmt == nullptr) {
       return;
+    }
     vswprintf(text, 2047, fmt, ap);
 
     tWString sMess = _W("");
@@ -383,19 +382,19 @@ namespace hpl {
     }
     tString                  caption   = cString::To8Char(asCaption);
     tString                  message   = cString::To8Char(sMess);
-    SDL_MessageBoxButtonData buttons[] = {
-      { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
-        1,
-        "Dismiss" }
-    };
-    SDL_MessageBoxData data = {
-      type,
-      NULL,
-      caption.c_str(),
-      message.c_str(),
-      1,
-      buttons,
-      NULL
+    SDL_MessageBoxButtonData buttons[] = { {
+        .flags    = SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
+        .buttonid = 1,
+        .text     = "Dismiss",
+    } };
+    SDL_MessageBoxData       data      = {
+      .flags       = type,
+      .window      = nullptr,
+      .title       = caption.c_str(),
+      .message     = message.c_str(),
+      .numbuttons  = 1,
+      .buttons     = buttons,
+      .colorScheme = nullptr,
     };
     int pressed = -1;
     SDL_ShowMessageBox(&data, &pressed);
@@ -411,7 +410,6 @@ namespace hpl {
     }
 #endif
   }
-
 
   //-----------------------------------------------------------------------
 
@@ -488,13 +486,14 @@ namespace hpl {
 
   //-----------------------------------------------------------------------
   void OSXLaunchURL(tString url);
+
   void cPlatform::OpenBrowserWindow(const tWString& asURL) {
 #if defined(__APPLE__)
     OSXLaunchURL(cString::To8Char(asURL));
 #else
     pid_t pID = fork();
     if (pID == 0) { // child
-      execlp("xdg-open", "xdg-open", cString::To8Char(asURL).c_str(), (char*) 0);
+      execlp("xdg-open", "xdg-open", cString::To8Char(asURL).c_str(), nullptr);
       exit(1);
     } else if (pID < 0) { // Failed
       Error("Could not Open URL %ls\n", asURL.c_str());
@@ -505,13 +504,14 @@ namespace hpl {
   }
 
   bool OSXOpenFile(tString path);
+
   bool cPlatform::OpenFileOnShell(const tWString& asPath) {
 #if defined(__APPLE__)
     return OSXOpenFile(cString::To8Char(asPath));
 #else
     pid_t pID = fork();
     if (pID == 0) { // child
-      execlp("/bin/bash", "xdg-open", "xdg-open", cString::To8Char(asPath).c_str(), (char*) 0);
+      execlp("/bin/bash", "xdg-open", "xdg-open", cString::To8Char(asPath).c_str(), nullptr);
       exit(1);
     } else if (pID < 0) { // Failed
       Error("Could not Open File %ls\n", asPath.c_str());
@@ -524,6 +524,7 @@ namespace hpl {
   }
 
   bool OSXRunProgram(tString path, tString args);
+
   bool cPlatform::RunProgram(const tWString& asPath, const tWString& asParams) {
     bool ret = true;
 #if defined(__APPLE__)
@@ -535,7 +536,7 @@ namespace hpl {
       tString sSepp = " ";
       cString::GetStringVec(cString::To8Char(asParams), tvArgs, &sSepp);
 
-      char** argv = (char**) hplMalloc(sizeof(char*) * (tvArgs.size() + 2));
+      char** argv = static_cast<char**>(hplMalloc(sizeof(char*) * (tvArgs.size() + 2)));
       if (argv) {
         tString sTemp = cString::To8Char(asPath);
         argv[0] = const_cast<char*>(sTemp.c_str());
@@ -543,8 +544,7 @@ namespace hpl {
         for (size_t i = 0; i < tvArgs.size(); ++i, ++ai) {
           argv[ai] = const_cast<char*>(tvArgs[i].c_str());
         }
-        argv[ai] = (char*) 0;
-
+        argv[ai] = nullptr;
         execvp(sTemp.c_str(), argv);
       }
       exit(1);

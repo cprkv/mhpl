@@ -92,6 +92,7 @@ int main(int argc, char* argv[]) {
 
   bool         cwd     = false;
   hpl::tString cmdline = "";
+
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-cwd") == 0) {
       cwd = true;
@@ -137,8 +138,9 @@ namespace hpl {
   }
 
   cLogWriter::~cLogWriter() {
-    if (mpFile)
+    if (mpFile) {
       fclose(mpFile);
+    }
   }
 
   void cLogWriter::Write(const tString& asMessage) {
@@ -157,28 +159,32 @@ namespace hpl {
 
   void cLogWriter::Clear() {
     ReopenFile();
-    if (mpFile)
+    if (mpFile) {
       fflush(mpFile);
+    }
   }
 
   //-----------------------------------------------------------------------
 
 
   void cLogWriter::SetFileName(const tWString& asFile) {
-    if (msFileName == asFile)
+    if (msFileName == asFile) {
       return;
+    }
 
     msFileName = asFile;
-    if (mpFile)
+    if (mpFile) {
       ReopenFile();
+    }
   }
 
   //-----------------------------------------------------------------------
 
 
   void cLogWriter::ReopenFile() {
-    if (mpFile)
+    if (mpFile) {
       fclose(mpFile);
+    }
 
 #ifdef WIN32
     mpFile = _wfopen(msFileName.c_str(), _W("w"));
@@ -308,9 +314,9 @@ namespace hpl {
   }
 
   void ClearUpdateLogFile() {
-    if (!gbUpdateLogIsActive)
+    if (!gbUpdateLogIsActive) {
       return;
-
+    }
     gUpdateLogWriter.Clear();
   }
 
@@ -325,13 +331,15 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   void LogUpdate(const char* fmt, ...) {
-    if (!gbUpdateLogIsActive)
+    if (!gbUpdateLogIsActive) {
       return;
+    }
 
     char    text[2048];
     va_list ap;
-    if (fmt == NULL)
+    if (fmt == nullptr) {
       return;
+    }
     va_start(ap, fmt);
     vsprintf(text, fmt, ap);
     va_end(ap);
@@ -359,10 +367,11 @@ namespace hpl {
     char sMess[1024];
 
     tString type = "ERR ";
-    if (msg->type == asMSGTYPE_WARNING)
+    if (msg->type == asMSGTYPE_WARNING) {
       type = "WARN";
-    else if (msg->type == asMSGTYPE_INFORMATION)
+    } else if (msg->type == asMSGTYPE_INFORMATION) {
       type = "INFO";
+    }
 
     sprintf(sMess, "%s (%d, %d) : %s : %s\n", msg->section, msg->row, msg->col, type.c_str(), msg->message);
 
@@ -399,7 +408,7 @@ namespace hpl {
 
   cLowLevelSystemSDL::cLowLevelSystemSDL() {
     mpScriptEngine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
-    if (mpScriptEngine == NULL) {
+    if (mpScriptEngine == nullptr) {
       Error("Failed to start angel script!\n");
     }
 

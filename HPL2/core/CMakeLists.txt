@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.11)
 project(HPL2)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -7,160 +7,129 @@ include(BoilerPlate)
 set(HPL2_VERSION_MAJOR 2)
 set(HPL2_VERSION_MINOR 0)
 
-if(IS_APPLE_64)
-    set(BIN_LIBROOT "${PLATFORM_PREFIX}64")
-else()
-    set(BIN_LIBROOT ${PLATFORM_PREFIX})
-endif()
-
-set(DEP_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/lib/${BIN_LIBROOT}")
-set(DEP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies/include")
-find_path(PREBUILT_PLATFORM_ROOT . PATHS "${DEP_LIB_DIR}" NO_DEFAULT_PATH)
-set(DEP_LIB_DIR ${DEP_LIB_DIR} PARENT_SCOPE)
-set(DEP_INCLUDE_DIR ${DEP_INCLUDE_DIR} PARENT_SCOPE)
-mark_as_advanced(PREBUILT_PLATFORM_ROOT)
-
 include(UtilityFunctions)
 
-IF(APPLE)
-    SET(PRIVATE_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../dependencies CACHE PATH "")
-    if(IS_APPLE_64)
-        SET(PRIVATE_LIB_SUFFIX "lib/macosx64")
-    else()
-        SET(PRIVATE_LIB_SUFFIX "lib/macosx")
-    endif()
-ELSEIF(LINUX)
-    SET(PRIVATE_LIB_SUFFIX "lib/linux")
-    SET(PRIVATE_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../dependencies CACHE PATH "")
-ENDIF()
+option(USE_SDL2 "Use SDL2 instead of SDL1.2" ON)
 
-OPTION(USE_SDL2 "Use SDL2 instead of SDL1.2" ON)
-
-SET(HPL2_DEFINES PUBLIC $<$<BOOL:${USE_SDL2}>:USE_SDL2>)
+set(HPL2_DEFINES PUBLIC $<$<BOOL:${USE_SDL2}>:USE_SDL2>)
 
 add_definitions(-DUSE_OALWRAPPER)
 
-set(HPL2_INCLUDES PUBLIC include PUBLIC ../dependencies/include)
+set(HPL2_INCLUDES PUBLIC include)
 
-IF(LINUX)
-    add_library(binreloc STATIC ../dependencies/sources/binreloc/binreloc.c)
-    target_include_directories(binreloc PUBLIC ../dependencies/sources/binreloc/)
-    set_target_properties(binreloc PROPERTIES COMPILE_DEFINITIONS "ENABLE_BINRELOC")
-ENDIF()
+if (LINUX)
+  add_library(binreloc STATIC ../dependencies/sources/binreloc/binreloc.c)
+  target_include_directories(binreloc PUBLIC ../dependencies/sources/binreloc/)
+  set_target_properties(binreloc PROPERTIES COMPILE_DEFINITIONS "ENABLE_BINRELOC")
+endif ()
 
 # common shared source
 file(GLOB common_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    sources/ai/*
-    sources/engine/*
-    sources/generate/*
-    sources/graphics/*
-    sources/gui/*
-    sources/haptic/*
-    sources/input/*
-    sources/math/*
-    sources/physics/*
-    sources/resources/*
-    sources/scene/*
-    sources/sound/*
-    sources/system/*
+  sources/ai/*
+  sources/engine/*
+  sources/generate/*
+  sources/graphics/*
+  sources/gui/*
+  sources/haptic/*
+  sources/input/*
+  sources/math/*
+  sources/physics/*
+  sources/resources/*
+  sources/scene/*
+  sources/sound/*
+  sources/system/*
 
-    include/ai/*
-    include/engine/*
-    include/generate/*
-    include/graphics/*
-    include/gui/*
-    include/haptic/*
-    include/input/*
-    include/math/*
-    include/physics/*
-    include/resources/*
-    include/scene/*
-    include/sound/*
-    include/system/*
-    include/*.*
-)
+  include/ai/*
+  include/engine/*
+  include/generate/*
+  include/graphics/*
+  include/gui/*
+  include/haptic/*
+  include/input/*
+  include/math/*
+  include/physics/*
+  include/resources/*
+  include/scene/*
+  include/sound/*
+  include/system/*
+  include/*.*
+  )
 list(APPEND common_sources include/BuildID_HPL2_0.h)
 list(REMOVE_DUPLICATES common_sources)
 
 #setup various IMPL sources
 file(GLOB impl_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    include/impl/tinyXML/*
-    include/impl/*.*
+  include/impl/tinyXML/*
+  include/impl/*.*
 
-    # tinyXML
-    sources/impl/tinyXml/*
-    sources/impl/XmlDocumentTiny.cpp
-    # scripting
-    sources/impl/SqScript.cpp
-    sources/impl/scriptarray.cpp
-    sources/impl/scripthelper.cpp
-    sources/impl/scriptstring.cpp
-    sources/impl/scriptstring_utils.cpp
-    # Image loading
-    sources/impl/BitmapLoader*
-    # theora video
-    sources/impl/VideoStreamTheora.cpp
-    # Newton
-    sources/impl/*Newton.cpp
-    # GL
-    sources/impl/FrameBufferGL.cpp
-    sources/impl/GLSL*
-    sources/impl/OcclusionQueryOGL.cpp
-    sources/impl/VertexBufferOGL_Array.cpp
-    sources/impl/VertexBufferOGL_VBO.cpp
-    sources/impl/VertexBufferOpenGL.cpp
-    # SDL
-    sources/impl/GamepadSDL.cpp
-    sources/impl/GamepadSDL2.cpp
-    sources/impl/KeyboardSDL.cpp
-    sources/impl/MouseSDL.cpp
-    sources/impl/MutexSDL.cpp
-    sources/impl/ThreadSDL.cpp
-    sources/impl/TimerSDL.cpp
-    sources/impl/LowLevelGraphicsSDL.cpp
-    sources/impl/LowLevelInputSDL.cpp
-    sources/impl/LowLevelResourcesSDL.cpp
-    sources/impl/LowLevelSystemSDL.cpp
-    sources/impl/SDLEngineSetup.cpp
-    sources/impl/SDLFontData.cpp
-    sources/impl/SDLTexture.cpp
-    # OpenAL
-    sources/impl/LowLevelSoundOpenAL.cpp
-    sources/impl/OpenAL*
-    # mesh loader
-    sources/impl/MeshLoaderCollada.cpp
-    sources/impl/MeshLoaderColladaHelpers.cpp
-    sources/impl/MeshLoaderColladaLoader.cpp
-    sources/impl/MeshLoaderMSH.cpp
-    sources/impl/MeshLoaderFBX.cpp
-)
+  # tinyXML
+  sources/impl/tinyXml/*
+  sources/impl/XmlDocumentTiny.cpp
+  # scripting
+  sources/impl/SqScript.cpp
+  sources/impl/scriptarray.cpp
+  sources/impl/scripthelper.cpp
+  sources/impl/scriptstring.cpp
+  sources/impl/scriptstring_utils.cpp
+  # Image loading
+  sources/impl/BitmapLoader*
+  # theora video
+  sources/impl/VideoStreamTheora.cpp
+  # Newton
+  sources/impl/*Newton.cpp
+  # GL
+  sources/impl/FrameBufferGL.cpp
+  sources/impl/GLSL*
+  sources/impl/OcclusionQueryOGL.cpp
+  sources/impl/VertexBufferOGL_Array.cpp
+  sources/impl/VertexBufferOGL_VBO.cpp
+  sources/impl/VertexBufferOpenGL.cpp
+  # SDL
+  sources/impl/GamepadSDL.cpp
+  sources/impl/GamepadSDL2.cpp
+  sources/impl/KeyboardSDL.cpp
+  sources/impl/MouseSDL.cpp
+  sources/impl/MutexSDL.cpp
+  sources/impl/ThreadSDL.cpp
+  sources/impl/TimerSDL.cpp
+  sources/impl/LowLevelGraphicsSDL.cpp
+  sources/impl/LowLevelInputSDL.cpp
+  sources/impl/LowLevelResourcesSDL.cpp
+  sources/impl/LowLevelSystemSDL.cpp
+  sources/impl/SDLEngineSetup.cpp
+  sources/impl/SDLFontData.cpp
+  sources/impl/SDLTexture.cpp
+  # OpenAL
+  sources/impl/LowLevelSoundOpenAL.cpp
+  sources/impl/OpenAL*
+  # mesh loader
+  sources/impl/MeshLoaderCollada.cpp
+  sources/impl/MeshLoaderColladaHelpers.cpp
+  sources/impl/MeshLoaderColladaLoader.cpp
+  sources/impl/MeshLoaderMSH.cpp
+  sources/impl/MeshLoaderFBX.cpp
+  )
 
-IF(APPLE)
-    LIST(APPEND impl_sources
-        sources/impl/PlatformMacOSX.mm
-        sources/impl/PlatformUnix.cpp
-        sources/impl/PlatformSDL.cpp)
-    IF(NOT USE_SDL2)
-        LIST(APPEND impl_sources
-            SDLMain.m
-            SDLMain.h)
-    ENDIF()
-ELSEIF(UNIX)
-    LIST(APPEND impl_sources
-        sources/impl/PlatformUnix.cpp
-        sources/impl/PlatformSDL.cpp)
-ENDIF()
+if (APPLE)
+  list(APPEND impl_sources sources/impl/PlatformMacOSX.mm sources/impl/PlatformUnix.cpp sources/impl/PlatformSDL.cpp)
+  if (NOT USE_SDL2)
+    list(APPEND impl_sources SDLMain.m SDLMain.h)
+  endif ()
+elseif (UNIX)
+  list(APPEND impl_sources sources/impl/PlatformUnix.cpp sources/impl/PlatformSDL.cpp)
+endif ()
 
 # Setup buildID source
 
-IF(APPLE)
-    SET(BUILDID_SUFFIX MacOSX)
-ELSEIF(LINUX)
-    SET(BUILDID_SUFFIX Linux)
-ELSE()
-    SET(BUILDID_SUFFIX Windows)
-ENDIF()
-SET(BUILDID_SUFFIX ${BUILDID_SUFFIX} CACHE STRING "Build ID Suffix")
+if (APPLE)
+  set(BUILDID_SUFFIX MacOSX)
+elseif (LINUX)
+  set(BUILDID_SUFFIX Linux)
+ELSE ()
+  set(BUILDID_SUFFIX Windows)
+endif ()
+
+set(BUILDID_SUFFIX ${BUILDID_SUFFIX} CACHE STRING "Build ID Suffix")
 
 # setup source groups
 source_group("AI" REGULAR_EXPRESSION "\\/ai\\/.+")
@@ -196,77 +165,75 @@ add_library(HPL2 STATIC ${common_sources} ${version_sources} ${impl_sources})
 target_include_directories(HPL2 ${HPL2_INCLUDES})
 target_compile_definitions(HPL2 ${HPL2_DEFINES})
 
-if(APPLE)
-    FIND_LIBRARY(SC_LIBRARY SystemConfiguration)
-    FIND_LIBRARY(COCOA_LIBRARY Cocoa)
-    mark_as_advanced(COCOA_LIBRARY THEORA_LIBRARY SC_LIBRARY)
-    set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY} z fltk)
-elseif(UNIX)
-    set(PLATFORM_LIBS binreloc pthread dl z fltk)
-endif()
+if (APPLE)
+  FIND_LIBRARY(SC_LIBRARY SystemConfiguration)
+  FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+  mark_as_advanced(COCOA_LIBRARY THEORA_LIBRARY SC_LIBRARY)
+  set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY} z fltk)
+elseif (UNIX)
+  set(PLATFORM_LIBS binreloc pthread dl z fltk)
+endif ()
 
 target_link_libraries(HPL2 PUBLIC
-    OALWrapper
-    SDL2-static
-    angelscript
-    newton-core
-    glew_s
-    theora
-    zlibstatic
-    IL
-    #${FBX_LIBRARY}
-    ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
-    ${PLATFORM_LIBS})
+  OALWrapper
+  SDL2-static
+  angelscript
+  newton-core
+  glew_s
+  theora
+  zlibstatic
+  IL
+  #${FBX_LIBRARY}
+  ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY}
+  ${PLATFORM_LIBS})
 
 set_target_properties(HPL2 PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED TRUE
-    CXX_EXTENSIONS OFF)
+  CXX_STANDARD 20
+  CXX_STANDARD_REQUIRED TRUE
+  CXX_EXTENSIONS OFF)
 
-if(APPLE)   
-    # helper function to copy the needed frameworks in at build time
-    SET(HPL2_FRAMEWORKS ${HPL2_FRAMEWORKS} CACHE STRING "HPL2 copy frameworks")
-    SET(HPL2_LIBRARIES libSDL2.dylib libIL.1.dylib) 
-    SET(HPL2_LIBRARIES ${HPL2_LIBRARIES}  CACHE STRING "HPL2 copy libs")
-    mark_as_advanced(HPL2_FRAMEWORKS HPL2_LIBRARIES)
+if (APPLE)
+  # helper function to copy the needed frameworks in at build time
+  set(HPL2_FRAMEWORKS ${HPL2_FRAMEWORKS} CACHE STRING "HPL2 copy frameworks")
+  set(HPL2_LIBRARIES libSDL2.dylib libIL.1.dylib)
+  set(HPL2_LIBRARIES ${HPL2_LIBRARIES} CACHE STRING "HPL2 copy libs")
+  mark_as_advanced(HPL2_FRAMEWORKS HPL2_LIBRARIES)
 
-    FUNCTION(PostBuildMacBundle APP_TARGET framework_list lib_list)
-        INCLUDE(BundleUtilities)
-        GET_TARGET_PROPERTY(_BIN_NAME ${APP_TARGET} LOCATION)
-        GET_DOTAPP_DIR(${_BIN_NAME} _BUNDLE_DIR)
+  function(PostBuildMacBundle APP_TARGET framework_list lib_list)
+    include(BundleUtilities)
+    get_target_property(_BIN_NAME ${APP_TARGET} LOCATION)
+    GET_DOTAPP_DIR(${_BIN_NAME} _BUNDLE_DIR)
 
-        set(_SCRIPT_FILE ${CMAKE_CURRENT_BINARY_DIR}/${APP_TARGET}_prep.cmake)
-        file(WRITE ${_SCRIPT_FILE}
-            "# Generated Script file\n"
-            "include(BundleUtilities)\n"
-            "get_bundle_and_executable(\"\${BUNDLE_APP}\" bundle executable valid)\n"
-            "if(valid)\n"
-            "  set(framework_path \"\${bundle}/Contents/Frameworks\")\n"
-            "  foreach(framework ${framework_list})\n"
-            "    file(MAKE_DIRECTORY \"\${framework_path}/\${framework}.framework/Versions/A/\")\n"
-            "    copy_resolved_framework_into_bundle(\${DEP_LIB_DIR}/\${framework}.framework/Versions/A/\${framework} \${framework_path}/\${framework}.framework/Versions/A/\${framework})\n"
-            "  endforeach()\n"
-            "  foreach(lib ${lib_list})\n"
-            "    copy_resolved_item_into_bundle(\${DEP_LIB_DIR}/\${lib} \${framework_path}/\${lib})\n"
-            "  endforeach()\n"
-            "else()\n"
-            "  message(ERROR \"App Not found? \${BUNDLE_APP}\")\n"
-            "endif()\n"
-            "#fixup_bundle(\"\${BUNDLE_APP}\" \"\" \"\${DEP_LIB_DIR}\")\n"
-        )
+    set(_SCRIPT_FILE ${CMAKE_CURRENT_BINARY_DIR}/${APP_TARGET}_prep.cmake)
+    file(WRITE ${_SCRIPT_FILE}
+      "# Generated Script file\n"
+      "include(BundleUtilities)\n"
+      "get_bundle_and_executable(\"\${BUNDLE_APP}\" bundle executable valid)\n"
+      "if(valid)\n"
+      "  set(framework_path \"\${bundle}/Contents/Frameworks\")\n"
+      "  foreach(framework ${framework_list})\n"
+      "    file(MAKE_DIRECTORY \"\${framework_path}/\${framework}.framework/Versions/A/\")\n"
+      "    copy_resolved_framework_into_bundle(\${DEP_LIB_DIR}/\${framework}.framework/Versions/A/\${framework} \${framework_path}/\${framework}.framework/Versions/A/\${framework})\n"
+      "  endforeach()\n"
+      "  foreach(lib ${lib_list})\n"
+      "    copy_resolved_item_into_bundle(\${DEP_LIB_DIR}/\${lib} \${framework_path}/\${lib})\n"
+      "  endforeach()\n"
+      "else()\n"
+      "  message(ERROR \"App Not found? \${BUNDLE_APP}\")\n"
+      "endif()\n"
+      "#fixup_bundle(\"\${BUNDLE_APP}\" \"\" \"\${DEP_LIB_DIR}\")\n")
 
-        ADD_CUSTOM_COMMAND(TARGET ${APP_TARGET}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -DBUNDLE_APP="${_BUNDLE_DIR}" -DDEP_LIB_DIR="${DEP_LIB_DIR}" -P "${_SCRIPT_FILE}"
-        )
-    ENDFUNCTION()
-ENDIF()
+    add_custom_command(TARGET ${APP_TARGET}
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -DBUNDLE_APP="${_BUNDLE_DIR}" -DDEP_LIB_DIR="${DEP_LIB_DIR}" -P "${_SCRIPT_FILE}")
+  endfunction()
+endif ()
 
-FUNCTION(AddTestTarget target_name)
-    add_executable(${target_name} EXCLUDE_FROM_ALL ${ARGN})
-    target_link_libraries(${target_name} HPL2)
-    set_target_properties(${target_name} PROPERTIES
-        XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "${DEP_LIB_DIR}"
-        INSTALL_RPATH "${DEP_LIB_DIR}")
-ENDFUNCTION()
+function(AddTestTarget target_name)
+  add_executable(${target_name} EXCLUDE_FROM_ALL ${ARGN})
+  target_link_libraries(${target_name} HPL2)
+  set_target_properties(${target_name} PROPERTIES
+    XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "${DEP_LIB_DIR}"
+    INSTALL_RPATH "${DEP_LIB_DIR}")
+endfunction()
 

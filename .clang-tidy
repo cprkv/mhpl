@@ -3,11 +3,12 @@ Checks: >
   -*,
   bugprone-*,
   google-*,
-  -misc-*,
   modernize-*,
   performance-*,
   portability-*,
-  readability-*
+  readability-*,
+  -misc-*,
+  -modernize-avoid-c-arrays
 WarningsAsErrors: "*"
 HeaderFilterRegex: '.*'
 CheckOptions:

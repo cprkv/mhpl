@@ -99,7 +99,9 @@ namespace hpl {
   void iResourceManager::DestroyUnused(int alMaxToKeep) {
     //Log("Start Num Of: %d\n",m_mapHandleResources.size());
     //Check if there are too many resources.
-    if ((int) m_mapResources.size() <= alMaxToKeep) return;
+    if (static_cast<int>(m_mapResources.size()) <= alMaxToKeep) {
+      return;
+    }
 
     //Add resources to a vector
     std::vector<iResourceBase*> vResources;
@@ -141,7 +143,9 @@ namespace hpl {
       //Log(" res: %d ...", pResource);
       //Log(" res: '%s' / '%s': %d ...",pResource->GetName().c_str(), cString::To8Char(pResource->GetFullPath()).c_str(),pResource->GetUserCount());
 
-      while (pResource->HasUsers()) pResource->DecUserCount();
+      while (pResource->HasUsers()) {
+        pResource->DecUserCount();
+      }
 
       Destroy(pResource);
 
@@ -162,7 +166,7 @@ namespace hpl {
   void iResourceManager::BeginLoad(const tString& asFile) {
     mlTimeStart = cPlatform::GetApplicationTime();
 
-    Log("Begin resource: %s\n", asFile.c_str());
+    // Log("Begin resource: %s\n", asFile.c_str());
 
     mlTabCount++;
   }
@@ -190,7 +194,9 @@ namespace hpl {
 
   tString iResourceManager::GetTabs() {
     tString sTabs;
-    for (int i = 0; i < mlTabCount; ++i) sTabs += "  ";
+    for (int i = 0; i < mlTabCount; ++i) {
+      sTabs += "  ";
+    }
     return sTabs;
   }
 
