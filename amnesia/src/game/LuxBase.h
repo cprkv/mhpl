@@ -31,9 +31,7 @@
 class cLuxMapHandler;
 class cLuxMapHelper;
 class cLuxInputHandler;
-
 class cLuxEffectHandler;
-
 class cLuxDebugHandler;
 class cLuxSaveHandler;
 class cLuxScriptHandler;
@@ -51,32 +49,25 @@ class cLuxInsanityHandler;
 class cLuxProgressLogHandler;
 class cLuxLoadScreenHandler;
 class iLuxAchievementHandler;
-
 class cLuxInventory;
-
 class cLuxCredits;
-
 class cLuxDemoEnd;
-
 class cLuxPreMenu;
-
 class cLuxMainMenu;
-
 class cLuxPlayer;
-
 
 //----------------------------------------------
 
 extern eLuxAxis StringToAxis(const tString& asAxis);
 
 /**
-* Calculates an offset and size based on virtual size that keeps the ratio of the size. Note that the outsize is the size of the ENTIRE screen!
-*/
+ * Calculates an offset and size based on virtual size that keeps the ratio of the size. Note that the outsize is the size of the ENTIRE screen!
+ */
 extern void LuxCalcGuiSetOffset(const cVector2f& avVirtualSizeIn, const cVector2f& avScreenSize, cVector2f& avOutSize, cVector2f& avOutOffset);
 
 /**
-* Same as CalcGuiSetOffset, but assumes avScreenSize is fromm screen.
-*/
+ * Same as CalcGuiSetOffset, but assumes avScreenSize is fromm screen.
+ */
 extern void LuxCalcGuiSetScreenOffset(const cVector2f& avVirtualSizeIn, cVector2f& avOutSize, cVector2f& avOutOffset);
 
 
@@ -97,15 +88,15 @@ public:
   bool CreateFromPath(const tWString& asPath);
 
   /**
-	 * Creates a copy of the current object and "feeds" it to cLuxBase
-	 * (this because these objects are created and destroyed in the Custom Story List window)
-	 */
+   * Creates a copy of the current object and "feeds" it to cLuxBase
+   * (this because these objects are created and destroyed in the Custom Story List window)
+   */
   void SetActive();
 
   /**
-	 * Starts a new game using the custom settings. 
-	 * NOTE: Should be called from a copied object, NEVER from one in the Custom Story List window!!
-	 */
+   * Starts a new game using the custom settings.
+   * NOTE: Should be called from a copied object, NEVER from one in the Custom Story List window!!
+   */
   bool StartGame();
 
   tWString msName;

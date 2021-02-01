@@ -114,9 +114,12 @@ extern tString gsSerialKey;
 eLuxAxis StringToAxis(const tString& asAxis) {
   tString sLowAxis = cString::ToLowerCase(asAxis);
 
-  if (sLowAxis == "x") return eLuxAxis_X;
-  if (sLowAxis == "y") return eLuxAxis_Y;
-  if (sLowAxis == "z") return eLuxAxis_Z;
+  if (sLowAxis == "x")
+    return eLuxAxis_X;
+  if (sLowAxis == "y")
+    return eLuxAxis_Y;
+  if (sLowAxis == "z")
+    return eLuxAxis_Z;
 
   Error("Axis '%s' does not exist!\n", asAxis.c_str());
 
@@ -291,7 +294,8 @@ static inline tString DecryptString(const tString& asEncStr) {
   keyBuff.SetPos(0);
   for (size_t i = 0; i < asEncStr.size(); ++i) {
     sOutStr += asEncStr[i] ^ keyBuff.GetChar();
-    if (++lBuffPos >= keyBuff.GetSize()) keyBuff.SetPos(0);
+    if (++lBuffPos >= keyBuff.GetSize())
+      keyBuff.SetPos(0);
   }
 
   return sOutStr;
@@ -301,14 +305,16 @@ static inline tString DecryptString(const tString& asEncStr) {
 
 static inline unsigned int GetFileCRC(const tString& asFilePath, unsigned int alKey) {
   cBinaryBuffer buff;
-  if (buff.Load(cString::To16Char(asFilePath)) == false) return 0;
+  if (buff.Load(cString::To16Char(asFilePath)) == false)
+    return 0;
 
   return buff.GetCRC(alKey, 0);
 }
 
 static inline unsigned int GetFileCRC(const tWString& asFilePath, unsigned int alKey) {
   cBinaryBuffer buff;
-  if (buff.Load(asFilePath) == false) return 0;
+  if (buff.Load(asFilePath) == false)
+    return 0;
 
   return buff.GetCRC(alKey, 0);
 }
@@ -383,15 +389,18 @@ cLuxBase::~cLuxBase() {
 bool cLuxBase::Init(const tString& asCommandline) {
   /////////////////////////////
   // Parse the command line
-  if (ParseCommandLine(asCommandline) == false) return false;
+  if (ParseCommandLine(asCommandline) == false)
+    return false;
 
   /////////////////////////////
   // Init basic app and engine stuff
-  if (InitApp() == false) return false;
+  if (InitApp() == false)
+    return false;
 
   /////////////////////////////
   // Load the config files
-  if (InitMainConfig() == false) return false;
+  if (InitMainConfig() == false)
+    return false;
 
   Log("Version %d.%d \n", kCurrentVersion_Main, kCurrentVersion_Minor);
 
@@ -422,15 +431,18 @@ bool cLuxBase::Init(const tString& asCommandline) {
 
   /////////////////////////////
   // Init the engine
-  if (InitEngine() == false) return false;
+  if (InitEngine() == false)
+    return false;
 
   /////////////////////////////
   // Check so all needed features are supported
-  if (CheckFeatureSupport() == false) return false;
+  if (CheckFeatureSupport() == false)
+    return false;
 
   /////////////////////////////
   // Init the game data and structures
-  if (InitGame() == false) return false;
+  if (InitGame() == false)
+    return false;
 
 
   //////////////////////////
@@ -455,7 +467,8 @@ bool cLuxBase::Init(const tString& asCommandline) {
     SetProfile(msDefaultProfileName);
 
     //Load user config
-    if (InitUserConfig() == false) return false;
+    if (InitUserConfig() == false)
+      return false;
 
     //Unlock input if not in window
     if (mpDebugHandler->GetDebugWindowActive() == false) {
@@ -481,7 +494,8 @@ bool cLuxBase::Init(const tString& asCommandline) {
 //-----------------------------------------------------------------------
 
 void cLuxBase::Exit() {
-  if (mbSaveConfigAtExit) SaveConfig();
+  if (mbSaveConfigAtExit)
+    SaveConfig();
   ExitGame();
   ExitConfig();
 }
@@ -525,7 +539,8 @@ bool cLuxBase::StartGame(const tString& asFile, const tString& asFolder, const t
     else
       sMapFile = mpUserConfig->GetString("Map", "File", "");
 
-    if (sMapFile == "") sMapFile = msStartMapFile;
+    if (sMapFile == "")
+      sMapFile = msStartMapFile;
   }
 
   ///////////////////
@@ -537,7 +552,8 @@ bool cLuxBase::StartGame(const tString& asFile, const tString& asFolder, const t
     else
       sMapFolder = mpUserConfig->GetString("Map", "Folder", "");
 
-    if (sMapFolder == "") sMapFolder = msStartMapFolder;
+    if (sMapFolder == "")
+      sMapFolder = msStartMapFolder;
   }
   mpMapHandler->SetMapFolder(sMapFolder);
 
@@ -550,7 +566,8 @@ bool cLuxBase::StartGame(const tString& asFile, const tString& asFolder, const t
     else
       sStartPos = mpUserConfig->GetString("Map", "StartPos", "");
 
-    if (sStartPos == "") sStartPos = msStartMapPos;
+    if (sStartPos == "")
+      sStartPos = msStartMapPos;
   }
 
   ///////////////////
@@ -885,7 +902,8 @@ bool cLuxBase::InitMainConfig() {
   /////////////////////////////////////////////////
   // Load the main settings
   mpMainConfig = LoadConfigFile(msDefaultMainConfigPath, msBaseSavePath + _W("main_settings.cfg"), false);
-  if (mpMainConfig == NULL) return false;
+  if (mpMainConfig == NULL)
+    return false;
 
   //Load some basic variables
   mbSaveConfigAtExit = mpMainConfig->GetBool("Main", "SaveConfig", true);
@@ -955,8 +973,10 @@ bool cLuxBase::InitMainConfig() {
 bool cLuxBase::InitUserConfig() {
   ////////////////////////////////////////////////
   // Clear previous config
-  if (mpUserConfig) hplDelete(mpUserConfig);
-  if (mpUserKeyConfig) hplDelete(mpUserKeyConfig);
+  if (mpUserConfig)
+    hplDelete(mpUserConfig);
+  if (mpUserKeyConfig)
+    hplDelete(mpUserKeyConfig);
   mpUserConfig    = NULL;
   mpUserKeyConfig = NULL;
 
@@ -968,13 +988,15 @@ bool cLuxBase::InitUserConfig() {
   /////////////////////////////////////////////////
   // Load the user settings
   mpUserConfig = LoadConfigFile(msDefaultUserConfigPath, msMainProfileSavePath + _W("user_settings.cfg"));
-  if (mpUserConfig == NULL) return false;
+  if (mpUserConfig == NULL)
+    return false;
 
   /////////////////////////
   //Load user key config
   bool bDidLoadDefault;
   mpUserKeyConfig = LoadConfigFile(msDefaultUserKeyConfigPath, msMainProfileSavePath + _W("user_keys.cfg"), false, &bDidLoadDefault);
-  if (mpUserKeyConfig == NULL) return false;
+  if (mpUserKeyConfig == NULL)
+    return false;
 
 #ifdef __APPLE__
   // Heinous kludge to get a default Mac keyboard shortcut without relying on different config files.
@@ -998,11 +1020,14 @@ void cLuxBase::ExitConfig() {
   hplDelete(mpConfigHandler);
   Log(" Deleting config files.\n");
   hplDelete(mpMainConfig);
-  if (mpUserConfig) hplDelete(mpUserConfig);
-  if (mpUserKeyConfig) hplDelete(mpUserKeyConfig);
+  if (mpUserConfig)
+    hplDelete(mpUserConfig);
+  if (mpUserKeyConfig)
+    hplDelete(mpUserKeyConfig);
   hplDelete(mpGameCfg);
   hplDelete(mpMenuCfg);
-  if (mpDemoCfg) hplDelete(mpDemoCfg);
+  if (mpDemoCfg)
+    hplDelete(mpDemoCfg);
 }
 
 //-----------------------------------------------------------------------
@@ -1015,7 +1040,8 @@ void cLuxBase::SaveConfig() {
   //////////////////////////////////
   //Make other modules save too!
   RunModuleMessage(eLuxUpdateableMessage_SaveMainConfig);
-  if (mpUserConfig) RunModuleMessage(eLuxUpdateableMessage_SaveUserConfig);
+  if (mpUserConfig)
+    RunModuleMessage(eLuxUpdateableMessage_SaveUserConfig);
 
   /////////////////////
   // Main variables
@@ -1154,7 +1180,8 @@ bool cLuxBase::InitEngine() {
 }
 
 void cLuxBase::ExitEngine() {
-  if (mpEngine) DestroyHPLEngine(mpEngine);
+  if (mpEngine)
+    DestroyHPLEngine(mpEngine);
 }
 
 //-----------------------------------------------------------------------
@@ -1349,7 +1376,8 @@ void cLuxBase::InitOver() {
 bool cLuxBase::CreateProfile(const tWString& asName) {
   tWString sPath = msBaseSavePath + asName + _W("/");
 
-  if (cPlatform::FolderExists(sPath)) return false;
+  if (cPlatform::FolderExists(sPath))
+    return false;
 
   cPlatform::CreateFolder(sPath);
 
@@ -1385,12 +1413,14 @@ void cLuxBase::SetProfile(const tWString& asName) {
 //-----------------------------------------------------------------------
 
 void cLuxBase::PreloadSound(const tString& asFile) {
-  if (asFile == "") return;
+  if (asFile == "")
+    return;
   gpBase->mpEngine->GetResources()->GetSoundEntityManager()->Preload(asFile);
 }
 
 void cLuxBase::PreloadParticleSystem(const tString& asFile) {
-  if (asFile == "") return;
+  if (asFile == "")
+    return;
   gpBase->mpEngine->GetResources()->GetParticleManager()->Preload(asFile);
 }
 
@@ -1437,7 +1467,8 @@ bool cLuxBase::LoadLanguage(const tString& asName, bool abForceReload) {
   ////////////////////////////////////////////
   //Check if the language is already loaded.
   tString sLowName = cString::ToLowerCase(asName);
-  if (msCurrentLanguage == sLowName && abForceReload == false) return false;
+  if (msCurrentLanguage == sLowName && abForceReload == false)
+    return false;
 
   if (msCurrentLanguage != "") {
     pResources->ClearTranslations();
@@ -1568,7 +1599,8 @@ bool cLuxBase::CheckFirstStartFlag() {
 }
 
 void cLuxBase::InitAchievements() {
-  if (mpAchievementHandler == NULL) return;
+  if (mpAchievementHandler == NULL)
+    return;
 
   mpAchievementHandler->CreateAchievement(eLuxAchievement_Insanity, "Insanity");
 

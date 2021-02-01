@@ -129,7 +129,31 @@ ELSE ()
   set(BUILDID_SUFFIX Windows)
 endif ()
 
-set(BUILDID_SUFFIX ${BUILDID_SUFFIX} CACHE STRING "Build ID Suffix")
+SET(BUILDID_SUFFIX ${BUILDID_SUFFIX} CACHE STRING "Build ID Suffix")
+
+find_file(BUILDID_BIN buildcounter.pl PATHS ${CMAKE_CURRENT_SOURCE_DIR} NO_DEFAULT_PATH)
+mark_as_advanced(BUILDID_SUFFIX BUILDID_BIN)
+
+function(GenerateBuildID outvar idname includedir sourcedir)
+  add_custom_command(
+    OUTPUT
+    ${sourcedir}/BuildID_${idname}_${BUILDID_SUFFIX}.cpp
+    ${includedir}/BuildID_${idname}.h
+    COMMAND
+    ${BUILDID_BIN}
+    ARGS
+    ${idname} ${includedir} ${sourcedir}
+  )
+  set(${outvar}
+    ${sourcedir}/BuildID_${idname}_${BUILDID_SUFFIX}.cpp
+    ${includedir}/BuildID_${idname}.h
+    PARENT_SCOPE)
+endfunction()
+
+GenerateBuildID(version_source
+  HPL2_0
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources)
 
 # setup source groups
 source_group("AI" REGULAR_EXPRESSION "\\/ai\\/.+")
@@ -166,8 +190,8 @@ target_include_directories(HPL2 ${HPL2_INCLUDES})
 target_compile_definitions(HPL2 ${HPL2_DEFINES})
 
 if (APPLE)
-  FIND_LIBRARY(SC_LIBRARY SystemConfiguration)
-  FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+  find_library(SC_LIBRARY SystemConfiguration)
+  find_library(COCOA_LIBRARY Cocoa)
   mark_as_advanced(COCOA_LIBRARY THEORA_LIBRARY SC_LIBRARY)
   set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY} z fltk)
 elseif (UNIX)
