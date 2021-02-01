@@ -1,4 +1,5 @@
 /build/
+HPL2/core/sources/BuildID_*
 cmake-build-*
 .DS_Store
 .idea
