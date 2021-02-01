@@ -17,12 +17,6 @@ add_definitions(-DUSE_OALWRAPPER)
 
 set(HPL2_INCLUDES PUBLIC include)
 
-if (LINUX)
-  add_library(binreloc STATIC ../dependencies/sources/binreloc/binreloc.c)
-  target_include_directories(binreloc PUBLIC ../dependencies/sources/binreloc/)
-  set_target_properties(binreloc PROPERTIES COMPILE_DEFINITIONS "ENABLE_BINRELOC")
-endif ()
-
 # common shared source
 file(GLOB common_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   sources/ai/*
@@ -195,6 +189,7 @@ if (APPLE)
   mark_as_advanced(COCOA_LIBRARY THEORA_LIBRARY SC_LIBRARY)
   set(PLATFORM_LIBS iconv ${SC_LIBRARY} ${COCOA_LIBRARY} z fltk)
 elseif (UNIX)
+  add_subdirectory(../../deps/binreloc binreloc)
   set(PLATFORM_LIBS binreloc pthread dl z fltk)
 endif ()
 

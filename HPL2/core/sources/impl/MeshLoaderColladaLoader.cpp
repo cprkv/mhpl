@@ -72,7 +72,9 @@ namespace hpl {
       cDate cacheDate   = cPlatform::FileModifiedDate(sCacheFile);
 
       //Check if cache is newer
-      if (cacheDate > colladaDate) bLoadCache = true;
+      if (cacheDate > colladaDate) {
+        bLoadCache = true;
+      }
     }
 
     /////////////////////////////////////////////////
@@ -96,10 +98,12 @@ namespace hpl {
     //unsigned long lStartTime = mpSystem->GetLowLevel()->GetTime();
 
     FILE* pFile = cPlatform::OpenFile(asFile, _W("rb"));
-    if (pFile == NULL) return false;
+    if (pFile == nullptr) {
+      return false;
+    }
 
-    TiXmlDocument* pXmlDoc = hplNew(TiXmlDocument, ());
-    if (pXmlDoc->LoadFile(pFile) == false) {
+    auto* pXmlDoc = hplNew(TiXmlDocument, ());
+    if (!pXmlDoc->LoadFile(pFile)) {
       Error("Couldn't load Collada XML file '%s'!\n", asFile.c_str());
       fclose(pFile);
       hplDelete(pXmlDoc);
@@ -206,12 +210,16 @@ namespace hpl {
       TiXmlElement* pSceneElem = pRootElem->FirstChildElement("library_visual_scenes");
       if (pSceneElem) {
         pSceneElem = pSceneElem->FirstChildElement("visual_scene");
-        if (pSceneElem == NULL) Warning("No visual scene element found!\n");
+        if (pSceneElem == nullptr) {
+          Warning("No visual scene element found!\n");
+        }
       }
 
-      if (pSceneElem == NULL) pSceneElem = pRootElem->FirstChildElement("scene");
+      if (pSceneElem == nullptr) {
+        pSceneElem = pRootElem->FirstChildElement("scene");
+      }
 
-      if (pSceneElem == NULL) {
+      if (pSceneElem == nullptr) {
         Warning("No scene element found!\n");
       } else {
         //Get start and end time (MAYA ONLY!)
@@ -236,9 +244,11 @@ namespace hpl {
                 TiXmlText* pText  = pParam->FirstChild()->ToText();
                 float      fValue = cString::ToFloat(pText->Value(), 0);
 
-                if (sName == "start_time") apColladaScene->mfStartTime = fValue;
-                else if (sName == "end_time")
+                if (sName == "start_time") {
+                  apColladaScene->mfStartTime = fValue;
+                } else if (sName == "end_time") {
                   apColladaScene->mfEndTime = fValue;
+                }
               }
             }
 
@@ -306,17 +316,17 @@ namespace hpl {
       pLibraryElem = pLibraryElem->NextSiblingElement();
     }
 
-    /*if(abCache && mbLoadAndSaveMSHFormat==false)
-		{
-			SaveStructures(sCacheFile,apColladaImageVec,
-							apColladaTextureVec,
-							apColladaMaterialVec,
-							apColladaLightVec,
-							apColladaGeometryVec,
-							apColladaControllerVec,
-							apColladaAnimVec,
-							apColladaScene);
-		}*/
+    //    if (abCache && mbLoadAndSaveMSHFormat == false) {
+    //      SaveStructures(sCacheFile, apColladaImageVec,
+    //                     apColladaTextureVec,
+    //                     apColladaMaterialVec,
+    //                     apColladaLightVec,
+    //                     apColladaGeometryVec,
+    //                     apColladaControllerVec,
+    //                     apColladaAnimVec,
+    //                     apColladaScene);
+    //    }
+
     hplDelete(pXmlDoc);
     return true;
   }
@@ -355,17 +365,33 @@ namespace hpl {
 
     TiXmlElement* pRootElem = CreateXMLChild(pXmlDoc, "ColladaCache");
 
-    if (apColladaImageVec) SaveImageVec(pRootElem, apColladaImageVec);
-    if (apColladaTextureVec) SaveTextureVec(pRootElem, apColladaTextureVec);
-    if (apColladaMaterialVec) SaveMaterialVec(pRootElem, apColladaMaterialVec);
-    if (apColladaLightVec) SaveLightVec(pRootElem, apColladaLightVec);
-    if (apColladaAnimVec) SaveAnimationVec(pRootElem, apColladaAnimVec);
-    if (apColladaControllerVec) SaveControllerVec(pRootElem, apColladaControllerVec);
-    if (apColladaGeometryVec) SaveGeometryVec(pRootElem, apColladaGeometryVec);
-    if (apColladaScene) SaveScene(pRootElem, apColladaScene);
+    if (apColladaImageVec) {
+      SaveImageVec(pRootElem, apColladaImageVec);
+    }
+    if (apColladaTextureVec) {
+      SaveTextureVec(pRootElem, apColladaTextureVec);
+    }
+    if (apColladaMaterialVec) {
+      SaveMaterialVec(pRootElem, apColladaMaterialVec);
+    }
+    if (apColladaLightVec) {
+      SaveLightVec(pRootElem, apColladaLightVec);
+    }
+    if (apColladaAnimVec) {
+      SaveAnimationVec(pRootElem, apColladaAnimVec);
+    }
+    if (apColladaControllerVec) {
+      SaveControllerVec(pRootElem, apColladaControllerVec);
+    }
+    if (apColladaGeometryVec) {
+      SaveGeometryVec(pRootElem, apColladaGeometryVec);
+    }
+    if (apColladaScene) {
+      SaveScene(pRootElem, apColladaScene);
+    }
 
     FILE* pFile = cPlatform::OpenFile(asFile, _W("w+"));
-    if (pFile == NULL || pXmlDoc->SaveFile(pFile) == false) {
+    if (pFile == nullptr || !pXmlDoc->SaveFile(pFile)) {
       Error("Couldn't save XML file %s\n", asFile.c_str());
       hplDelete(pXmlDoc);
       return false;
@@ -380,16 +406,14 @@ namespace hpl {
   static void SaveImageVec(TiXmlElement* apRootElem, tColladaImageVec* apColladaImageVec) {
     TiXmlElement* pImageRootElem = CreateXMLChild(apRootElem, "ImageRoot");
 
-    pImageRootElem->SetAttribute("Size", (int) apColladaImageVec->size());
+    pImageRootElem->SetAttribute("Size", static_cast<int>(apColladaImageVec->size()));
 
-    for (size_t i = 0; i < apColladaImageVec->size(); ++i) {
-      cColladaImage* pImage = &(*apColladaImageVec)[i];
-
+    for (auto& image : *apColladaImageVec) {
       TiXmlElement* pImageElem = CreateXMLChild(pImageRootElem, "Image");
 
-      pImageElem->SetAttribute("Id", pImage->msId.c_str());
-      pImageElem->SetAttribute("Name", pImage->msName.c_str());
-      pImageElem->SetAttribute("Source", cString::GetFileName(pImage->msSource.c_str()).c_str());
+      pImageElem->SetAttribute("Id", image.msId.c_str());
+      pImageElem->SetAttribute("Name", image.msName.c_str());
+      pImageElem->SetAttribute("Source", cString::GetFileName(image.msSource.c_str()).c_str());
     }
   }
 
@@ -400,14 +424,12 @@ namespace hpl {
 
     pTextureRootElem->SetAttribute("Size", (int) apColladaTextureVec->size());
 
-    for (size_t i = 0; i < apColladaTextureVec->size(); ++i) {
-      cColladaTexture* pTexture = &(*apColladaTextureVec)[i];
-
+    for (auto& texture : *apColladaTextureVec) {
       TiXmlElement* pTextureElem = CreateXMLChild(pTextureRootElem, "Texture");
 
-      pTextureElem->SetAttribute("Id", pTexture->msId.c_str());
-      pTextureElem->SetAttribute("Name", pTexture->msName.c_str());
-      pTextureElem->SetAttribute("Image", pTexture->msImage.c_str());
+      pTextureElem->SetAttribute("Id", texture.msId.c_str());
+      pTextureElem->SetAttribute("Name", texture.msName.c_str());
+      pTextureElem->SetAttribute("Image", texture.msImage.c_str());
     }
   }
 
@@ -418,15 +440,13 @@ namespace hpl {
 
     pMaterialRootElem->SetAttribute("Size", (int) apColladaMaterialVec->size());
 
-    for (size_t i = 0; i < apColladaMaterialVec->size(); ++i) {
-      cColladaMaterial* pMaterial = &(*apColladaMaterialVec)[i];
-
+    for (auto& material : *apColladaMaterialVec) {
       TiXmlElement* pMaterialElem = CreateXMLChild(pMaterialRootElem, "Material");
 
-      pMaterialElem->SetAttribute("Id", pMaterial->msId.c_str());
-      pMaterialElem->SetAttribute("Name", pMaterial->msName.c_str());
-      pMaterialElem->SetAttribute("Texture", pMaterial->msTexture.c_str());
-      pMaterialElem->SetAttribute("Color", pMaterial->mDiffuseColor.ToFileString().c_str());
+      pMaterialElem->SetAttribute("Id", material.msId.c_str());
+      pMaterialElem->SetAttribute("Name", material.msName.c_str());
+      pMaterialElem->SetAttribute("Texture", material.msTexture.c_str());
+      pMaterialElem->SetAttribute("Color", material.mDiffuseColor.ToFileString().c_str());
     }
   }
 
@@ -435,7 +455,7 @@ namespace hpl {
   static void SaveLightVec(TiXmlElement* apRootElem, tColladaLightVec* apColladaLightVec) {
     TiXmlElement* pLightRootElem = CreateXMLChild(apRootElem, "LightRoot");
 
-    pLightRootElem->SetAttribute("Size", (int) apColladaLightVec->size());
+    pLightRootElem->SetAttribute("Size", static_cast<int>(apColladaLightVec->size()));
 
     for (size_t i = 0; i < apColladaLightVec->size(); ++i) {
       cColladaLight* pLight = &(*apColladaLightVec)[i];
@@ -636,19 +656,18 @@ namespace hpl {
       //Main properties
       pGeometryElem->SetAttribute("Id", pGeometry->msId.c_str());
       pGeometryElem->SetAttribute("Name", pGeometry->msName.c_str());
-
       pGeometryElem->SetAttribute("Material", pGeometry->msMaterial.c_str());
 
       /////////////////////////////////
       // Vertex properties
       // Should not be needed.
-      /*pGeometryElem->SetAttribute("PosIdxNum",pGeometry->mlPosIdxNum);
-			pGeometryElem->SetAttribute("NormIdxNum",pGeometry->mlNormIdxNum); 
-			pGeometryElem->SetAttribute("TexIdxNum",pGeometry->mlTexIdxNum);
-
-			pGeometryElem->SetAttribute("PosArrayIdx",pGeometry->mlPosArrayIdx); 
-			pGeometryElem->SetAttribute("NormArrayIdx",pGeometry->mlNormArrayIdx); 
-			pGeometryElem->SetAttribute("TexArrayIdx",pGeometry->mlTexArrayIdx); */
+      //      pGeometryElem->SetAttribute("PosIdxNum", pGeometry->mlPosIdxNum);
+      //      pGeometryElem->SetAttribute("NormIdxNum", pGeometry->mlNormIdxNum);
+      //      pGeometryElem->SetAttribute("TexIdxNum", pGeometry->mlTexIdxNum);
+      //
+      //      pGeometryElem->SetAttribute("PosArrayIdx", pGeometry->mlPosArrayIdx);
+      //      pGeometryElem->SetAttribute("NormArrayIdx", pGeometry->mlNormArrayIdx);
+      //      pGeometryElem->SetAttribute("TexArrayIdx", pGeometry->mlTexArrayIdx);
 
       /////////////////////////////////
       // Index Vec
@@ -735,9 +754,7 @@ namespace hpl {
         TiXmlElement* pExtraElem  = CreateXMLChild(pExtraVertexVecElem, "ExtraVertex");
         for (size_t idx = 0; idx < pGeometry->mvExtraVtxVec.size(); ++idx) {
           tColladaExtraVtxList* pList = &pGeometry->mvExtraVtxVec[idx];
-
-          tColladaExtraVtxListIt it = pList->begin();
-          for (; it != pList->end(); ++it) {
+          for (auto it = pList->begin(); it != pList->end(); ++it) {
             cColladaExtraVtx& extra = *it;
             sData += cString::ToString(extra.mlVtx) + " " +
                      cString::ToString(extra.mlNorm) + " " +
@@ -766,8 +783,7 @@ namespace hpl {
   //-----------------------------------------------------------------------
 
   static void SaveIterativeNode(TiXmlElement* apParentElem, cColladaNode* apParentNode) {
-    tColladaNodeListIt it = apParentNode->mlstChildren.begin();
-    for (; it != apParentNode->mlstChildren.end(); ++it) {
+    for (auto it = apParentNode->mlstChildren.begin(); it != apParentNode->mlstChildren.end(); ++it) {
       cColladaNode* pNode     = *it;
       TiXmlElement* pNodeElem = CreateXMLChild(apParentElem, "Node");
 
@@ -791,8 +807,7 @@ namespace hpl {
 
       TiXmlElement* pTransformRootElem = CreateXMLChild(pNodeElem, "TransformRoot");
       //tColladaTransformList mlstTransforms;
-      tColladaTransformListIt transIt = pNode->mlstTransforms.begin();
-      for (; transIt != pNode->mlstTransforms.end(); ++transIt) {
+      for (auto transIt = pNode->mlstTransforms.begin(); transIt != pNode->mlstTransforms.end(); ++transIt) {
         cColladaTransform& transform      = *transIt;
         TiXmlElement*      pTransformElem = CreateXMLChild(pTransformRootElem, "Transform");
 
@@ -851,7 +866,8 @@ namespace hpl {
     //unsigned long lStartTime = mpSystem->GetLowLevel()->GetTime();
 
     FILE* pFile = cPlatform::OpenFile(asFile, _W("rb"));
-    if (pFile == NULL) return false;
+    if (pFile == NULL)
+      return false;
 
     TiXmlDocument* pXmlDoc = hplNew(TiXmlDocument, ());
     if (pXmlDoc->LoadFile(pFile) == false) {
@@ -867,14 +883,22 @@ namespace hpl {
 
     TiXmlElement* pRootElem = pXmlDoc->RootElement();
 
-    if (apColladaImageVec) LoadImageVec(pRootElem, apColladaImageVec);
-    if (apColladaTextureVec) LoadTextureVec(pRootElem, apColladaTextureVec);
-    if (apColladaMaterialVec) LoadMaterialVec(pRootElem, apColladaMaterialVec);
-    if (apColladaLightVec) LoadLightVec(pRootElem, apColladaLightVec);
-    if (apColladaAnimVec) LoadAnimationVec(pRootElem, apColladaAnimVec);
-    if (apColladaControllerVec) LoadControllerVec(pRootElem, apColladaControllerVec);
-    if (apColladaGeometryVec) LoadGeometryVec(pRootElem, apColladaGeometryVec);
-    if (apColladaScene) LoadScene(pRootElem, apColladaScene);
+    if (apColladaImageVec)
+      LoadImageVec(pRootElem, apColladaImageVec);
+    if (apColladaTextureVec)
+      LoadTextureVec(pRootElem, apColladaTextureVec);
+    if (apColladaMaterialVec)
+      LoadMaterialVec(pRootElem, apColladaMaterialVec);
+    if (apColladaLightVec)
+      LoadLightVec(pRootElem, apColladaLightVec);
+    if (apColladaAnimVec)
+      LoadAnimationVec(pRootElem, apColladaAnimVec);
+    if (apColladaControllerVec)
+      LoadControllerVec(pRootElem, apColladaControllerVec);
+    if (apColladaGeometryVec)
+      LoadGeometryVec(pRootElem, apColladaGeometryVec);
+    if (apColladaScene)
+      LoadScene(pRootElem, apColladaScene);
 
     hplDelete(pXmlDoc);
     return true;
