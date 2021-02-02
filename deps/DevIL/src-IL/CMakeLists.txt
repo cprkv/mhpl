@@ -70,7 +70,7 @@ test_big_endian(WORDS_BIGENDIAN)
 
 
 # check availability of optional external libs
-find_package(PNG)
+#find_package(PNG) # todo: mhpl
 find_package(TIFF)
 #find_package(JPEG) # using our own version and link static
 find_package(Jasper)
@@ -180,7 +180,7 @@ endif(NOT IL_NO_PNG)
 if(NOT IL_NO_JPG)
     #list(APPEND incs ${JPEG_INCLUDE_DIRS} )
     #list(APPEND libs ${JPEG_LIBRARIES} )
-    list(APPEND libs "jpeg")
+    list(APPEND libs jpeg)
 endif(NOT IL_NO_JPG)
 
 if(NOT IL_NO_TIF)

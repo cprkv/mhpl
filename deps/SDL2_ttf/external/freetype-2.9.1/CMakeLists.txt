@@ -192,12 +192,6 @@ else ()
   find_package(PNG)
 endif ()
 
-if (FT_WITH_ZLIB)
-  find_package(ZLIB REQUIRED)
-else ()
-  find_package(ZLIB)
-endif ()
-
 if (FT_WITH_BZIP2)
   find_package(BZip2 REQUIRED)
 else ()
@@ -237,11 +231,11 @@ endif ()
 # Create the options file
 file(READ "${PROJECT_SOURCE_DIR}/include/freetype/config/ftoption.h"
   FTOPTION_H)
-if (ZLIB_FOUND)
-  string(REGEX REPLACE
-    "/\\* +(#define +FT_CONFIG_OPTION_SYSTEM_ZLIB) +\\*/" "\\1"
-    FTOPTION_H "${FTOPTION_H}")
-endif ()
+
+string(REGEX REPLACE
+  "/\\* +(#define +FT_CONFIG_OPTION_SYSTEM_ZLIB) +\\*/" "\\1"
+  FTOPTION_H "${FTOPTION_H}")
+
 if (BZIP2_FOUND)
   string(REGEX REPLACE
     "/\\* +(#define +FT_CONFIG_OPTION_USE_BZIP2) +\\*/" "\\1"
@@ -380,11 +374,9 @@ endif ()
 
 set(PKG_CONFIG_REQUIRED_PRIVATE "")
 
-if (ZLIB_FOUND)
-  target_link_libraries(freetype PRIVATE ${ZLIB_LIBRARIES})
-  target_include_directories(freetype PRIVATE ${ZLIB_INCLUDE_DIRS})
-  list(APPEND PKG_CONFIG_REQUIRED_PRIVATE zlib)
-endif ()
+target_link_libraries(freetype PRIVATE zlib)
+list(APPEND PKG_CONFIG_REQUIRED_PRIVATE zlib)
+
 if (BZIP2_FOUND)
   target_link_libraries(freetype PRIVATE ${BZIP2_LIBRARIES})
   target_include_directories(freetype PRIVATE ${BZIP2_INCLUDE_DIR}) # not BZIP2_INCLUDE_DIRS
