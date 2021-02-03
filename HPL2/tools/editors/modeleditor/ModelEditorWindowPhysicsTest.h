@@ -29,123 +29,117 @@ class cBodyPicker;
 class cModelEditorWindowPhysicsTest;
 
 
-class cBodyPicker : public iPhysicsRayCallback
-{
+class cBodyPicker : public iPhysicsRayCallback {
 public:
-	cBodyPicker();
+  cBodyPicker();
 
-	void Clear();
+  void Clear();
 
-	bool OnIntersect(iPhysicsBody *pBody,cPhysicsRayParams *apParams);
+  bool OnIntersect(iPhysicsBody* pBody, cPhysicsRayParams* apParams);
 
-	iPhysicsBody* mpPickedBody;
-	cVector3f mvPos;
-	cVector3f mvLocalPos;
-	float mfLastT;
-	float mfDist;
+  iPhysicsBody* mpPickedBody;
+  cVector3f     mvPos;
+  cVector3f     mvLocalPos;
+  float         mfLastT;
+  float         mfDist;
 };
 
-class cPhysicsTestRenderCallback : public iRendererCallback
-{
+class cPhysicsTestRenderCallback : public iRendererCallback {
 public:
-	cPhysicsTestRenderCallback()
-	{
-		mbDrawDebug=false;
-		mbDrawSkeleton=false;
-	}
+  cPhysicsTestRenderCallback() {
+    mbDrawDebug    = false;
+    mbDrawSkeleton = false;
+  }
 
-	void OnPostSolidDraw(cRendererCallbackFunctions *apFunctions);
+  void OnPostSolidDraw(cRendererCallbackFunctions* apFunctions);
 
-	void OnPostTranslucentDraw(cRendererCallbackFunctions *apFunctions){}
+  void OnPostTranslucentDraw(cRendererCallbackFunctions* apFunctions) {}
 
-	void DrawSkeletonRec(cRendererCallbackFunctions* apFunctions, cNode3D* apBoneState);
+  void DrawSkeletonRec(cRendererCallbackFunctions* apFunctions, cNode3D* apBoneState);
 
-	cModelEditorWindowPhysicsTest* mpWindow;
-	cBodyPicker* mpBodyPicker;
+  cModelEditorWindowPhysicsTest* mpWindow;
+  cBodyPicker*                   mpBodyPicker;
 
-	cVector3f mvDragPos;
+  cVector3f mvDragPos;
 
-	bool mbDrawDebug;
-	bool mbDrawSkeleton;
+  bool mbDrawDebug;
+  bool mbDrawSkeleton;
 
 protected:
-    
 };
 
 //--------------------------------------------------------------------
 
-class cModelEditorWindowPhysicsTest : public iEditorWindow, public iEditorViewport
-{
-	friend class cPhysicsTestRenderCallback;
-public:
-	cModelEditorWindowPhysicsTest(iEditorBase* apEditor, iFrameBuffer* apFB);
-	~cModelEditorWindowPhysicsTest();
+class cModelEditorWindowPhysicsTest : public iEditorWindow
+    , public iEditorViewport {
+  friend class cPhysicsTestRenderCallback;
 
-	int GetSelectedAnimation(); 
-	void SetSelectedAnimation(int alX);
+public:
+  cModelEditorWindowPhysicsTest(iEditorBase* apEditor, iFrameBuffer* apFB);
+  ~cModelEditorWindowPhysicsTest();
+
+  int  GetSelectedAnimation();
+  void SetSelectedAnimation(int alX);
 
 protected:
-	bool WindowSpecificInputCallback(iEditorInput* apInput);
+  bool WindowSpecificInputCallback(iEditorInput* apInput);
 
-	void SetUpRender();
-	void SetUpModel();
+  void SetUpRender();
+  void SetUpModel();
 
-	void UpdateBuoyancy();
+  void UpdateBuoyancy();
 
-	void OnInitLayout();
-	void OnSetActive(bool abX);
+  void OnInitLayout();
+  void OnSetActive(bool abX);
 
-	bool OnViewportUpdate(const cGuiMessageData& aData);
-	bool OnViewportMouseDown(const cGuiMessageData& aData);
-	bool OnViewportMouseUp(const cGuiMessageData& aData);
+  bool OnViewportUpdate(const cGuiMessageData& aData);
+  bool OnViewportMouseDown(const cGuiMessageData& aData);
+  bool OnViewportMouseUp(const cGuiMessageData& aData);
 
-	bool OnViewportKeyPress(const cGuiMessageData& aData);
-	bool OnViewportKeyRelease(const cGuiMessageData& aData);
+  bool OnViewportKeyPress(const cGuiMessageData& aData);
+  bool OnViewportKeyRelease(const cGuiMessageData& aData);
 
-	cVector2f mvFrameBufferSize;
+  cVector2f mvFrameBufferSize;
 
-	bool mbViewMode;
+  bool mbViewMode;
 
-	//////////////////////////////////////
-	// Test settings layout
-	cEditorInputEnum* mpInpAnimations;
-	cEditorInputBool* mpInpShowDebug;
-	cEditorInputBool* mpInpShowSkeleton;
-	cEditorInputBool* mpInpMainLight;
-	cEditorInputBool* mpInpBackLight;
-	cEditorInputBool* mpInpBuoyancyActive;
-	cEditorInputNumber* mpInpBuoyancyDensity;
-	cEditorInputNumber* mpInpBuoyancyLinearViscosity;
-	cEditorInputNumber* mpInpBuoyancyAngularViscosity;
-	cEditorInputNumber* mpInpBuoyancySurfaceHeight;
+  //////////////////////////////////////
+  // Test settings layout
+  cEditorInputEnum*   mpInpAnimations;
+  cEditorInputBool*   mpInpShowDebug;
+  cEditorInputBool*   mpInpShowSkeleton;
+  cEditorInputBool*   mpInpMainLight;
+  cEditorInputBool*   mpInpBackLight;
+  cEditorInputBool*   mpInpBuoyancyActive;
+  cEditorInputNumber* mpInpBuoyancyDensity;
+  cEditorInputNumber* mpInpBuoyancyLinearViscosity;
+  cEditorInputNumber* mpInpBuoyancyAngularViscosity;
+  cEditorInputNumber* mpInpBuoyancySurfaceHeight;
 
-	iWidget* mpPrevAttention;
+  iWidget* mpPrevAttention;
 
-	cWorld* mpTestWorld;
-	iPhysicsWorld *mpTestPhysicsWorld;
-	std::vector<iPhysicsJoint*> mvJoints;
-	cBodyPicker mBodyPicker;
-	cPhysicsTestRenderCallback mRenderCallback;
-	iPhysicsBody* mpFloorBody;
+  cWorld*                     mpTestWorld;
+  iPhysicsWorld*              mpTestPhysicsWorld;
+  std::vector<iPhysicsJoint*> mvJoints;
+  cBodyPicker                 mBodyPicker;
+  cPhysicsTestRenderCallback  mRenderCallback;
+  iPhysicsBody*               mpFloorBody;
 
-	iLight* mpMainLight;
-	iLight* mpBackLight;
-	cMeshEntity* mpFloor;
-	cMeshEntity* mpWater;
-	cMeshEntity* mpTestEntity;
+  iLight*      mpMainLight;
+  iLight*      mpBackLight;
+  cMeshEntity* mpFloor;
+  cMeshEntity* mpWater;
+  cMeshEntity* mpTestEntity;
 
-	//////////////
-	// Water data
-	static bool mbBuoyancyActive;
-	static float mfBuoyancyDensity;
-	static float mfBuoyancyLinearViscosity;
-	static float mfBuoyancyAngularViscosity;
-	static cPlanef mBuoyancySurface;
+  //////////////
+  // Water data
+  static bool    mbBuoyancyActive;
+  static float   mfBuoyancyDensity;
+  static float   mfBuoyancyLinearViscosity;
+  static float   mfBuoyancyAngularViscosity;
+  static cPlanef mBuoyancySurface;
 };
 
 //--------------------------------------------------------------------
 
 #endif // MODEL_EDITOR_WINDOW_PHYSICS_TEST_H
-
-
-

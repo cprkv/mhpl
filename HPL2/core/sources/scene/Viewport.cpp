@@ -26,118 +26,105 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cViewport::cViewport(cScene *apScene)
-	{
-		mpScene = apScene;
+  cViewport::cViewport(cScene* apScene) {
+    mpScene = apScene;
 
-		mbActive = true;
-		mbVisible = true;
+    mbActive  = true;
+    mbVisible = true;
 
-		mpRenderSettings = hplNew( cRenderSettings, () );
+    mpRenderSettings = hplNew(cRenderSettings, ());
 
-		mpWorld = NULL;
-		mpCamera = NULL;
-		mpRenderer = NULL;
-		mpPostEffectComposite = NULL;
+    mpWorld               = NULL;
+    mpCamera              = NULL;
+    mpRenderer            = NULL;
+    mpPostEffectComposite = NULL;
 
-		mbIsListener = false;
-	}
+    mbIsListener = false;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cViewport::~cViewport()
-	{
-		hplDelete( mpRenderSettings );
-	}
+  cViewport::~cViewport() {
+    hplDelete(mpRenderSettings);
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	void cViewport::SetWorld(cWorld *apWorld)
-	{ 
-		if(mpWorld != NULL && mpScene->WorldExists(mpWorld))
-		{
-			mpWorld->SetIsSoundEmitter(false);
-		}
+  //-----------------------------------------------------------------------
 
-		mpWorld = apWorld;
-		if(mpWorld) mpWorld->SetIsSoundEmitter(true);
+  void cViewport::SetWorld(cWorld* apWorld) {
+    if (mpWorld != NULL && mpScene->WorldExists(mpWorld)) {
+      mpWorld->SetIsSoundEmitter(false);
+    }
 
-		mpRenderSettings->ResetVariables();
-	}
-	
+    mpWorld = apWorld;
+    if (mpWorld)
+      mpWorld->SetIsSoundEmitter(true);
 
-	//-----------------------------------------------------------------------
+    mpRenderSettings->ResetVariables();
+  }
 
-	void cViewport::AddGuiSet(cGuiSet *apSet)
-	{
-		mlstGuiSets.push_back(apSet);
-	}
-	void cViewport::RemoveGuiSet(cGuiSet *apSet)
-	{
-		STLFindAndRemove(mlstGuiSets, apSet);
-	}
-	cGuiSetListIterator cViewport::GetGuiSetIterator()
-	{
-		return cGuiSetListIterator(&mlstGuiSets);
-	}
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void cViewport::AddViewportCallback(iViewportCallback *apCallback)
-	{
-		mlstCallbacks.push_back(apCallback);
-	}
-	
-	void cViewport::RemoveViewportCallback(iViewportCallback *apCallback)
-	{
-		STLFindAndRemove(mlstCallbacks, apCallback);
-	}
+  void cViewport::AddGuiSet(cGuiSet* apSet) {
+    mlstGuiSets.push_back(apSet);
+  }
+  void cViewport::RemoveGuiSet(cGuiSet* apSet) {
+    STLFindAndRemove(mlstGuiSets, apSet);
+  }
+  cGuiSetListIterator cViewport::GetGuiSetIterator() {
+    return cGuiSetListIterator(&mlstGuiSets);
+  }
 
-	void cViewport::RunViewportCallbackMessage(eViewportMessage aMessage)
-	{
-		tViewportCallbackListIt it = mlstCallbacks.begin();
-		for(; it != mlstCallbacks.begin(); ++it)
-		{
-			iViewportCallback *pCallback = *it;
+  //-----------------------------------------------------------------------
 
-			pCallback->RunMessage(aMessage);
-		}
+  void cViewport::AddViewportCallback(iViewportCallback* apCallback) {
+    mlstCallbacks.push_back(apCallback);
+  }
 
-	}
+  void cViewport::RemoveViewportCallback(iViewportCallback* apCallback) {
+    STLFindAndRemove(mlstCallbacks, apCallback);
+  }
 
-	//-----------------------------------------------------------------------
+  void cViewport::RunViewportCallbackMessage(eViewportMessage aMessage) {
+    tViewportCallbackListIt it = mlstCallbacks.begin();
+    for (; it != mlstCallbacks.begin(); ++it) {
+      iViewportCallback* pCallback = *it;
 
-	void cViewport::AddRendererCallback(iRendererCallback *apCallback)
-	{
-		mlstRendererCallbacks.push_back(apCallback);
-	}
+      pCallback->RunMessage(aMessage);
+    }
+  }
 
-	void cViewport::RemoveRendererCallback(iRendererCallback *apCallback)
-	{
-		STLFindAndRemove(mlstRendererCallbacks, apCallback);
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+  void cViewport::AddRendererCallback(iRendererCallback* apCallback) {
+    mlstRendererCallbacks.push_back(apCallback);
+  }
 
-	//-----------------------------------------------------------------------
-	
+  void cViewport::RemoveRendererCallback(iRendererCallback* apCallback) {
+    STLFindAndRemove(mlstRendererCallbacks, apCallback);
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-}
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
+
+  //-----------------------------------------------------------------------
+
+
+  //-----------------------------------------------------------------------
+
+} // namespace hpl

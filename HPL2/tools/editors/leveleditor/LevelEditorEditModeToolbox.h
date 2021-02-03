@@ -32,28 +32,26 @@ class cLevelEditor;
 
 //----------------------------------------------------------------
 
-class cLevelEditorEditModeToolbox : public iLevelEditorWindow
-{
+class cLevelEditorEditModeToolbox : public iLevelEditorWindow {
 public:
-	cLevelEditorEditModeToolbox(cLevelEditor* apEditor);
-	virtual ~cLevelEditorEditModeToolbox();
+  cLevelEditorEditModeToolbox(cLevelEditor* apEditor);
+  virtual ~cLevelEditorEditModeToolbox();
 
-	void OnInitLayout();
-	void OnUpdate(float afTimeStep);
+  void OnInitLayout();
+  void OnUpdate(float afTimeStep);
 
-    
+
 protected:
-	///////////////////////////
-	// Own functions
-	bool Button_Pressed(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(Button_Pressed);
+  ///////////////////////////
+  // Own functions
+  bool Button_Pressed(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(Button_Pressed);
 
-	///////////////////////////
-	// Data
-	std::vector<cWidgetButton*> mvButtons;
+  ///////////////////////////
+  // Data
+  std::vector<cWidgetButton*> mvButtons;
 };
 
 //----------------------------------------------------------------
 
 #endif // EDIT_MODE_TOOLBOX_H
-

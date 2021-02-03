@@ -30,108 +30,106 @@ class cModelEditorWindowOutline;
 
 class cUIPickFilter;
 
-class cModelEditorWindowOutlineHelper : public iEditorWindowPopUp
-{
+class cModelEditorWindowOutlineHelper : public iEditorWindowPopUp {
 public:
-	cModelEditorWindowOutlineHelper(cModelEditorWindowOutline* apWindow, tIntList& alstIDs);
-	~cModelEditorWindowOutlineHelper();
+  cModelEditorWindowOutlineHelper(cModelEditorWindowOutline* apWindow, tIntList& alstIDs);
+  ~cModelEditorWindowOutlineHelper();
 
-	void SetAllowedTypes(const tIntVec& avTypes);
+  void SetAllowedTypes(const tIntVec& avTypes);
 
-	void AddExcludedID(int alID);
-	void ExcludeIDs(tIntList& alstIDs);
+  void AddExcludedID(int alID);
+  void ExcludeIDs(tIntList& alstIDs);
 
-	void SetCallback(void* apCallbackObject, tGuiCallbackFunc apCallback);
-	
-	void SetMultiSelectionEnabled(bool abX);
+  void SetCallback(void* apCallbackObject, tGuiCallbackFunc apCallback);
+
+  void SetMultiSelectionEnabled(bool abX);
+
 protected:
-	void PopulateList();
-	void UpdateHighlightedItems();
-	bool Button_OnPressed(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(Button_OnPressed);
-	bool List_OnSelectionChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(List_OnSelectionChange);
+  void PopulateList();
+  void UpdateHighlightedItems();
+  bool Button_OnPressed(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(Button_OnPressed);
+  bool List_OnSelectionChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(List_OnSelectionChange);
 
-	void OnInitLayout();
-	void OnSetActive(bool abX);
+  void OnInitLayout();
+  void OnSetActive(bool abX);
 
-	cModelEditorWindowOutline* mpOutline;
-	cWidgetListBox* mpListObjects;
-	cWidgetButton* mvButtons[2];
-	
-	void* mpCallbackObject;
-	tGuiCallbackFunc mpCallback;
+  cModelEditorWindowOutline* mpOutline;
+  cWidgetListBox*            mpListObjects;
+  cWidgetButton*             mvButtons[2];
 
-	tIntList mlstExcludedIDs;
-	
-	tIntVec mvIDList;
-	tIntList& mlstTempIDs;
+  void*            mpCallbackObject;
+  tGuiCallbackFunc mpCallback;
 
-	cUIPickFilter* mpFilter;
+  tIntList mlstExcludedIDs;
+
+  tIntVec   mvIDList;
+  tIntList& mlstTempIDs;
+
+  cUIPickFilter* mpFilter;
 };
 
 //--------------------------------------------------------------------
 
-class cModelEditorWindowOutline : public iEditorWindowPopUp
-{
+class cModelEditorWindowOutline : public iEditorWindowPopUp {
 public:
-	cModelEditorWindowOutline(iEditorBase* apEditor);
+  cModelEditorWindowOutline(iEditorBase* apEditor);
 
-	void AddButtonDetach();
-	void AddButtonAttachParent();
-	void AddButtonAttachChild();
-	void AddButtonEditAttachments();
-	void AddButtonDetachParent();
-	void AddButtonDetachChild();
+  void AddButtonDetach();
+  void AddButtonAttachParent();
+  void AddButtonAttachChild();
+  void AddButtonEditAttachments();
+  void AddButtonDetachParent();
+  void AddButtonDetachChild();
 
-	void ClearEditPanel();
+  void ClearEditPanel();
 
 protected:
-	void PopulateList();
-	void UpdateHighlightedItems();
-	void UpdateEditPanel();
-	void AddObjectToList(iEntityWrapper* apEntity, int alLevel);
+  void PopulateList();
+  void UpdateHighlightedItems();
+  void UpdateEditPanel();
+  void AddObjectToList(iEntityWrapper* apEntity, int alLevel);
 
-	void OnInitLayout();
-	void OnSetActive(bool abX);
-	void OnUpdate(float afTimeStep);
+  void OnInitLayout();
+  void OnSetActive(bool abX);
+  void OnUpdate(float afTimeStep);
 
-	bool InputCallback(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(InputCallback);
+  bool InputCallback(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(InputCallback);
 
-	bool AttachParentBodyCallback(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(AttachParentBodyCallback);
-	bool AttachChildBodyCallback(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(AttachChildBodyCallback);
-	bool SetAttachmentsCallback(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(SetAttachmentsCallback);
+  bool AttachParentBodyCallback(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(AttachParentBodyCallback);
+  bool AttachChildBodyCallback(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(AttachChildBodyCallback);
+  bool SetAttachmentsCallback(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(SetAttachmentsCallback);
 
-	cModelEditorWindowOutlineHelper* CreateHelperWindow(tIntList& alstIDs, tGuiCallbackFunc apCallback, bool abMulti=false);
-	iEntityWrapper* GetSelectedEntity();
+  cModelEditorWindowOutlineHelper* CreateHelperWindow(tIntList& alstIDs, tGuiCallbackFunc apCallback, bool abMulti = false);
+  iEntityWrapper*                  GetSelectedEntity();
 
 
-	bool mbHideConnectedShapes;
-	tIntVec mvIDList;
-	tIntList mlstAddedChildren;
+  bool     mbHideConnectedShapes;
+  tIntVec  mvIDList;
+  tIntList mlstAddedChildren;
 
-	cWidgetListBox* mpListObjects;
-	cWidgetCheckBox* mpCheckBoxHideShapes;
+  cWidgetListBox*  mpListObjects;
+  cWidgetCheckBox* mpCheckBoxHideShapes;
 
-	cWidgetDummy* mpGroupPanel;
-	cWidgetButton* mpButtonDetach;
-	cWidgetButton* mpButtonAttachParent;
-	cWidgetButton* mpButtonDetachParent;
-	cWidgetButton* mpButtonAttachChild;
-	cWidgetButton* mpButtonDetachChild;
-	cWidgetButton* mpButtonEditAttachments;
+  cWidgetDummy*  mpGroupPanel;
+  cWidgetButton* mpButtonDetach;
+  cWidgetButton* mpButtonAttachParent;
+  cWidgetButton* mpButtonDetachParent;
+  cWidgetButton* mpButtonAttachChild;
+  cWidgetButton* mpButtonDetachChild;
+  cWidgetButton* mpButtonEditAttachments;
 
-	cModelEditorWindowOutlineHelper* mpHelperWindow;
-	tIntList mlstTempIDs;
+  cModelEditorWindowOutlineHelper* mpHelperWindow;
+  tIntList                         mlstTempIDs;
 
-	unsigned int mlModificationStamp;
+  unsigned int mlModificationStamp;
 };
 
 //--------------------------------------------------------------------
 
 #endif // MODEL_EDITOR_WINDOW_OUTLINE_H
-

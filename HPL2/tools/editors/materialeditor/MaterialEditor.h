@@ -46,73 +46,70 @@ class cEditorWindowTextureBrowser;
 class cEditorWindowOptions;
 class cEditorWindowMaterialEditor;
 
-enum eDirExt
-{
-	eDir_Maps = eDir_LastEnum,
+enum eDirExt {
+  eDir_Maps = eDir_LastEnum,
 
-	eDirExt_LastEnum
+  eDirExt_LastEnum
 };
 
 //--------------------------------------------------------------------
 
-class cMaterialEditor : public iEditorBase
-{
+class cMaterialEditor : public iEditorBase {
 public:
-	cMaterialEditor(const tString& asCommandLine);
-	~cMaterialEditor();
+  cMaterialEditor(const tString& asCommandLine);
+  ~cMaterialEditor();
 
 protected:
-	///////////////////////////
-	// Own functions
-	void LoadEditorSession(iXmlDocument* apDoc, cXmlElement** apElement) {}
-	void SaveEditorSession(iXmlDocument* apDoc, cXmlElement** apElement) {}
-	
-	void AppSpecificReset(){}
-	void AppSpecificLoad(iXmlDocument* apDoc){}
-	void AppSpecificSave(iXmlDocument* apDoc){}
+  ///////////////////////////
+  // Own functions
+  void LoadEditorSession(iXmlDocument* apDoc, cXmlElement** apElement) {}
+  void SaveEditorSession(iXmlDocument* apDoc, cXmlElement** apElement) {}
 
-	void SetUpWindowAreas(){}
-	void InitRenderTarget(const cVector2f& avSize){}
-	void CreateViewports(){}
-	
+  void AppSpecificReset() {}
+  void AppSpecificLoad(iXmlDocument* apDoc) {}
+  void AppSpecificSave(iXmlDocument* apDoc) {}
 
-	void UpdateEditMenu();
-
-	///////////////////////////
-	// Implemented functions
-	void OnSetUpDirectories();
-
-	void OnUpdate(float afTimeStep);
-
-	void OnSetSelectedViewport(){}
-
-	void OnPostUpdateLayout();
-
-	void OnInit();
-	void OnInitInput();
-	void OnInitLayout();
-
-	void OnLoadConfig();
-	void OnSaveConfig();
-
-	void SetUpClassDefinitions(cEditorUserClassDefinitionManager* apManager) {}
-
-	iEditorWorld* CreateSpecificWorld() { return NULL; }
-	iEditorWindowLowerToolbar* CreateSpecificLowerToolbar() { return NULL; }
-	iEditorWindowEditModeSidebar* CreateEditModeSidebar() { return NULL; }
-
-	///////////////////////////
-	// Data
+  void SetUpWindowAreas() {}
+  void InitRenderTarget(const cVector2f& avSize) {}
+  void CreateViewports() {}
 
 
-	///////////////////////
-	// Config stuff
-	cConfigFile* mpLocalConfig;
+  void UpdateEditMenu();
 
-	tString msCommandLineFile;
+  ///////////////////////////
+  // Implemented functions
+  void OnSetUpDirectories();
+
+  void OnUpdate(float afTimeStep);
+
+  void OnSetSelectedViewport() {}
+
+  void OnPostUpdateLayout();
+
+  void OnInit();
+  void OnInitInput();
+  void OnInitLayout();
+
+  void OnLoadConfig();
+  void OnSaveConfig();
+
+  void SetUpClassDefinitions(cEditorUserClassDefinitionManager* apManager) {}
+
+  iEditorWorld*                 CreateSpecificWorld() { return NULL; }
+  iEditorWindowLowerToolbar*    CreateSpecificLowerToolbar() { return NULL; }
+  iEditorWindowEditModeSidebar* CreateEditModeSidebar() { return NULL; }
+
+  ///////////////////////////
+  // Data
+
+
+  ///////////////////////
+  // Config stuff
+  cConfigFile* mpLocalConfig;
+
+  tString msCommandLineFile;
 };
 
 //----------------------------------------------------------
 
 #endif //LEVEL_EDITOR_H
-

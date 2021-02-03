@@ -166,7 +166,8 @@ namespace hpl {
         if (pBmp == NULL) {
           Error("Couldn't load bitmap '%s'!\n", cString::To8Char(vPaths[i]).c_str());
 
-          for (int j = 0; j < (int) vBitmaps.size(); j++) hplDelete(vBitmaps[j]);
+          for (int j = 0; j < (int) vBitmaps.size(); j++)
+            hplDelete(vBitmaps[j]);
 
           EndLoad();
           return NULL;
@@ -184,19 +185,22 @@ namespace hpl {
       if (pTexture->CreateAnimFromBitmapVec(&vBitmaps) == false) {
         Error("Couldn't create animated texture '%s'!\n", sBaseName.c_str());
         hplDelete(pTexture);
-        for (int j = 0; j < (int) vBitmaps.size(); j++) hplDelete(vBitmaps[j]);
+        for (int j = 0; j < (int) vBitmaps.size(); j++)
+          hplDelete(vBitmaps[j]);
         EndLoad();
         return NULL;
       }
 
       //Bitmaps no longer needed.
-      for (int j = 0; j < (int) vBitmaps.size(); j++) hplDelete(vBitmaps[j]);
+      for (int j = 0; j < (int) vBitmaps.size(); j++)
+        hplDelete(vBitmaps[j]);
 
       mlMemoryUsage += pTexture->GetMemorySize();
       AddResource(pTexture);
     }
 
-    if (pTexture) pTexture->IncUserCount();
+    if (pTexture)
+      pTexture->IncUserCount();
     else
       Error("Couldn't texture '%s'\n", asFirstFrameName.c_str());
 
@@ -236,7 +240,8 @@ namespace hpl {
             tString sNewName = sName + mvCubeSideSuffixes[i] + "." + *it;
             sPath            = mpFileSearcher->GetFilePath(sNewName);
 
-            if (sPath != _W("")) break;
+            if (sPath != _W(""))
+              break;
           }
 
           if (sPath == _W("")) {
@@ -254,7 +259,8 @@ namespace hpl {
           cBitmap* pBmp = mpBitmapLoaderHandler->LoadBitmap(vPaths[i], 0);
           if (pBmp == NULL) {
             Error("Couldn't load bitmap '%s'!\n", cString::To8Char(vPaths[i]).c_str());
-            for (int j = 0; j < (int) vBitmaps.size(); j++) hplDelete(vBitmaps[j]);
+            for (int j = 0; j < (int) vBitmaps.size(); j++)
+              hplDelete(vBitmaps[j]);
             EndLoad();
             return NULL;
           }
@@ -272,19 +278,22 @@ namespace hpl {
         if (pTexture->CreateCubeFromBitmapVec(&vBitmaps) == false) {
           Error("Couldn't create cubemap '%s'!\n", sName.c_str());
           hplDelete(pTexture);
-          for (int j = 0; j < (int) vBitmaps.size(); j++) hplDelete(vBitmaps[j]);
+          for (int j = 0; j < (int) vBitmaps.size(); j++)
+            hplDelete(vBitmaps[j]);
           EndLoad();
           return NULL;
         }
 
         //Bitmaps no longer needed.
-        for (int j = 0; j < (int) vBitmaps.size(); j++) hplDelete(vBitmaps[j]);
+        for (int j = 0; j < (int) vBitmaps.size(); j++)
+          hplDelete(vBitmaps[j]);
 
         mlMemoryUsage += pTexture->GetMemorySize();
         AddResource(pTexture);
       }
 
-      if (pTexture) pTexture->IncUserCount();
+      if (pTexture)
+        pTexture->IncUserCount();
       else
         Error("Couldn't texture '%s'\n", sName.c_str());
 
@@ -341,14 +350,14 @@ namespace hpl {
 
     pTexture = FindTexture2D(asName, sPath);
 
-    if (pTexture == NULL && sPath != _W("")) {
+    if (pTexture == nullptr && !sPath.empty()) {
       //Load the bitmap
-      cBitmap* pBmp;
-      pBmp = mpBitmapLoaderHandler->LoadBitmap(sPath, 0);
-      if (pBmp == NULL) {
+      cBitmap* pBmp = mpBitmapLoaderHandler->LoadBitmap(sPath, 0);
+
+      if (pBmp == nullptr) {
         Error("Texture manager Couldn't load bitmap '%s'\n", cString::To8Char(sPath).c_str());
         EndLoad();
-        return NULL;
+        return nullptr;
       }
 
       //Create the texture and load from bitmap
@@ -358,11 +367,11 @@ namespace hpl {
       pTexture->SetUseMipMaps(abUseMipMaps);
       pTexture->SetSizeDownScaleLevel(alTextureSizeLevel);
 
-      if (pTexture->CreateFromBitmap(pBmp) == false) {
+      if (!pTexture->CreateFromBitmap(pBmp)) {
         hplDelete(pTexture);
         hplDelete(pBmp);
         EndLoad();
-        return NULL;
+        return nullptr;
       }
 
       //Bitmap is no longer needed so delete it.
@@ -372,9 +381,11 @@ namespace hpl {
       AddResource(pTexture);
     }
 
-    if (pTexture) pTexture->IncUserCount();
-    else
-      Error("Couldn't texture '%s'\n", asName.c_str());
+    if (pTexture) {
+      pTexture->IncUserCount();
+    } else {
+      Error("Couldn't create (or find) simple texture '%s'\n", asName.c_str()); // actually, fatal error
+    }
 
     EndLoad();
     return pTexture;
@@ -382,38 +393,41 @@ namespace hpl {
 
   //-----------------------------------------------------------------------
 
-  iTexture* cTextureManager::FindTexture2D(const tString& asName, tWString& asFilePath) {
-    iTexture* pTexture = NULL;
+  iTexture* cTextureManager::FindTexture2D(const tString& name, tWString& file_path) {
+    iTexture* texture = nullptr;
 
-    if (cString::GetFileExt(asName) == "") {
-      int lMaxCount = -1;
+    if (cString::GetFileExt(name).empty()) {
+      int max_count = -1;
 
       ///////////////////////
       //Iterate the different formats
-      tStringVec* apFileFormatsVec = mpBitmapLoaderHandler->GetSupportedTypes();
-      for (tStringVecIt it = apFileFormatsVec->begin(); it != apFileFormatsVec->end(); ++it) {
-        tWString  sTempPath = _W("");
-        iTexture* pTempTex  = NULL;
-        int       lCount    = 0;
-
-        tString sNewName = cString::SetFileExt(asName, *it);
-        pTempTex         = static_cast<iTexture*>(FindLoadedResource(sNewName, sTempPath, &lCount));
+      tStringVec* file_formats_vec = mpBitmapLoaderHandler->GetSupportedTypes();
+      for (auto it = file_formats_vec->begin(); it != file_formats_vec->end(); ++it) {
+        int      count    = 0;
+        tString  new_name = cString::SetFileExt(name, *it);
+        tWString temp_path;
+        auto*    temp_tex = static_cast<iTexture*>(FindLoadedResource(new_name, temp_path, &count));
 
         ///////////////////////
         //Check if the image exists and then check if it has the hightest equal count.
-        if ((pTempTex == NULL && sTempPath != _W("")) || pTempTex != NULL) {
-          if (lCount > lMaxCount) {
-            lMaxCount  = lCount;
-            asFilePath = sTempPath;
-            pTexture   = pTempTex;
+        if ((temp_tex == nullptr && !temp_path.empty()) || temp_tex != nullptr) {
+          if (count > max_count) {
+            max_count  = count;
+            file_path  = temp_path;
+            texture    = temp_tex;
           }
         }
       }
+
     } else {
-      pTexture = static_cast<iTexture*>(FindLoadedResource(asName, asFilePath));
+      texture = static_cast<iTexture*>(FindLoadedResource(name, file_path));
     }
 
-    return pTexture;
+    if (texture == nullptr) {
+      Warning("texture with name '%s' was not found in path '%s'\n", name.c_str(), file_path.c_str());
+    }
+
+    return texture;
   }
 
 

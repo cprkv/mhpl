@@ -64,7 +64,7 @@ void cLuxStaticPropLoader::AfterLoad(cXmlElement* apRootElem, const cMatrixf& a_
 
 	pStaticProp->mvLights = mvLights;
 	pStaticProp->mvParticleSystems = mvParticleSystems;
-	pStaticProp->mvBillboards = mvBillboards;
+	pStaticProp->billboards_ = billboards_;
 	pStaticProp->mvBeams = mvBeams;
 	pStaticProp->mvSoundEntities = mvSoundEntities;
 

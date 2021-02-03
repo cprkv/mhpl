@@ -20,17 +20,16 @@
 #ifndef MODEL_EDITOR_TYPES_H
 #define MODEL_EDITOR_TYPES_H
 
-enum eModelEditorEditMode
-{
-	eModelEditorEditMode_Select,
-	eModelEditorEditMode_Bodies,
-	eModelEditorEditMode_Joints,
-	eModelEditorEditMode_Lights,
-	eModelEditorEditMode_Billboards,
-	eModelEditorEditMode_ParticleSystems,
-	eModelEditorEditMode_Sounds,
+enum eModelEditorEditMode {
+  eModelEditorEditMode_Select,
+  eModelEditorEditMode_Bodies,
+  eModelEditorEditMode_Joints,
+  eModelEditorEditMode_Lights,
+  eModelEditorEditMode_Billboards,
+  eModelEditorEditMode_ParticleSystems,
+  eModelEditorEditMode_Sounds,
 
-	eModelEditorEditMode_LastEnum,
+  eModelEditorEditMode_LastEnum,
 };
 
 //----------------------------------------------------------

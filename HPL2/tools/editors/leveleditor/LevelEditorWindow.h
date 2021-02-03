@@ -32,19 +32,18 @@ class cLevelEditor;
 
 //-------------------------------------------------------
 
-class iLevelEditorWindow : public iEditorWindow
-{
+class iLevelEditorWindow : public iEditorWindow {
 public:
-	iLevelEditorWindow(cLevelEditor* apEditor, const tString& asName);
-	virtual ~iLevelEditorWindow();
+  iLevelEditorWindow(cLevelEditor* apEditor, const tString& asName);
+  virtual ~iLevelEditorWindow();
 
 protected:
-	///////////////////////////
-	// Own functions
+  ///////////////////////////
+  // Own functions
 
-	///////////////////////////
-	// Data
-	cLevelEditor* mpEditor;
+  ///////////////////////////
+  // Data
+  cLevelEditor* mpEditor;
 };
 
 //-------------------------------------------------------

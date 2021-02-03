@@ -21,8 +21,8 @@
 #include "BuildID_ParticleEditor.h"
 
 #ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+  #define WIN32_LEAN_AND_MEAN
+  #include <windows.h>
 #endif
 
 
@@ -31,30 +31,29 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-int hplMain(const tString& asCommandLine)
-{
-	//////////////////////////
-	// Init BlackBox
-	#ifdef WIN32
-		HINSTANCE hBlackBoxLib = LoadLibrary( "BlackBox.dll" );
-	#endif
+int hplMain(const tString& asCommandLine) {
+//////////////////////////
+// Init BlackBox
+#ifdef WIN32
+  HINSTANCE hBlackBoxLib = LoadLibrary("BlackBox.dll");
+#endif
 
-	cParticleEditor* pEditor = hplNew(cParticleEditor, ());
-	cEngine* pEngine = pEditor->Init(NULL, "ParticleEditor", GetBuildID_ParticleEditor(), false);
+  cParticleEditor* pEditor = hplNew(cParticleEditor, ());
+  cEngine*         pEngine = pEditor->Init(NULL, "ParticleEditor", GetBuildID_ParticleEditor(), false);
 
-	pEngine->Run();
+  pEngine->Run();
 
-	hplDelete(pEditor);
-	hplDelete(pEngine);
+  hplDelete(pEditor);
+  hplDelete(pEngine);
 
-	cMemoryManager::LogResults();
+  cMemoryManager::LogResults();
 
-	//////////////////////////
-	// Exit BlackBox
-	#ifdef WIN32
-			if(hBlackBoxLib) FreeLibrary(hBlackBoxLib);
-	#endif
+//////////////////////////
+// Exit BlackBox
+#ifdef WIN32
+  if (hBlackBoxLib)
+    FreeLibrary(hBlackBoxLib);
+#endif
 
-	return 0;
+  return 0;
 }
-

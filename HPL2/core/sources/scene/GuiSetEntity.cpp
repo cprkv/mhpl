@@ -24,56 +24,50 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cGuiSetEntity::cGuiSetEntity(const tString asName,cGuiSet *apSet) :
-								iRenderable(asName)
-	{
-		mpGuiSet = apSet;
-		
-		mBoundingVolume.SetSize(apSet->Get3DSize());
-	}
+  cGuiSetEntity::cGuiSetEntity(const tString asName, cGuiSet* apSet)
+      : iRenderable(asName) {
+    mpGuiSet = apSet;
+    mBoundingVolume.SetSize(apSet->Get3DSize());
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cGuiSetEntity::~cGuiSetEntity()
-	{
-	}
+  cGuiSetEntity::~cGuiSetEntity() {
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	
-	void cGuiSetEntity::SetGuiSet(cGuiSet *apSet)
-	{
-		mpGuiSet = apSet;
-		mBoundingVolume.SetSize(apSet->Get3DSize());
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cMatrixf*  cGuiSetEntity::GetModelMatrix(cFrustum *apFrustum)
-	{
-		m_mtxTemp = GetWorldMatrix();
-		return &m_mtxTemp;
-	}
+  void cGuiSetEntity::SetGuiSet(cGuiSet* apSet) {
+    mpGuiSet = apSet;
+    mBoundingVolume.SetSize(apSet->Get3DSize());
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	int cGuiSetEntity::GetMatrixUpdateCount()
-	{
-		return GetTransformUpdateCount();
-	}
+  cMatrixf* cGuiSetEntity::GetModelMatrix(cFrustum* apFrustum) {
+    m_mtxTemp = GetWorldMatrix();
+    return &m_mtxTemp;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
+
+  int cGuiSetEntity::GetMatrixUpdateCount() {
+    return GetTransformUpdateCount();
+  }
+
+  //-----------------------------------------------------------------------
 
 
-}
+} // namespace hpl

@@ -48,137 +48,132 @@ class cModelEditorEditModeToolbox;
 class cModelEditorLowerToolbar;
 class cModelEditorWindowPhysiscTest;
 
-enum eDirExt
-{
-	eDir_Maps = eDir_LastEnum,
+enum eDirExt {
+  eDir_Maps = eDir_LastEnum,
 
-	eDirExt_LastEnum
+  eDirExt_LastEnum
 };
 
 
-enum eModelEditorFlags
-{
-	eModelEditorFlag_TestWindowActive = eEditorFlag_LastEnum,
+enum eModelEditorFlags {
+  eModelEditorFlag_TestWindowActive = eEditorFlag_LastEnum,
 
-	eModelEditorFlag_LastEnum,
+  eModelEditorFlag_LastEnum,
 };
-
 
 
 //--------------------------------------------------------------------
 
-class cModelEditor : public iEditorBase
-{
+class cModelEditor : public iEditorBase {
 public:
-	cModelEditor();
-	~cModelEditor();
+  cModelEditor();
+  ~cModelEditor();
 
-	int GetLastSelectedAnimation() { return mlLastTestAnimation; }
-	void SetLastSelectedAnimation(int alX) { mlLastTestAnimation = alX; }
+  int  GetLastSelectedAnimation() { return mlLastTestAnimation; }
+  void SetLastSelectedAnimation(int alX) { mlLastTestAnimation = alX; }
 
-	void SetUpClassDefinitions(cEditorUserClassDefinitionManager* apManager);
+  void SetUpClassDefinitions(cEditorUserClassDefinitionManager* apManager);
 
 protected:
-	///////////////////////////
-	// Own functions
-	bool MainMenu_ItemClick(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(MainMenu_ItemClick);
+  ///////////////////////////
+  // Own functions
+  bool MainMenu_ItemClick(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(MainMenu_ItemClick);
 
-	bool QuitCallback(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(QuitCallback);
+  bool QuitCallback(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(QuitCallback);
 
-	bool MainMenu_UndoRedo(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(MainMenu_UndoRedo);
+  bool MainMenu_UndoRedo(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(MainMenu_UndoRedo);
 
-	bool MeshImport_Callback(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(MeshImport_Callback);
+  bool MeshImport_Callback(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(MeshImport_Callback);
 
-	bool OnChangeFlags(int alFlags);
+  bool OnChangeFlags(int alFlags);
 
-	
-	void UpdateEditMenu();
 
-	iEditorWindowLowerToolbar* CreateSpecificLowerToolbar();
+  void UpdateEditMenu();
 
-	///////////////////////////
-	// Implemented functions
-	iEditorWorld* CreateSpecificWorld();
+  iEditorWindowLowerToolbar* CreateSpecificLowerToolbar();
 
-	void OnSetUpDirectories();
+  ///////////////////////////
+  // Implemented functions
+  iEditorWorld* CreateSpecificWorld();
 
-	void OnUpdate(float afTimeStep);
-	void OnSetSelectedViewport(){}
+  void OnSetUpDirectories();
 
-	void OnPostUpdateLayout();
+  void OnUpdate(float afTimeStep);
+  void OnSetSelectedViewport() {}
 
-	void OnInit();
-	void OnInitInput();
-	void OnInitLayout();
+  void OnPostUpdateLayout();
 
-	void OnLoadConfig();
-	void OnSaveConfig();
+  void OnInit();
+  void OnInitInput();
+  void OnInitLayout();
 
-	void AppSpecificReset();
-	void AppSpecificLoad(iXmlDocument* apDoc);
-	void AppSpecificSave(iXmlDocument* apDoc);
+  void OnLoadConfig();
+  void OnSaveConfig();
 
-	cWidgetMainMenu* CreateMainMenu();
+  void AppSpecificReset();
+  void AppSpecificLoad(iXmlDocument* apDoc);
+  void AppSpecificSave(iXmlDocument* apDoc);
 
-	///////////////////////////
-	// Data
-	// Menu stuff
-	// File menu
-	cWidgetMenuItem* mpMainMenuNew;
-	cWidgetMenuItem* mpMainMenuSave;
-	cWidgetMenuItem* mpMainMenuSaveAs;
-	cWidgetMenuItem* mpMainMenuLoad;
-	cWidgetMenuItem* mpMainMenuRecent;
-	cWidgetMenuItem* mpMainMenuImport;
-	cWidgetMenuItem* mpMainMenuExit;
+  cWidgetMainMenu* CreateMainMenu();
 
-	// Edit menu
-	cWidgetMenuItem* mpMainMenuUndo;
-	cWidgetMenuItem* mpMainMenuRedo;
-	cWidgetMenuItem* mpMainMenuDelete;
-	cWidgetMenuItem* mpMainMenuClone;
-	cWidgetMenuItem* mpMainMenuSearch;
-	cWidgetMenuItem* mpMainMenuGroup;
-	
-	// Settings menu
-	cWidgetMenuItem* mpMainMenuUserSettings;
-	cWidgetMenuItem* mpMainMenuAnimations;
+  ///////////////////////////
+  // Data
+  // Menu stuff
+  // File menu
+  cWidgetMenuItem* mpMainMenuNew;
+  cWidgetMenuItem* mpMainMenuSave;
+  cWidgetMenuItem* mpMainMenuSaveAs;
+  cWidgetMenuItem* mpMainMenuLoad;
+  cWidgetMenuItem* mpMainMenuRecent;
+  cWidgetMenuItem* mpMainMenuImport;
+  cWidgetMenuItem* mpMainMenuExit;
 
-	// View menu
-	cWidgetMenuItem* mpMainMenuOutline;
-	
-	///////////////////////////////////
-	// Test window
-	iEditorWindow* mpTestWindow;
-	int mlLastTestAnimation;
-	iEditorWindow* mpWindowAnimations;
-	
-	///////////////////////
-	// Config stuff
-	cConfigFile* mpLocalConfig;
+  // Edit menu
+  cWidgetMenuItem* mpMainMenuUndo;
+  cWidgetMenuItem* mpMainMenuRedo;
+  cWidgetMenuItem* mpMainMenuDelete;
+  cWidgetMenuItem* mpMainMenuClone;
+  cWidgetMenuItem* mpMainMenuSearch;
+  cWidgetMenuItem* mpMainMenuGroup;
 
-	///////////////////////
-	// Saving / Loading
-	tWString msImportedMeshFilename;
-	tWString msLastMeshPath;
+  // Settings menu
+  cWidgetMenuItem* mpMainMenuUserSettings;
+  cWidgetMenuItem* mpMainMenuAnimations;
 
-	///////////////////////
-	// Model User Settings
-	tString msDefaultTypeName;
-	tString msDefaultSubTypeName;
+  // View menu
+  cWidgetMenuItem* mpMainMenuOutline;
 
-	tString msCurrentTypeName;
-	tString msCurrentSubTypeName;
+  ///////////////////////////////////
+  // Test window
+  iEditorWindow* mpTestWindow;
+  int            mlLastTestAnimation;
+  iEditorWindow* mpWindowAnimations;
 
-	//tCustomVarList mlstCurrentUserVars; // Vars in use by current model
-	//tCustomVarMap mmapUserVarPool; // Var pool (to keep values of non active vars, in case they are active again)
+  ///////////////////////
+  // Config stuff
+  cConfigFile* mpLocalConfig;
+
+  ///////////////////////
+  // Saving / Loading
+  tWString msImportedMeshFilename;
+  tWString msLastMeshPath;
+
+  ///////////////////////
+  // Model User Settings
+  tString msDefaultTypeName;
+  tString msDefaultSubTypeName;
+
+  tString msCurrentTypeName;
+  tString msCurrentSubTypeName;
+
+  //tCustomVarList mlstCurrentUserVars; // Vars in use by current model
+  //tCustomVarMap mmapUserVarPool; // Var pool (to keep values of non active vars, in case they are active again)
 };
 
 //----------------------------------------------------------
 
 #endif //MODEL_EDITOR_H
-

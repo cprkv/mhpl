@@ -24,12 +24,12 @@ using namespace hpl;
 #include "BuildID_LevelEditor.h"
 
 #ifdef WITH_BINRELOC
-#include "binreloc.h"
+  #include "binreloc.h"
 #endif
 
 #ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+  #define WIN32_LEAN_AND_MEAN
+  #include <windows.h>
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -37,36 +37,35 @@ using namespace hpl;
 //////////////////////////////////////////////////////////////////////////
 
 
-int hplMain(const tString& asCommandLine)
-{
-	//////////////////////////
-	// Init BlackBox
-	#ifdef WIN32
-		HINSTANCE hBlackBoxLib = LoadLibrary( "BlackBox.dll" );
-	#endif
+int hplMain(const tString& asCommandLine) {
+//////////////////////////
+// Init BlackBox
+#ifdef WIN32
+  HINSTANCE hBlackBoxLib = LoadLibrary("BlackBox.dll");
+#endif
 
-	//cMemoryManager::SetLogCreation(true);
+  //cMemoryManager::SetLogCreation(true);
 
-	cLevelEditor* pEditor = hplNew(cLevelEditor, ());
+  cLevelEditor* pEditor = hplNew(cLevelEditor, ());
 
 
-	cEngine* pEngine = pEditor->Init(NULL, "LevelEditor", GetBuildID_LevelEditor(), false);
+  cEngine* pEngine = pEditor->Init(NULL, "LevelEditor", GetBuildID_LevelEditor(), false);
 
-	pEngine->Run();
+  pEngine->Run();
 
-	hplDelete(pEditor);
-	DestroyHPLEngine(pEngine);
-	cMemoryManager::LogResults();
+  hplDelete(pEditor);
+  DestroyHPLEngine(pEngine);
+  cMemoryManager::LogResults();
 
-	//////////////////////////
-	// Exit BlackBox
-	#ifdef WIN32
-			if(hBlackBoxLib) FreeLibrary(hBlackBoxLib);
-	#endif
+//////////////////////////
+// Exit BlackBox
+#ifdef WIN32
+  if (hBlackBoxLib)
+    FreeLibrary(hBlackBoxLib);
+#endif
 
-	return 0;
+  return 0;
 }
-
 
 
 //---------------------------------------

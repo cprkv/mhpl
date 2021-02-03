@@ -35,108 +35,107 @@ class cEntityWrapperParticleEmitter;
 
 //-------------------------------------------------------------
 
-class cParticleEditorWindowEmitterParams : public iEditorWindow
-{
+class cParticleEditorWindowEmitterParams : public iEditorWindow {
 public:
-	cParticleEditorWindowEmitterParams(iEditorBase* apEditor);
-	~cParticleEditorWindowEmitterParams();
+  cParticleEditorWindowEmitterParams(iEditorBase* apEditor);
+  ~cParticleEditorWindowEmitterParams();
 
-	void SetCurrentEmitter(cEntityWrapperParticleEmitter* apEmitter);
+  void SetCurrentEmitter(cEntityWrapperParticleEmitter* apEmitter);
 
 protected:
-	void OnInitLayout();
-	void OnUpdate(float afTimeStep);
+  void OnInitLayout();
+  void OnUpdate(float afTimeStep);
 
-	bool WindowSpecificInputCallback(iEditorInput* apInput);
+  bool WindowSpecificInputCallback(iEditorInput* apInput);
 
-	cWidgetTabFrame* mpTFCategories;
+  cWidgetTabFrame* mpTFCategories;
 
-	cEditorInputText* mpInpName;
-	cEditorInputNumber* mpInpMaxParticles;
-	cEditorInputNumber* mpInpParticlesPerSec;
-	cEditorInputNumber* mpInpStartTimeOffset;
-	cEditorInputBool* mpInpRespawn;
-	cEditorInputNumber* mpInpWarmUpTime;
-	cEditorInputNumber* mpInpWarmUpStepsPerSec;
+  cEditorInputText*   mpInpName;
+  cEditorInputNumber* mpInpMaxParticles;
+  cEditorInputNumber* mpInpParticlesPerSec;
+  cEditorInputNumber* mpInpStartTimeOffset;
+  cEditorInputBool*   mpInpRespawn;
+  cEditorInputNumber* mpInpWarmUpTime;
+  cEditorInputNumber* mpInpWarmUpStepsPerSec;
 
-	cEditorInputVec2* mpInpLength;
-	cEditorInputVec2* mpInpInterval;
+  cEditorInputVec2* mpInpLength;
+  cEditorInputVec2* mpInpInterval;
 
-	cEditorInputVec3* mpInpOffsetPos;
-	cEditorInputVec3* mpInpOffsetAng;
+  cEditorInputVec3* mpInpOffsetPos;
+  cEditorInputVec3* mpInpOffsetAng;
 
-	cEditorInputEnum* mpInpDrawType;
-	cEditorInputBool* mpInpMulRGBWithAlpha;
-	cEditorInputVec2* mpInpMinSize;
-	cEditorInputVec2* mpInpMaxSize;
+  cEditorInputEnum* mpInpDrawType;
+  cEditorInputBool* mpInpMulRGBWithAlpha;
+  cEditorInputVec2* mpInpMinSize;
+  cEditorInputVec2* mpInpMaxSize;
 
-	cEditorInputNumber* mpInpStartRelSize;
-	cEditorInputNumber* mpInpMiddleRelSizeStart;
-	cEditorInputNumber* mpInpMiddleRelSize;
-	cEditorInputNumber* mpInpMiddleRelSizeLength;
-	cEditorInputNumber* mpInpEndRelSize;
+  cEditorInputNumber* mpInpStartRelSize;
+  cEditorInputNumber* mpInpMiddleRelSizeStart;
+  cEditorInputNumber* mpInpMiddleRelSize;
+  cEditorInputNumber* mpInpMiddleRelSizeLength;
+  cEditorInputNumber* mpInpEndRelSize;
 
-	cEditorInputBool* mpInpUseCollision;
-	cEditorInputNumber* mpInpUpdateRate;
-	cEditorInputVec2* mpInpMaxCollisions;
-	cEditorInputVec2* mpInpBounceAmount;
+  cEditorInputBool*   mpInpUseCollision;
+  cEditorInputNumber* mpInpUpdateRate;
+  cEditorInputVec2*   mpInpMaxCollisions;
+  cEditorInputVec2*   mpInpBounceAmount;
 
-	cEditorInputBool* mpInpUsePartSpin;
-	cEditorInputEnum* mpInpSpinType;
-	cEditorInputVec2* mpInpSpinVelRange;
-	cEditorInputBool* mpInpUseRev;
-	cEditorInputVec3* mpInpMinRevVel;
-	cEditorInputVec3* mpInpMaxRevVel;
+  cEditorInputBool* mpInpUsePartSpin;
+  cEditorInputEnum* mpInpSpinType;
+  cEditorInputVec2* mpInpSpinVelRange;
+  cEditorInputBool* mpInpUseRev;
+  cEditorInputVec3* mpInpMinRevVel;
+  cEditorInputVec3* mpInpMaxRevVel;
 
-	cEditorInputEnum* mpInpStartType;
+  cEditorInputEnum* mpInpStartType;
 
-	cEditorInputVec3* mpInpBoxStartMinPos;
-	cEditorInputVec3* mpInpBoxStartMaxPos;
-	cEditorInputVec2* mpInpSphStartMinAng;
-	cEditorInputVec2* mpInpSphStartMaxAng;
-	cEditorInputVec2* mpInpSphStartRadius;
+  cEditorInputVec3* mpInpBoxStartMinPos;
+  cEditorInputVec3* mpInpBoxStartMaxPos;
+  cEditorInputVec2* mpInpSphStartMinAng;
+  cEditorInputVec2* mpInpSphStartMaxAng;
+  cEditorInputVec2* mpInpSphStartRadius;
 
-	cEditorInputColorFrame* mpInpMinCol;
-	cEditorInputColorFrame* mpInpMaxCol;
+  cEditorInputColorFrame* mpInpMinCol;
+  cEditorInputColorFrame* mpInpMaxCol;
 
-	cEditorInputColorFrame* mpInpStartRelCol;
-	cEditorInputNumber* mpInpMiddleRelColStart;
-	cEditorInputColorFrame* mpInpMiddleRelCol;
-	cEditorInputNumber* mpInpMiddleRelColLength;
-	cEditorInputColorFrame* mpInpEndRelCol;
+  cEditorInputColorFrame* mpInpStartRelCol;
+  cEditorInputNumber*     mpInpMiddleRelColStart;
+  cEditorInputColorFrame* mpInpMiddleRelCol;
+  cEditorInputNumber*     mpInpMiddleRelColLength;
+  cEditorInputColorFrame* mpInpEndRelCol;
 
-	cEditorInputEnum* mpInpVelType;
-	cEditorInputEnum* mpInpCoordSys;
-	cEditorInputBool* mpInpUseDir;
+  cEditorInputEnum* mpInpVelType;
+  cEditorInputEnum* mpInpCoordSys;
+  cEditorInputBool* mpInpUseDir;
 
-	cEditorInputEnum* mpInpGravType;
-	cEditorInputVec3* mpInpGravAcc;
+  cEditorInputEnum* mpInpGravType;
+  cEditorInputVec3* mpInpGravAcc;
 
-	cEditorInputVec3* mpInpMinVel;
-	cEditorInputVec3* mpInpMaxVel;
+  cEditorInputVec3* mpInpMinVel;
+  cEditorInputVec3* mpInpMaxVel;
 
-	cEditorInputVec2* mpInpSphVelMinAng;
-	cEditorInputVec2* mpInpSphVelMaxAng;
-	cEditorInputVec2* mpInpSphVelSpeed;
-    
-	cEditorInputVec3* mpInpMinAcc;
-	cEditorInputVec3* mpInpMaxAcc;
-	cEditorInputVec2* mpInpSpeedMul;
-	cEditorInputVec2* mpInpMaxSpeed;
+  cEditorInputVec2* mpInpSphVelMinAng;
+  cEditorInputVec2* mpInpSphVelMaxAng;
+  cEditorInputVec2* mpInpSphVelSpeed;
 
-	cEditorInputVec2* mpInpLifeSpan;
-	cEditorInputEnum* mpInpDeathType;
-	cEditorInputFile* mpInpDeathPS;
+  cEditorInputVec3* mpInpMinAcc;
+  cEditorInputVec3* mpInpMaxAcc;
+  cEditorInputVec2* mpInpSpeedMul;
+  cEditorInputVec2* mpInpMaxSpeed;
 
-	cEditorInputFile* mpInpMaterial;
-	cEditorInputNumber* mpInpNumFiles;
-	cEditorInputNumber* mpInpAnimLen;
-    
-	cEditorInputVec2* mpInpSubDAmount;
-	cEditorInputEnum* mpInpSubDType;
+  cEditorInputVec2* mpInpLifeSpan;
+  cEditorInputEnum* mpInpDeathType;
+  cEditorInputFile* mpInpDeathPS;
+
+  cEditorInputFile*   mpInpMaterial;
+  cEditorInputNumber* mpInpNumFiles;
+  cEditorInputNumber* mpInpAnimLen;
+
+  cEditorInputVec2* mpInpSubDAmount;
+  cEditorInputEnum* mpInpSubDType;
 
 
-	cEntityWrapperParticleEmitter* mpEmitter;
+  cEntityWrapperParticleEmitter* mpEmitter;
 };
 
 //-------------------------------------------------------------

@@ -51,88 +51,86 @@ class cParticleEditorWindowEmitters;
 //--------------------------------------------------------------------
 //--------------------------------------------------------------------
 
-class cParticleEditor : public iEditorBase
-{
+class cParticleEditor : public iEditorBase {
 public:
-	cParticleEditor();
-	~cParticleEditor();
+  cParticleEditor();
+  ~cParticleEditor();
 
-	void ViewportMouseDown(cEditorWindowViewport* apViewport, int alButtons){}
-	void ViewportMouseUp(cEditorWindowViewport* apViewport, int alButtons){}
+  void ViewportMouseDown(cEditorWindowViewport* apViewport, int alButtons) {}
+  void ViewportMouseUp(cEditorWindowViewport* apViewport, int alButtons) {}
 
 protected:
-	///////////////////////////
-	// Own functions
-	bool MainMenu_ItemClick(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(MainMenu_ItemClick);
+  ///////////////////////////
+  // Own functions
+  bool MainMenu_ItemClick(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(MainMenu_ItemClick);
 
-	void OnNew();
-	void OnPostWorldLoad();
-	void AppSpecificReset();
-	void AppSpecificLoad(iXmlDocument* apDoc);
-	void AppSpecificSave(iXmlDocument* apDoc);
+  void OnNew();
+  void OnPostWorldLoad();
+  void AppSpecificReset();
+  void AppSpecificLoad(iXmlDocument* apDoc);
+  void AppSpecificSave(iXmlDocument* apDoc);
 
-	void UpdateMenu();
-	void UpdateEditMenu();
+  void UpdateMenu();
+  void UpdateEditMenu();
 
-	///////////////////////////
-	// Implemented functions
-	iEditorWorld* CreateSpecificWorld();
-	iEditorWindowLowerToolbar* CreateSpecificLowerToolbar() { return NULL; }
-	iEditorWindowEditModeSidebar* CreateEditModeSidebar() { return NULL; }
+  ///////////////////////////
+  // Implemented functions
+  iEditorWorld*                 CreateSpecificWorld();
+  iEditorWindowLowerToolbar*    CreateSpecificLowerToolbar() { return NULL; }
+  iEditorWindowEditModeSidebar* CreateEditModeSidebar() { return NULL; }
 
-	cWidgetMainMenu* CreateMainMenu();
-	void SetUpWindowAreas();
-	void CreateViewports();
+  cWidgetMainMenu* CreateMainMenu();
+  void             SetUpWindowAreas();
+  void             CreateViewports();
 
-	void OnSetUpDirectories();
+  void OnSetUpDirectories();
 
-	void OnUpdate(float afTimeStep);
-	void OnSetSelectedViewport(){}
+  void OnUpdate(float afTimeStep);
+  void OnSetSelectedViewport() {}
 
-	void OnPostUpdateLayout();
+  void OnPostUpdateLayout();
 
-	void OnInit();
-	void OnInitInput();
-	void OnInitLayout();
+  void OnInit();
+  void OnInitInput();
+  void OnInitLayout();
 
-	void OnLoadConfig();
-	void OnSaveConfig();
+  void OnLoadConfig();
+  void OnSaveConfig();
 
-	void SetUpClassDefinitions(cEditorUserClassDefinitionManager* apManager) {}
+  void SetUpClassDefinitions(cEditorUserClassDefinitionManager* apManager) {}
 
-	///////////////////////////
-	// Data
-	
-	// File menu
-	cWidgetMenuItem* mpMainMenuNew;
-	cWidgetMenuItem* mpMainMenuSave;
-	cWidgetMenuItem* mpMainMenuSaveAs;
-	cWidgetMenuItem* mpMainMenuLoad;
-	cWidgetMenuItem* mpMainMenuRecent;
-	cWidgetMenuItem* mpMainMenuExit;
+  ///////////////////////////
+  // Data
 
-	// Edit menu
-	cWidgetMenuItem* mpMainMenuUndo;
-	cWidgetMenuItem* mpMainMenuRedo;
-	cWidgetMenuItem* mpMainMenuOptions;
+  // File menu
+  cWidgetMenuItem* mpMainMenuNew;
+  cWidgetMenuItem* mpMainMenuSave;
+  cWidgetMenuItem* mpMainMenuSaveAs;
+  cWidgetMenuItem* mpMainMenuLoad;
+  cWidgetMenuItem* mpMainMenuRecent;
+  cWidgetMenuItem* mpMainMenuExit;
 
-	// View menu
-	cWidgetMenuItem* mpMIShowFloor;
-	cWidgetMenuItem* mpMIShowWalls;
-	cWidgetMenuItem* mpMISetColor[3];
+  // Edit menu
+  cWidgetMenuItem* mpMainMenuUndo;
+  cWidgetMenuItem* mpMainMenuRedo;
+  cWidgetMenuItem* mpMainMenuOptions;
 
-	////////////////////////////////
-	// Some windows
-	cEditorWindowOptions* mpWindowOptions;
-	cParticleEditorWindowEmitters* mpWEmitters;
+  // View menu
+  cWidgetMenuItem* mpMIShowFloor;
+  cWidgetMenuItem* mpMIShowWalls;
+  cWidgetMenuItem* mpMISetColor[3];
 
-	///////////////////////
-	// Config stuff
-	cConfigFile* mpLocalConfig;
+  ////////////////////////////////
+  // Some windows
+  cEditorWindowOptions*          mpWindowOptions;
+  cParticleEditorWindowEmitters* mpWEmitters;
+
+  ///////////////////////
+  // Config stuff
+  cConfigFile* mpLocalConfig;
 };
 
 //----------------------------------------------------------
 
 #endif //LEVEL_EDITOR_H
-

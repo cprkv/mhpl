@@ -28,25 +28,25 @@ class cModelEditorWorld;
 
 //--------------------------------------------------------------
 
-class cModelEditorActionMeshLoad : public iEditorActionWorldModifier
-{
+class cModelEditorActionMeshLoad : public iEditorActionWorldModifier {
 public:
-	cModelEditorActionMeshLoad(cModelEditorWorld* apEditorWorld, const tString& asFilename);
+  cModelEditorActionMeshLoad(cModelEditorWorld* apEditorWorld, const tString& asFilename);
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
+
 protected:
-	void CreateSkeleton(tIntList& alstBoneIDs, tIntListIt& alstBoneIt, int alParentID, cBone* apBone);
-	tString msOldMeshFilename;
-	tString msNewMeshFilename;
+  void    CreateSkeleton(tIntList& alstBoneIDs, tIntListIt& alstBoneIt, int alParentID, cBone* apBone);
+  tString msOldMeshFilename;
+  tString msNewMeshFilename;
 
-	tIntList mlstSubMeshIDs;
-	tIntList mlstOldSubMeshIDs;
+  tIntList mlstSubMeshIDs;
+  tIntList mlstOldSubMeshIDs;
 
-	tIntList mlstBoneIDs;
-	tIntList mlstOldBoneIDs;
+  tIntList mlstBoneIDs;
+  tIntList mlstOldBoneIDs;
 
-	tIntList mlstOldSelectedIDs;
+  tIntList mlstOldSelectedIDs;
 };
 
 //--------------------------------------------------------------

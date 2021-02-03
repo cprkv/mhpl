@@ -26,63 +26,57 @@
 
 //----------------------------------------------------------------
 
-cModelEditorEditModeToolbox::cModelEditorEditModeToolbox(cModelEditor* apEditor) : iEditorWindow(apEditor,"Edit Mode ToolBox")
-{
-	mpEditor = apEditor;
+cModelEditorEditModeToolbox::cModelEditorEditModeToolbox(cModelEditor* apEditor)
+    : iEditorWindow(apEditor, "Edit Mode ToolBox") {
+  mpEditor = apEditor;
 }
 
 //----------------------------------------------------------------
 
-cModelEditorEditModeToolbox::~cModelEditorEditModeToolbox()
-{
+cModelEditorEditModeToolbox::~cModelEditorEditModeToolbox() {
 }
 
 //----------------------------------------------------------------
 
-void cModelEditorEditModeToolbox::OnInitLayout()
-{
-	SetSize(cVector2f(50,370));
-	
-	cVector3f vPos = cVector3f(5,5,0.1f);
+void cModelEditorEditModeToolbox::OnInitLayout() {
+  SetSize(cVector2f(50, 370));
 
-	tEditorEditModeVec& vEditModes = mpEditor->GetEditModes();
-	for(int i=0;i<(int)vEditModes.size();++i)
-	{
-		iEditorEditMode* pEditMode = vEditModes[i];
+  cVector3f vPos = cVector3f(5, 5, 0.1f);
 
-		mvButtons[i] = mpSet->CreateWidgetButton(vPos, 40, cString::To16Char(pEditMode->GetName()), mpBGFrame);
-		mvButtons[i]->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(Button_Pressed));
-		mvButtons[i]->SetUserData(pEditMode);
+  tEditorEditModeVec& vEditModes = mpEditor->GetEditModes();
+  for (int i = 0; i < (int) vEditModes.size(); ++i) {
+    iEditorEditMode* pEditMode = vEditModes[i];
 
-		vPos.y += 45;
+    mvButtons[i] = mpSet->CreateWidgetButton(vPos, 40, cString::To16Char(pEditMode->GetName()), mpBGFrame);
+    mvButtons[i]->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(Button_Pressed));
+    mvButtons[i]->SetUserData(pEditMode);
 
-		AddWidget(mvButtons[i]);
-	}
+    vPos.y += 45;
 
-	/*mvButtons[eModelEditorEditMode_Select]->SetText(_W("Select"));
+    AddWidget(mvButtons[i]);
+  }
+
+  /*mvButtons[eModelEditorEditMode_Select]->SetText(_W("Select"));
 	mvButtons[eModelEditorEditMode_Bodies]->SetText(_W("Shapes"));
 	mvButtons[eModelEditorEditMode_Joints]->SetText(_W("Joints"));
 	mvButtons[eModelEditorEditMode_Lights]->SetText(_W("Lights"));
 	mvButtons[eModelEditorEditMode_Billboards]->SetText(_W("Bboards"));
 	mvButtons[eModelEditorEditMode_ParticleSystems]->SetText(_W("PS"));
 	mvButtons[eModelEditorEditMode_Sounds]->SetText(_W("Sounds"));*/
-
 }
 
 //----------------------------------------------------------------
 
-bool cModelEditorEditModeToolbox::Button_Pressed(iWidget* apWidget, const cGuiMessageData& aData)
-{
-	mpEditor->SetCurrentEditMode((iEditorEditMode*)apWidget->GetUserData());
-	/*eModelEditorEditMode desiredEditMode = eModelEditorEditMode_Select;
+bool cModelEditorEditModeToolbox::Button_Pressed(iWidget* apWidget, const cGuiMessageData& aData) {
+  mpEditor->SetCurrentEditMode((iEditorEditMode*) apWidget->GetUserData());
+  /*eModelEditorEditMode desiredEditMode = eModelEditorEditMode_Select;
 	for(int i=0;i<7; ++i)
 		if(apWidget==mvButtons[i]) desiredEditMode = (eModelEditorEditMode)i;
 	
 	mpEditor->SetModelEditorEditMode(desiredEditMode);*/
-	
-	return true;
+
+  return true;
 }
 kGuiCallbackDeclaredFuncEnd(cModelEditorEditModeToolbox, Button_Pressed);
 
 //----------------------------------------------------------------
-

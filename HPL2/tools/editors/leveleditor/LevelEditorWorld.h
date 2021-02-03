@@ -34,13 +34,15 @@ class cLevelEditorStaticObjectCombo;
 ///////////////////////////////////////////////////////////
 // cLevelEditorEntityExtData
 //	Extension Data for entities in LevelEditor
-class cLevelEditorEntityExtData
-{
+class cLevelEditorEntityExtData {
 public:
-	cLevelEditorEntityExtData() { mlGroupID = 0; mlComboID = -1; }
+  cLevelEditorEntityExtData() {
+    mlGroupID = 0;
+    mlComboID = -1;
+  }
 
-	int mlGroupID;
-	int mlComboID;
+  int mlGroupID;
+  int mlComboID;
 };
 
 //---------------------------------------------------------------
@@ -48,54 +50,51 @@ public:
 ///////////////////////////////////////////////////////////
 // cLevelEditorWorld
 //	Scene data with specifics to LevelEditor
-class cLevelEditorWorld : public iEditorWorld
-{
+class cLevelEditorWorld : public iEditorWorld {
 public:
-	cLevelEditorWorld(iEditorBase* apEditor);
-	~cLevelEditorWorld();
+  cLevelEditorWorld(iEditorBase* apEditor);
+  ~cLevelEditorWorld();
 
-	cXmlElement* GetWorldDataElement(iXmlDocument* apXmlDoc);
-	cXmlElement* GetWorldObjectsElement(cXmlElement* apWorldDataElement);
-	void LoadWorldObjects(cXmlElement* apWorldObjectsElement);
+  cXmlElement* GetWorldDataElement(iXmlDocument* apXmlDoc);
+  cXmlElement* GetWorldObjectsElement(cXmlElement* apWorldDataElement);
+  void         LoadWorldObjects(cXmlElement* apWorldObjectsElement);
 
-	cXmlElement* CreateWorldDataElement(iXmlDocument* apXmlDoc);
-	cXmlElement* CreateWorldObjectsElement(cXmlElement* apWorldDataElement);
-	void SaveWorldObjects(cXmlElement* apWorldObjectsElement, tEntityWrapperList& alstEnts);
+  cXmlElement* CreateWorldDataElement(iXmlDocument* apXmlDoc);
+  cXmlElement* CreateWorldObjectsElement(cXmlElement* apWorldDataElement);
+  void         SaveWorldObjects(cXmlElement* apWorldObjectsElement, tEntityWrapperList& alstEnts);
 
-	void Reset();
+  void Reset();
 
-	//////////////////////////////////////////
-	// StaticObject Combos management
-	int GetFreeComboID() { return mlComboID++; }
-	cLevelEditorStaticObjectCombo* CreateStaticObjectCombo(int alID);
+  //////////////////////////////////////////
+  // StaticObject Combos management
+  int                            GetFreeComboID() { return mlComboID++; }
+  cLevelEditorStaticObjectCombo* CreateStaticObjectCombo(int alID);
 
-	bool AddStaticObjectCombo(cLevelEditorStaticObjectCombo* apCombo);
-	void RemoveStaticObjectCombo(int alID);
-	void ClearStaticObjectCombos();
-	const tStaticObjectComboList& GetStaticObjectCombos() { return mlstStaticObjectCombos; }
+  bool                          AddStaticObjectCombo(cLevelEditorStaticObjectCombo* apCombo);
+  void                          RemoveStaticObjectCombo(int alID);
+  void                          ClearStaticObjectCombos();
+  const tStaticObjectComboList& GetStaticObjectCombos() { return mlstStaticObjectCombos; }
 
-	cLevelEditorStaticObjectCombo* GetStaticObjectCombo(int alComboId);
-	int GetStaticObjectComboNum();
+  cLevelEditorStaticObjectCombo* GetStaticObjectCombo(int alComboId);
+  int                            GetStaticObjectComboNum();
 
-	////////////////////////////////////////////
-	// Level Editor specific code
-	void CreateDataCallback(iEntityWrapperData* apData);
-	void CopyDataFromEntityCallback(iEntityWrapperData* apData, iEntityWrapper* apEnt);
-	void CopyDataToEntityCallback(iEntityWrapperData* apData, iEntityWrapper* apEnt, int alCopyStep);
-	void DestroyDataCallback(iEntityWrapperData* apData);
+  ////////////////////////////////////////////
+  // Level Editor specific code
+  void CreateDataCallback(iEntityWrapperData* apData);
+  void CopyDataFromEntityCallback(iEntityWrapperData* apData, iEntityWrapper* apEnt);
+  void CopyDataToEntityCallback(iEntityWrapperData* apData, iEntityWrapper* apEnt, int alCopyStep);
+  void DestroyDataCallback(iEntityWrapperData* apData);
 
-	void SaveDataCallback(iEntityWrapperData* apData, cXmlElement* apElement);
-	void LoadDataCallback(iEntityWrapperData* apData, cXmlElement* apElement);
+  void SaveDataCallback(iEntityWrapperData* apData, cXmlElement* apElement);
+  void LoadDataCallback(iEntityWrapperData* apData, cXmlElement* apElement);
 
-	void DestroyEntityWrapperCallback(iEntityWrapper* apEnt);
+  void DestroyEntityWrapperCallback(iEntityWrapper* apEnt);
 
 protected:
-
-	int mlComboID;
-	tStaticObjectComboList mlstStaticObjectCombos;
+  int                    mlComboID;
+  tStaticObjectComboList mlstStaticObjectCombos;
 };
 
 //---------------------------------------------------------------
 
 #endif // HPLEDITOR_LEVEL_EDITOR_WORLD_H
-

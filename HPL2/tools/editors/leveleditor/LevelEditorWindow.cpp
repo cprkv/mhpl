@@ -29,15 +29,14 @@
 
 //---------------------------------------------------------------
 
-iLevelEditorWindow::iLevelEditorWindow(cLevelEditor *apEditor, const tString& asName) : iEditorWindow(apEditor, "Level Editor Window: "+asName)
-{
-	mpEditor = apEditor;
+iLevelEditorWindow::iLevelEditorWindow(cLevelEditor* apEditor, const tString& asName)
+    : iEditorWindow(apEditor, "Level Editor Window: " + asName) {
+  mpEditor = apEditor;
 }
 
 //---------------------------------------------------------------
 
-iLevelEditorWindow::~iLevelEditorWindow()
-{
+iLevelEditorWindow::~iLevelEditorWindow() {
 }
 
 //---------------------------------------------------------------

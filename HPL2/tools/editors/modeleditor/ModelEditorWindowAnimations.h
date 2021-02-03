@@ -28,54 +28,53 @@ class cAnimationWrapper;
 
 //-------------------------------------------------------------------------
 
-class cModelEditorWindowAnimations : public iEditorWindowPopUp
-{
+class cModelEditorWindowAnimations : public iEditorWindowPopUp {
 public:
-	cModelEditorWindowAnimations(cModelEditor* apEditor);
+  cModelEditorWindowAnimations(cModelEditor* apEditor);
 
 protected:
-	void OnSetActive(bool abX);
-	void OnInitLayout();
-	void OnUpdate(float afTimeStep);
+  void OnSetActive(bool abX);
+  void OnInitLayout();
+  void OnUpdate(float afTimeStep);
 
-	bool InputCallback(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(InputCallback);
-	bool WindowSpecificInputCallback(iEditorInput* apInput);
+  bool InputCallback(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(InputCallback);
+  bool WindowSpecificInputCallback(iEditorInput* apInput);
 
-	cModelEditor* mpEditor;
+  cModelEditor* mpEditor;
 
-	bool CheckAnimNameAvailable(const tString& asName);
+  bool CheckAnimNameAvailable(const tString& asName);
 
-	void UpdateAnimInputs();
-	void UpdateEventInputs();
+  void UpdateAnimInputs();
+  void UpdateEventInputs();
 
-	/////////////
-	// Layout
-	cWidgetButton* mpBOK;
-	cWidgetButton* mpBCancel;
+  /////////////
+  // Layout
+  cWidgetButton* mpBOK;
+  cWidgetButton* mpBCancel;
 
-	cWidgetButton* mpBAddAnimation;
-	cWidgetButton* mpBRemAnimation;
+  cWidgetButton* mpBAddAnimation;
+  cWidgetButton* mpBRemAnimation;
 
-	cWidgetListBox* mpListAnimations;
-	cEditorInputText* mpInpAnimName;
-	cEditorInputFile* mpInpAnimFile;
-	cEditorInputNumber* mpInpAnimSpeed;
-	cEditorInputNumber* mpInpAnimSpecialEventTime;
+  cWidgetListBox*     mpListAnimations;
+  cEditorInputText*   mpInpAnimName;
+  cEditorInputFile*   mpInpAnimFile;
+  cEditorInputNumber* mpInpAnimSpeed;
+  cEditorInputNumber* mpInpAnimSpecialEventTime;
 
-	cWidgetButton* mpBAddEvent;
-	cWidgetButton* mpBRemEvent;
+  cWidgetButton* mpBAddEvent;
+  cWidgetButton* mpBRemEvent;
 
-	cEditorInputEnum* mpInpAnimEvents;
+  cEditorInputEnum* mpInpAnimEvents;
 
-	cWidgetLabel* mpLEvent;
-	cWidgetListBox* mpListEvents;
-	cWidgetGroup* mpGEvent;
-	cEditorInputNumber* mpInpEventTime;
-	cEditorInputEnum* mpInpEventType;
-	cEditorInputText* mpInpEventValue;
+  cWidgetLabel*       mpLEvent;
+  cWidgetListBox*     mpListEvents;
+  cWidgetGroup*       mpGEvent;
+  cEditorInputNumber* mpInpEventTime;
+  cEditorInputEnum*   mpInpEventType;
+  cEditorInputText*   mpInpEventValue;
 
-	std::vector<cAnimationWrapper> mvTempAnimations;
+  std::vector<cAnimationWrapper> mvTempAnimations;
 };
 
 //-------------------------------------------------------------------------

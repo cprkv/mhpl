@@ -42,48 +42,47 @@ class iCustomVarInput;
 
 //--------------------------------------------------------------------------------
 
-class cModelEditorWindowUserSettings : public iEditorWindowPopUp
-{
+class cModelEditorWindowUserSettings : public iEditorWindowPopUp {
 public:
-	cModelEditorWindowUserSettings(cModelEditor* apEditor);
-	~cModelEditorWindowUserSettings();
+  cModelEditorWindowUserSettings(cModelEditor* apEditor);
+  ~cModelEditorWindowUserSettings();
 
 protected:
-	void OnSetActive(bool abX);
-	void OnInitLayout();
-	void OnUpdate(float afTimeStep);
+  void OnSetActive(bool abX);
+  void OnInitLayout();
+  void OnUpdate(float afTimeStep);
 
-	bool TypeList_OnChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(TypeList_OnChange);
-	
-	bool SubTypeList_OnChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(SubTypeList_OnChange);
+  bool TypeList_OnChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(TypeList_OnChange);
 
-	bool Button_OnPressed(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(Button_OnPressed);
+  bool SubTypeList_OnChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(SubTypeList_OnChange);
 
-	void PopulateTypeList();
-	void PopulateSubTypeList();
-	void PopulateVarList();
+  bool Button_OnPressed(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(Button_OnPressed);
 
-	void OrganizeVarInputs();
+  void PopulateTypeList();
+  void PopulateSubTypeList();
+  void PopulateVarList();
 
-	void SetTypeSubTypeCombo(const tString& asType, const tString& asSubType);
+  void OrganizeVarInputs();
 
-	///////////////////////////////////////////////////
-	// Data
-	cModelEditor* mpEditor;
+  void SetTypeSubTypeCombo(const tString& asType, const tString& asSubType);
 
-	cWidgetLabel* mpLabelType;
-	cWidgetComboBox* mpComboBoxType;
-	cWidgetLabel* mpLabelSubType;
-	cWidgetComboBox* mpComboBoxSubType;
+  ///////////////////////////////////////////////////
+  // Data
+  cModelEditor* mpEditor;
 
-	cWidgetFrame* mpFrameVars;
-	cEditorVarInputPanel* mpInputPanel;
-	
+  cWidgetLabel*    mpLabelType;
+  cWidgetComboBox* mpComboBoxType;
+  cWidgetLabel*    mpLabelSubType;
+  cWidgetComboBox* mpComboBoxSubType;
 
-	cWidgetButton* mvButtons[2];
+  cWidgetFrame*         mpFrameVars;
+  cEditorVarInputPanel* mpInputPanel;
+
+
+  cWidgetButton* mvButtons[2];
 };
 
 //--------------------------------------------------------------------------------

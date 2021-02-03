@@ -29,63 +29,53 @@
 
 //---------------------------------------------------------------------------------
 
-cModelEditorActionMeshLoad::cModelEditorActionMeshLoad(cModelEditorWorld* apEditorWorld, const tString& asFilename) : iEditorActionWorldModifier("Load Mesh", apEditorWorld)
-{
-	cModelEditorWorld* pWorld = (cModelEditorWorld*)mpEditorWorld;
+cModelEditorActionMeshLoad::cModelEditorActionMeshLoad(cModelEditorWorld* apEditorWorld, const tString& asFilename)
+    : iEditorActionWorldModifier("Load Mesh", apEditorWorld) {
+  cModelEditorWorld* pWorld = (cModelEditorWorld*) mpEditorWorld;
 
-	msOldMeshFilename = pWorld->GetSubMeshType()->GetMeshFilename();
-	mlstOldSubMeshIDs = pWorld->GetSubMeshType()->GetSubMeshIDs();// ((cModelEditorWorld*)mpEditorWorld)->GetSubMeshIDs();
-	mlstOldBoneIDs = pWorld->GetBoneType()->GetBoneIDs(); //((cModelEditorWorld*)mpEditorWorld)->GetBoneIDs();
+  msOldMeshFilename = pWorld->GetSubMeshType()->GetMeshFilename();
+  mlstOldSubMeshIDs = pWorld->GetSubMeshType()->GetSubMeshIDs(); // ((cModelEditorWorld*)mpEditorWorld)->GetSubMeshIDs();
+  mlstOldBoneIDs    = pWorld->GetBoneType()->GetBoneIDs();       //((cModelEditorWorld*)mpEditorWorld)->GetBoneIDs();
 
-	msNewMeshFilename = asFilename;
+  msNewMeshFilename = asFilename;
 
-	cMeshManager* pManager = mpEditorWorld->GetEditor()->GetEngine()->GetResources()->GetMeshManager();
-	cMesh* pMesh = pManager->CreateMesh(asFilename);
+  cMeshManager* pManager = mpEditorWorld->GetEditor()->GetEngine()->GetResources()->GetMeshManager();
+  cMesh*        pMesh    = pManager->CreateMesh(asFilename);
 
-	if(pMesh)
-	{
-		for(int i=0;i<pMesh->GetSubMeshNum();++i)
-			mlstSubMeshIDs.push_back(mpEditorWorld->GetFreeID());
+  if (pMesh) {
+    for (int i = 0; i < pMesh->GetSubMeshNum(); ++i)
+      mlstSubMeshIDs.push_back(mpEditorWorld->GetFreeID());
 
-		cSkeleton* pSkeleton = pMesh->GetSkeleton();
-		if(pSkeleton)
-		{
-			for(int i=0;i<pSkeleton->GetBoneNum();++i)
-				mlstBoneIDs.push_back(mpEditorWorld->GetFreeID());
-		}
-	}
+    cSkeleton* pSkeleton = pMesh->GetSkeleton();
+    if (pSkeleton) {
+      for (int i = 0; i < pSkeleton->GetBoneNum(); ++i)
+        mlstBoneIDs.push_back(mpEditorWorld->GetFreeID());
+    }
+  }
 
-	pManager->Destroy(pMesh);
+  pManager->Destroy(pMesh);
 }
 
 //---------------------------------------------------------------------------------
 
-void cModelEditorActionMeshLoad::DoModify()
-{
-	mpEditorWorld->GetEditor()->GetSelection()->ClearEntities();
-	tEntityDataVec temp;
-	((cModelEditorWorld*)mpEditorWorld)->GetSubMeshType()->SetMesh(msNewMeshFilename, true, 
-																	temp, mlstSubMeshIDs, 
-																	temp, mlstBoneIDs);
+void cModelEditorActionMeshLoad::DoModify() {
+  mpEditorWorld->GetEditor()->GetSelection()->ClearEntities();
+  tEntityDataVec temp;
+  ((cModelEditorWorld*) mpEditorWorld)->GetSubMeshType()->SetMesh(msNewMeshFilename, true, temp, mlstSubMeshIDs, temp, mlstBoneIDs);
 }
 
 //---------------------------------------------------------------------------------
 
-void cModelEditorActionMeshLoad::UndoModify()
-{
-	cEditorSelection* pSelection = mpEditorWorld->GetEditor()->GetSelection();
-	tEntityDataVec temp;
-	((cModelEditorWorld*)mpEditorWorld)->GetSubMeshType()->SetMesh(msOldMeshFilename, true,
-																	temp, mlstOldSubMeshIDs, 
-																	temp, mlstOldBoneIDs);
-	tIntListIt it = mlstOldSelectedIDs.begin();
-	for(;it!=mlstOldSelectedIDs.end();++it)
-	{
-		iEntityWrapper* pEnt = mpEditorWorld->GetEntity(*it);
+void cModelEditorActionMeshLoad::UndoModify() {
+  cEditorSelection* pSelection = mpEditorWorld->GetEditor()->GetSelection();
+  tEntityDataVec    temp;
+  ((cModelEditorWorld*) mpEditorWorld)->GetSubMeshType()->SetMesh(msOldMeshFilename, true, temp, mlstOldSubMeshIDs, temp, mlstOldBoneIDs);
+  tIntListIt it = mlstOldSelectedIDs.begin();
+  for (; it != mlstOldSelectedIDs.end(); ++it) {
+    iEntityWrapper* pEnt = mpEditorWorld->GetEntity(*it);
 
-		pSelection->AddEntity(pEnt);
-	}
+    pSelection->AddEntity(pEnt);
+  }
 }
 
 //---------------------------------------------------------------------------------
-

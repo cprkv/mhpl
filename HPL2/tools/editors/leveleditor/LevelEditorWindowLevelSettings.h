@@ -22,42 +22,41 @@
 
 #include "../common/EditorWindow.h"
 
-class cLevelEditorWindowLevelSettings : public iEditorWindowPopUp
-{
+class cLevelEditorWindowLevelSettings : public iEditorWindowPopUp {
 public:
-	cLevelEditorWindowLevelSettings(iEditorBase* apEditor);
-	~cLevelEditorWindowLevelSettings();
+  cLevelEditorWindowLevelSettings(iEditorBase* apEditor);
+  ~cLevelEditorWindowLevelSettings();
 
 protected:
-	void OnUpdate(float afTimeStep);
-	void OnInitLayout();
-	void OnSetActive(bool abX);
+  void OnUpdate(float afTimeStep);
+  void OnInitLayout();
+  void OnSetActive(bool abX);
 
-	bool WindowSpecificInputCallback(iEditorInput* apInput);
+  bool WindowSpecificInputCallback(iEditorInput* apInput);
 
-	bool ResetDecals(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ResetDecals);
+  bool ResetDecals(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ResetDecals);
 
-	////////////////////////////////////
-	// Data
+  ////////////////////////////////////
+  // Data
 
-	////////////////////////
-	// Layout stuff
+  ////////////////////////
+  // Layout stuff
 
 
-	cEditorInputBool* mpInpSkyboxActive;
-	cEditorInputFile* mpInpSkyboxTexture;
-	cEditorInputColorFrame* mpInpSkyboxColor;
+  cEditorInputBool*       mpInpSkyboxActive;
+  cEditorInputFile*       mpInpSkyboxTexture;
+  cEditorInputColorFrame* mpInpSkyboxColor;
 
-	cEditorInputBool* mpInpFogActive;
-	cEditorInputBool* mpInpFogCulling;
-	cEditorInputNumber* mpInpFogStart;
-	cEditorInputNumber* mpInpFogEnd;
-	cEditorInputNumber* mpInpFogFallOffExp;
-	cEditorInputColorFrame* mpInpFogColor;
+  cEditorInputBool*       mpInpFogActive;
+  cEditorInputBool*       mpInpFogCulling;
+  cEditorInputNumber*     mpInpFogStart;
+  cEditorInputNumber*     mpInpFogEnd;
+  cEditorInputNumber*     mpInpFogFallOffExp;
+  cEditorInputColorFrame* mpInpFogColor;
 
-	cEditorInputNumber* mpInpGlobalMaxDecalTris;
-	cWidgetButton*	mpBResetDecals;
+  cEditorInputNumber* mpInpGlobalMaxDecalTris;
+  cWidgetButton*      mpBResetDecals;
 };
 
-#endif //HPLEDITOR_EDITOR_WORLD_SETTINGS_H 
+#endif //HPLEDITOR_EDITOR_WORLD_SETTINGS_H

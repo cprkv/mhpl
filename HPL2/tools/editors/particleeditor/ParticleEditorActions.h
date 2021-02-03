@@ -26,82 +26,70 @@
 
 class cParticleEditor;
 
-enum eEditorParticleEmitterFloatProperty
-{
+enum eEditorParticleEmitterFloatProperty {
 };
 
-enum eEditorParticleEmitterVec3Property
-{
+enum eEditorParticleEmitterVec3Property {
 };
 
-enum eEditorParticleEmitterVec2Property
-{
+enum eEditorParticleEmitterVec2Property {
 };
 
-enum eEditorParticleEmitterStringProperty
-{
+enum eEditorParticleEmitterStringProperty {
 };
 
-enum eEditorParticleEmitterBoolProperty
-{
+enum eEditorParticleEmitterBoolProperty {
 };
 
 //--------------------------------------------------------------------------------------
 
-class cParticleEditorActionCreateEmitter : public iEditorActionWorldModifier
-{
+class cParticleEditorActionCreateEmitter : public iEditorActionWorldModifier {
 public:
-	cParticleEditorActionCreateEmitter();
-	void Do();
-	void Undo();
+  cParticleEditorActionCreateEmitter();
+  void Do();
+  void Undo();
 };
 
-class cParticleEditorActionDeleteEmitter : public iEditorActionWorldModifier
-{
+class cParticleEditorActionDeleteEmitter : public iEditorActionWorldModifier {
 public:
-	cParticleEditorActionDeleteEmitter();
-	void Do();
-	void Undo();
+  cParticleEditorActionDeleteEmitter();
+  void Do();
+  void Undo();
 };
 
-class cParticleEditorActionSetEmitterFloatProperty : public iEditorActionWorldModifier
-{
+class cParticleEditorActionSetEmitterFloatProperty : public iEditorActionWorldModifier {
 public:
-	cParticleEditorActionSetEmitterFloatProperty();
-	void Do();
-	void Undo();
+  cParticleEditorActionSetEmitterFloatProperty();
+  void Do();
+  void Undo();
 };
 
-class cParticleEditorActionSetEmitterVec3Property : public iEditorActionWorldModifier
-{
+class cParticleEditorActionSetEmitterVec3Property : public iEditorActionWorldModifier {
 public:
-	cParticleEditorActionSetEmitterVec3Property();
-	void Do();
-	void Undo();
+  cParticleEditorActionSetEmitterVec3Property();
+  void Do();
+  void Undo();
 };
 
-class cParticleEditorActionSetEmitterVec2Property : public iEditorActionWorldModifier
-{
+class cParticleEditorActionSetEmitterVec2Property : public iEditorActionWorldModifier {
 public:
-	cParticleEditorActionSetEmitterVec2Property();
-	void Do();
-	void Undo();
+  cParticleEditorActionSetEmitterVec2Property();
+  void Do();
+  void Undo();
 };
 
-class cParticleEditorActionSetEmitterStringProperty : public iEditorActionWorldModifier
-{
+class cParticleEditorActionSetEmitterStringProperty : public iEditorActionWorldModifier {
 public:
-	cParticleEditorActionSetEmitterStringProperty();
-	void Do();
-	void Undo();
+  cParticleEditorActionSetEmitterStringProperty();
+  void Do();
+  void Undo();
 };
 
-class cParticleEditorActionSetEmitterBoolProperty : public iEditorActionWorldModifier
-{
+class cParticleEditorActionSetEmitterBoolProperty : public iEditorActionWorldModifier {
 public:
-	cParticleEditorActionSetEmitterBoolProperty();
-	void Do();
-	void Undo();
+  cParticleEditorActionSetEmitterBoolProperty();
+  void Do();
+  void Undo();
 };
 
 //--------------------------------------------------------------------------------------

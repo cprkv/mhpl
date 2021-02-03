@@ -20,355 +20,281 @@
 #include "scene/Entity3D.h"
 #include "scene/Node3D.h"
 #include "math/Math.h"
-
 #include "system/LowLevelSystem.h"
+#include <utility>
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
-	iEntity3D::iEntity3D(tString asName)
-	{
-		msName = asName;
-		mbIsActive = true;
-		
-		mpParentNode = NULL;
+  //-----------------------------------------------------------------------
+  iEntity3D::iEntity3D(tString asName) {
+    msName                 = std::move(asName);
+    mbIsActive             = true;
+    mpParentNode           = nullptr;
+    m_mtxLocalTransform    = cMatrixf::Identity;
+    m_mtxWorldTransform    = cMatrixf::Identity;
+    mbTransformUpdated     = true;
+    mlCount                = 0;
+    msSourceFile           = "";
+    mbApplyTransformToBV   = true;
+    mbUpdateBoundingVolume = true;
+    mpParent               = nullptr;
+    mlIteratorCount        = -1;
+    mbIsSaved              = true;
+    mlUniqueID             = -1;
+  }
 
-		m_mtxLocalTransform = cMatrixf::Identity;
-		m_mtxWorldTransform = cMatrixf::Identity;
+  iEntity3D::~iEntity3D() {
+    if (mpParentNode) {
+      mpParentNode->RemoveEntity(this);
+    } else if (mpParent) {
+      mpParent->RemoveChild(this);
+    }
 
-		mbTransformUpdated = true;
+    for (auto* child : mlstChildren) {
+      child->mpParent = nullptr;
+    }
 
-		mlCount = 0;
+    for (auto* node : mlstNodeChildren) {
+      node->mpEntityParent = nullptr;
+    }
+  }
 
-		msSourceFile = "";
+  //-----------------------------------------------------------------------
 
-		mbApplyTransformToBV = true;
-		mbUpdateBoundingVolume = true;
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-		mpParent = NULL;
+  //-----------------------------------------------------------------------
 
-		mlIteratorCount =-1;
+  cVector3f iEntity3D::GetLocalPosition() {
+    return m_mtxLocalTransform.GetTranslation();
+  }
 
-		mbIsSaved = true;
-		mlUniqueID = -1;
-	}
+  //-----------------------------------------------------------------------
 
-	iEntity3D::~iEntity3D()
-	{
-		if(mpParentNode)
-			mpParentNode->RemoveEntity(this);
-		else if(mpParent) 
-			mpParent->RemoveChild(this);
+  cMatrixf& iEntity3D::GetLocalMatrix() {
+    return m_mtxLocalTransform;
+  }
 
-		for(tEntity3DListIt it = mlstChildren.begin(); it != mlstChildren.end();++it)
-		{
-			iEntity3D *pChild = *it;
-			pChild->mpParent = NULL;
-		}
+  //-----------------------------------------------------------------------
 
-		for(tNode3DListIt it = mlstNodeChildren.begin(); it != mlstNodeChildren.end();++it)
-		{
-			cNode3D *pNode = *it;
-			pNode->mpEntityParent = NULL;
-		}
-	}
+  cVector3f iEntity3D::GetWorldPosition() {
+    UpdateWorldTransform();
+    return m_mtxWorldTransform.GetTranslation();
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
+  cMatrixf& iEntity3D::GetWorldMatrix() {
+    UpdateWorldTransform();
+    return m_mtxWorldTransform;
+  }
 
-	//-----------------------------------------------------------------------
-	
-	cVector3f iEntity3D::GetLocalPosition()
-	{
-		return m_mtxLocalTransform.GetTranslation();
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void iEntity3D::SetPosition(const cVector3f& avPos) {
+    m_mtxLocalTransform.m[0][3] = avPos.x;
+    m_mtxLocalTransform.m[1][3] = avPos.y;
+    m_mtxLocalTransform.m[2][3] = avPos.z;
+    SetTransformUpdated();
+  }
 
-	cMatrixf& iEntity3D::GetLocalMatrix()
-	{
-		return m_mtxLocalTransform;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void iEntity3D::SetMatrix(const cMatrixf& a_mtxTransform) {
+    m_mtxLocalTransform = a_mtxTransform;
+    SetTransformUpdated();
+  }
 
-	cVector3f iEntity3D::GetWorldPosition()
-	{
-		UpdateWorldTransform();
+  //-----------------------------------------------------------------------
 
-		return m_mtxWorldTransform.GetTranslation();
-	}
-	
-	//-----------------------------------------------------------------------
+  void iEntity3D::SetWorldPosition(const cVector3f& avWorldPos) {
+    if (mpParent) {
+      SetPosition(avWorldPos - mpParent->GetWorldPosition());
+    } else {
+      SetPosition(avWorldPos);
+    }
+  }
 
-	cMatrixf& iEntity3D::GetWorldMatrix()
-	{
-		UpdateWorldTransform();
-		
-		return m_mtxWorldTransform;
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void iEntity3D::SetPosition(const cVector3f& avPos)
-	{
-		m_mtxLocalTransform.m[0][3] = avPos.x;
-		m_mtxLocalTransform.m[1][3] = avPos.y;
-		m_mtxLocalTransform.m[2][3] = avPos.z;
+  void iEntity3D::SetWorldMatrix(const cMatrixf& a_mtxWorldTransform) {
+    if (mpParent) {
+      auto relative_matrix = cMath::MatrixMul(cMath::MatrixInverse(mpParent->GetWorldMatrix()),
+                                              a_mtxWorldTransform);
+      SetMatrix(relative_matrix);
+    } else {
+      SetMatrix(a_mtxWorldTransform);
+    }
+  }
 
-		SetTransformUpdated();
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void iEntity3D::SetMatrix(const cMatrixf& a_mtxTransform)
-	{
-		m_mtxLocalTransform = a_mtxTransform;
+  void iEntity3D::SetTransformUpdated(bool abUpdateCallbacks) {
+    mbTransformUpdated = true;
+    mlCount++;
+    mbUpdateBoundingVolume = true;
 
-		SetTransformUpdated();
-	}
+    OnTransformUpdated();
 
-	//-----------------------------------------------------------------------
+    //Update children
+    for (auto* child : mlstChildren) {
+      child->SetTransformUpdated(true);
+    }
 
-	void iEntity3D::SetWorldPosition(const cVector3f& avWorldPos)
-	{
-		if(mpParent)
-		{
-			SetPosition(avWorldPos - mpParent->GetWorldPosition());
-		}
-		else
-		{
-			SetPosition(avWorldPos);
-		}
-	}
+    //Update node children
+    for (auto* node : mlstNodeChildren) {
+      node->SetWorldTransformUpdated();
+    }
 
-	//-----------------------------------------------------------------------
+    //Update callbacks
+    if (!mlstCallbacks.empty() && abUpdateCallbacks) {
+      for (auto* callback : mlstCallbacks) {
+        callback->OnTransformUpdate(this);
+      }
+    }
+  }
 
-	void iEntity3D::SetWorldMatrix(const cMatrixf& a_mtxWorldTransform)
-	{
-		if(mpParent)
-		{
-			SetMatrix(cMath::MatrixMul(cMath::MatrixInverse(mpParent->GetWorldMatrix()),
-				a_mtxWorldTransform));
-		}
-		else
-		{
-			SetMatrix(a_mtxWorldTransform);
-		}
-	}
-	
-	//-----------------------------------------------------------------------
-	
-	void iEntity3D::SetTransformUpdated(bool abUpdateCallbacks)
-	{
-		mbTransformUpdated = true;
-		mlCount++;
+  //-----------------------------------------------------------------------
 
-		mbUpdateBoundingVolume = true;
+  bool iEntity3D::GetTransformUpdated() {
+    return mbTransformUpdated;
+  }
 
-		OnTransformUpdated();
-		
-		//Update children
-		for(tEntity3DListIt EntIt = mlstChildren.begin(); EntIt != mlstChildren.end();++EntIt)
-		{
-			iEntity3D *pChild = *EntIt;
-			pChild->SetTransformUpdated(true);
-		}
-		
-		//Update node children
-		for(tNode3DListIt nodeIt = mlstNodeChildren.begin(); nodeIt != mlstNodeChildren.end();++nodeIt)
-		{
-			cNode3D *pNode = *nodeIt;
-			pNode->SetWorldTransformUpdated();
-		}
+  //-----------------------------------------------------------------------
 
-		//Update callbacks
-		if(mlstCallbacks.empty() || abUpdateCallbacks==false) return;
+  int iEntity3D::GetTransformUpdateCount() {
+    return mlCount;
+  }
 
-		tEntityCallbackListIt it = mlstCallbacks.begin();
-		for(; it!= mlstCallbacks.end(); ++it)
-		{
-			iEntityCallback* pCallback = *it;
-			pCallback->OnTransformUpdate(this);
-		}
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  cBoundingVolume* iEntity3D::GetBoundingVolume() {
+    if (mbApplyTransformToBV && mbUpdateBoundingVolume) {
+      mBoundingVolume.SetTransform(GetWorldMatrix());
+      mbUpdateBoundingVolume = false;
+    }
 
-	bool iEntity3D::GetTransformUpdated()
-	{
-		return mbTransformUpdated;
-	}
-	
-	//-----------------------------------------------------------------------
-	
-	int iEntity3D::GetTransformUpdateCount()
-	{
-		return mlCount;
-	}
+    return &mBoundingVolume;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cBoundingVolume* iEntity3D::GetBoundingVolume()
-	{
-		if(mbApplyTransformToBV && mbUpdateBoundingVolume)
-		{
-			mBoundingVolume.SetTransform(GetWorldMatrix());
-			mbUpdateBoundingVolume = false;
-		}
+  void iEntity3D::AddCallback(iEntityCallback* apCallback) {
+    mlstCallbacks.push_back(apCallback);
+  }
 
-		return &mBoundingVolume;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void iEntity3D::RemoveCallback(iEntityCallback* apCallback) {
+    STLFindAndRemove(mlstCallbacks, apCallback);
+  }
 
-	void iEntity3D::AddCallback(iEntityCallback *apCallback)
-	{
-		mlstCallbacks.push_back(apCallback);
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void iEntity3D::RemoveCallback(iEntityCallback *apCallback)
-	{
-		STLFindAndRemove(mlstCallbacks, apCallback);
-	}
+  void iEntity3D::AddChild(iEntity3D* apEntity) {
+    if (apEntity == nullptr) {
+      return;
+    }
+    if (apEntity->mpParent != nullptr) {
+      apEntity->mpParent->RemoveChild(apEntity);
+    }
 
-	//-----------------------------------------------------------------------
+    mlstChildren.push_back(apEntity);
+    apEntity->mpParent = this;
 
-	void iEntity3D::AddChild(iEntity3D *apEntity)
-	{
-		if(apEntity==NULL)return;
-		if(apEntity->mpParent != NULL)
-		{
-			apEntity->mpParent->RemoveChild(apEntity);
-		}
+    apEntity->SetTransformUpdated(true);
+  }
 
-	    mlstChildren.push_back(apEntity);
-		apEntity->mpParent = this;
+  void iEntity3D::RemoveChild(iEntity3D* apEntity) {
+    for (auto it = mlstChildren.begin(); it != mlstChildren.end();) {
+      iEntity3D* child = *it;
+      if (child == apEntity) {
+        child->mpParent = nullptr;
+        it              = mlstChildren.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
 
-		apEntity->SetTransformUpdated(true);
-	}
-	
-	void iEntity3D::RemoveChild(iEntity3D *apEntity)
-	{
-		for(tEntity3DListIt it = mlstChildren.begin(); it != mlstChildren.end();)
-		{
-			iEntity3D *pChild = *it;
-			if(pChild == apEntity)
-			{
-				pChild->mpParent = NULL;
-				it = mlstChildren.erase(it);
-			}
-			else
-			{
-				++it;
-			}
-		}
-	}
+  bool iEntity3D::IsChild(iEntity3D* apEntity) {
+    return std::any_of(mlstChildren.begin(),
+                       mlstChildren.end(),
+                       [=](auto& a) { return apEntity == a; });
+  }
 
-	bool iEntity3D::IsChild(iEntity3D *apEntity)
-	{
-		for(tEntity3DListIt it = mlstChildren.begin(); it != mlstChildren.end();++it)
-		{
-			iEntity3D *pChild = *it;
-			if(pChild == apEntity) return true;
-		}
-		return false;
-	}
+  iEntity3D* iEntity3D::GetEntityParent() {
+    return mpParent;
+  }
 
-	iEntity3D * iEntity3D::GetEntityParent()
-	{
-		return mpParent;
-	}
+  cEntity3DIterator iEntity3D::GetChildIterator() {
+    return cEntity3DIterator(&mlstChildren);
+  }
 
-	cEntity3DIterator iEntity3D::GetChildIterator()
-	{
-		return cEntity3DIterator(&mlstChildren);
-	}
-	
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	void iEntity3D::AddNodeChild(cNode3D *apNode)
-	{
-		if(apNode->mpEntityParent != NULL)
-		{
-			apNode->mpEntityParent->RemoveNodeChild(apNode);
-		}
+  void iEntity3D::AddNodeChild(cNode3D* apNode) {
+    if (apNode->mpEntityParent != nullptr) {
+      apNode->mpEntityParent->RemoveNodeChild(apNode);
+    }
 
-		mlstNodeChildren.push_back(apNode);
-		apNode->mpEntityParent = this;
+    mlstNodeChildren.push_back(apNode);
+    apNode->mpEntityParent = this;
 
-		apNode->SetWorldTransformUpdated();
-	}
-	
-	void iEntity3D::RemoveNodeChild(cNode3D *apNode)
-	{
-		for(tNode3DListIt it = mlstNodeChildren.begin(); it != mlstNodeChildren.end();)
-		{
-			cNode3D *pNode = *it;
-			if(pNode == apNode)
-			{
-				pNode->mpEntityParent = NULL;
-				it = mlstNodeChildren.erase(it);
-			}
-			else
-			{
-				++it;
-			}
-		}
-	}
-	
-	bool iEntity3D::IsNodeChild(cNode3D *apNode)
-	{
-		for(tNode3DListIt it = mlstNodeChildren.begin(); it != mlstNodeChildren.end();++it)
-		{
-			cNode3D *pNode = *it;
-			if(pNode == apNode) return true;
-		}
-		return false;
-	}
-	
-	//-----------------------------------------------------------------------
-	
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+    apNode->SetWorldTransformUpdated();
+  }
 
-	//-----------------------------------------------------------------------
-	void iEntity3D::UpdateWorldTransform()
-	{
-		if(mbTransformUpdated)
-		{
-			//Log("CREATING Entity '%s' world transform!\n",msName.c_str());
+  void iEntity3D::RemoveNodeChild(cNode3D* apNode) {
+    for (auto it = mlstNodeChildren.begin(); it != mlstNodeChildren.end();) {
+      cNode3D* node = *it;
+      if (node == apNode) {
+        node->mpEntityParent = nullptr;
+        it                   = mlstNodeChildren.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
 
-			mbTransformUpdated = false;
-			
-			//first check if there is a node parent
-			if(mpParentNode)
-			{
-				cNode3D* pNode3D = static_cast<cNode3D*>(mpParentNode);
+  bool iEntity3D::IsNodeChild(cNode3D* apNode) {
+    return std::any_of(mlstNodeChildren.begin(),
+                       mlstNodeChildren.end(),
+                       [=](auto& a) { return apNode == a; });
+  }
 
-				m_mtxWorldTransform = cMath::MatrixMul(pNode3D->GetWorldMatrix(), m_mtxLocalTransform);
-			}
-			//If there is no node parent check for entity parent
-			else if(mpParent)
-			{
-				m_mtxWorldTransform = cMath::MatrixMul(mpParent->GetWorldMatrix(), m_mtxLocalTransform);
-			}
-			else
-			{
-				m_mtxWorldTransform = m_mtxLocalTransform;
-			}
-		}
-	}
-	
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
+
+  //-----------------------------------------------------------------------
+  void iEntity3D::UpdateWorldTransform() {
+    if (mbTransformUpdated) {
+      //Log("CREATING Entity '%s' world transform!\n",msName.c_str());
+
+      mbTransformUpdated = false;
+
+      //first check if there is a node parent
+      if (mpParentNode) {
+        auto* node3D        = static_cast<cNode3D*>(mpParentNode);
+        m_mtxWorldTransform = cMath::MatrixMul(node3D->GetWorldMatrix(), m_mtxLocalTransform);
+      }
+
+      //If there is no node parent check for entity parent
+      else if (mpParent) {
+        m_mtxWorldTransform = cMath::MatrixMul(mpParent->GetWorldMatrix(), m_mtxLocalTransform);
+      } else {
+        m_mtxWorldTransform = m_mtxLocalTransform;
+      }
+    }
+  }
+
+  //-----------------------------------------------------------------------
+} // namespace hpl

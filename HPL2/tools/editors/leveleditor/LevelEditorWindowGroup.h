@@ -34,64 +34,62 @@ class cLevelEditor;
 
 //---------------------------------------------------------------
 
-class cLevelEditorWindowGroup : public iEditorWindowPopUp
-{
+class cLevelEditorWindowGroup : public iEditorWindowPopUp {
 public:
-	cLevelEditorWindowGroup(cLevelEditor* apEditor);
-	~cLevelEditorWindowGroup();
+  cLevelEditorWindowGroup(cLevelEditor* apEditor);
+  ~cLevelEditorWindowGroup();
 
 
 protected:
-	////////////////////////////////
-	// Own functions
-	bool MainMenu_ItemClick(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(MainMenu_ItemClick);
+  ////////////////////////////////
+  // Own functions
+  bool MainMenu_ItemClick(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(MainMenu_ItemClick);
 
-	bool GroupList_OnSelectionChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(GroupList_OnSelectionChange);
+  bool GroupList_OnSelectionChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(GroupList_OnSelectionChange);
 
-	bool EntityList_OnSelectionChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(EntityList_OnSelectionChange);
+  bool EntityList_OnSelectionChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(EntityList_OnSelectionChange);
 
-	bool VisibilityCheckBox_OnChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(VisibilityCheckBox_OnChange);
+  bool VisibilityCheckBox_OnChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(VisibilityCheckBox_OnChange);
 
-	bool Name_OnEnter(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(Name_OnEnter);
+  bool Name_OnEnter(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(Name_OnEnter);
 
-	void UpdateGroupList();
-	void UpdateEntityList();
-	void UpdateGroupParams();
-	////////////////////////////////
-	// Implemented functions
-	void OnInitLayout();
+  void UpdateGroupList();
+  void UpdateEntityList();
+  void UpdateGroupParams();
+  ////////////////////////////////
+  // Implemented functions
+  void OnInitLayout();
 
-	void OnWorldModify();
+  void OnWorldModify();
 
-	void OnUpdate(float afTimeStep);
+  void OnUpdate(float afTimeStep);
 
-	////////////////////////////////
-	// Data
-	tGroupMap* mpGroupMap;
-	tIntVec		mvGroupIDs;
+  ////////////////////////////////
+  // Data
+  tGroupMap* mpGroupMap;
+  tIntVec    mvGroupIDs;
 
-	bool mbMustUpdateGroupList;
-	bool mbMustUpdateList;
+  bool mbMustUpdateGroupList;
+  bool mbMustUpdateList;
 
-	cWidgetMainMenu* mpMainMenu;
-	cWidgetMenuItem* mpMainMenuNew;
-	cWidgetMenuItem* mpMainMenuDelete;
-	cWidgetMenuItem* mpMainMenuAddSelected;
-	cWidgetMenuItem* mpMainMenuRemoveSelected;
-	cWidgetMenuItem* mpMainMenuSelect;
-	cWidgetMenuItem* mpMainMenuDeselect;
-	cWidgetMenuItem* mpMainMenuExit;
+  cWidgetMainMenu* mpMainMenu;
+  cWidgetMenuItem* mpMainMenuNew;
+  cWidgetMenuItem* mpMainMenuDelete;
+  cWidgetMenuItem* mpMainMenuAddSelected;
+  cWidgetMenuItem* mpMainMenuRemoveSelected;
+  cWidgetMenuItem* mpMainMenuSelect;
+  cWidgetMenuItem* mpMainMenuDeselect;
+  cWidgetMenuItem* mpMainMenuExit;
 
-	cWidgetTextBox* mpInputName;
-	cWidgetListBox* mpListGroups;
-	cWidgetMultiPropertyListBox* mpListGroupEntities;
-	cWidgetCheckBox* mpCheckBoxGroupVisibility;
-
+  cWidgetTextBox*              mpInputName;
+  cWidgetListBox*              mpListGroups;
+  cWidgetMultiPropertyListBox* mpListGroupEntities;
+  cWidgetCheckBox*             mpCheckBoxGroupVisibility;
 };
 
 //--------------------------------------------------------------------

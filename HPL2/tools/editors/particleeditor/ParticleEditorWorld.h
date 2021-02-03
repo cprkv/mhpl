@@ -26,61 +26,60 @@ class cEntityWrapperParticleEmitter;
 
 //---------------------------------------------------------------
 
-class cParticleEditorWorld : public iEditorWorld
-{
+class cParticleEditorWorld : public iEditorWorld {
 public:
-	cParticleEditorWorld(iEditorBase* apEditor);
-	~cParticleEditorWorld();
+  cParticleEditorWorld(iEditorBase* apEditor);
+  ~cParticleEditorWorld();
 
-	cXmlElement* CreateWorldDataElement(iXmlDocument* apXmlDoc) { return NULL; }
-	cXmlElement* CreateWorldObjectsElement(cXmlElement* apWorldDataElement) { return NULL; }
+  cXmlElement* CreateWorldDataElement(iXmlDocument* apXmlDoc) { return NULL; }
+  cXmlElement* CreateWorldObjectsElement(cXmlElement* apWorldDataElement) { return NULL; }
 
-	cXmlElement* GetWorldDataElement(iXmlDocument* apXmlDoc) { return apXmlDoc; }
-	void LoadWorldData(cXmlElement* apWorldDataElement) {}
-	cXmlElement* GetWorldObjectsElement(cXmlElement* apWorldDataElement) { return NULL; }
-	void LoadWorldObjects(cXmlElement* apWorldObjectsElement) {}
+  cXmlElement* GetWorldDataElement(iXmlDocument* apXmlDoc) { return apXmlDoc; }
+  void         LoadWorldData(cXmlElement* apWorldDataElement) {}
+  cXmlElement* GetWorldObjectsElement(cXmlElement* apWorldDataElement) { return NULL; }
+  void         LoadWorldObjects(cXmlElement* apWorldObjectsElement) {}
 
-	bool Load(iXmlDocument*);
-	bool Save(iXmlDocument*);
+  bool Load(iXmlDocument*);
+  bool Save(iXmlDocument*);
 
-	void Reset();
+  void Reset();
 
-	iEntityWrapper* AddEmitter(iEntityWrapperData* apData=NULL);
-	void RemoveEmitter(iEntityWrapper* apEmitter);
-	bool GetEmittersUpdated() { return mbEmittersUpdated; }
-	void SetEmittersUpdated(bool abX) { mbEmittersUpdated = abX; }
+  iEntityWrapper* AddEmitter(iEntityWrapperData* apData = NULL);
+  void            RemoveEmitter(iEntityWrapper* apEmitter);
+  bool            GetEmittersUpdated() { return mbEmittersUpdated; }
+  void            SetEmittersUpdated(bool abX) { mbEmittersUpdated = abX; }
 
-	void UpdateParticleSystem();
+  void UpdateParticleSystem();
 
-	void SetShowWalls(bool abX);
-	void SetShowFloor(bool abX);
-	void SetBGColor(const cColor& aCol);
+  void SetShowWalls(bool abX);
+  void SetShowFloor(bool abX);
+  void SetBGColor(const cColor& aCol);
 
-	bool GetShowFloor() { return mbShowFloor; }
-	bool GetShowWalls() { return mbShowWalls; }
-	cColor GetBGColor();
+  bool   GetShowFloor() { return mbShowFloor; }
+  bool   GetShowWalls() { return mbShowWalls; }
+  cColor GetBGColor();
+
 protected:
-	bool CheckDataIsValid();
+  bool CheckDataIsValid();
 
-	void OnEditorUpdate();
+  void OnEditorUpdate();
 
-	bool mbEmittersUpdated;
-	bool mbPSDataUpdated;
-	iPhysicsWorld* mpPhysicsWorld;
-	iXmlDocument* mpTestData;
-	cParticleSystem* mpTestPS;
+  bool             mbEmittersUpdated;
+  bool             mbPSDataUpdated;
+  iPhysicsWorld*   mpPhysicsWorld;
+  iXmlDocument*    mpTestData;
+  cParticleSystem* mpTestPS;
 
-	cColor mBGCol;
+  cColor mBGCol;
 
-	bool mbShowFloor;
-	bool mbShowWalls;
+  bool mbShowFloor;
+  bool mbShowWalls;
 
-	
-	std::vector<cMeshEntity*> mvWalls;
-	std::vector<iPhysicsBody*> mvWallBodies;
+
+  std::vector<cMeshEntity*>  mvWalls;
+  std::vector<iPhysicsBody*> mvWallBodies;
 };
 
 //---------------------------------------------------------------
 
 #endif // HPLEDITOR_PARTICLE_EDITOR_WORLD_H
-

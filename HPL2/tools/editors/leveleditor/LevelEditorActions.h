@@ -34,366 +34,350 @@ class cLevelEditorStaticObjectCombo;
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionGroupAdd : public iEditorAction
-{
+class cLevelEditorActionGroupAdd : public iEditorAction {
 public:
-	cLevelEditorActionGroupAdd(iEditorBase* apEditor, unsigned int alID, const tString& asName);
+  cLevelEditorActionGroupAdd(iEditorBase* apEditor, unsigned int alID, const tString& asName);
 
-	void Do();
-	void Undo();
+  void Do();
+  void Undo();
 
 protected:
-	iEditorBase* mpEditor;
-	unsigned int mlID;
-	tString msName;
+  iEditorBase* mpEditor;
+  unsigned int mlID;
+  tString      msName;
 
-	tIntVec mvEntityIDs;
-	tUIntVec mvEntityGroups;
+  tIntVec  mvEntityIDs;
+  tUIntVec mvEntityGroups;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionGroupAddSelected : public iEditorAction
-{
+class cLevelEditorActionGroupAddSelected : public iEditorAction {
 public:
-	cLevelEditorActionGroupAddSelected(iEditorBase* apEditor, unsigned int alID);
+  cLevelEditorActionGroupAddSelected(iEditorBase* apEditor, unsigned int alID);
 
-	void Do();
-	void Undo();
+  void Do();
+  void Undo();
 
 protected:
-	iEditorBase* mpEditor;
-	unsigned int mlID;
+  iEditorBase* mpEditor;
+  unsigned int mlID;
 
-	tIntVec mvEntityIDs;
-	tUIntVec mvEntityGroups;
+  tIntVec  mvEntityIDs;
+  tUIntVec mvEntityGroups;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionGroupDelete : public iEditorAction
-{
+class cLevelEditorActionGroupDelete : public iEditorAction {
 public:
-	cLevelEditorActionGroupDelete(iEditorBase* apEditor, unsigned int alID);
+  cLevelEditorActionGroupDelete(iEditorBase* apEditor, unsigned int alID);
 
-	void Do();
-	void Undo();
+  void Do();
+  void Undo();
 
 protected:
-	iEditorBase* mpEditor;
-	unsigned int mlID;
-	tString msName;
-	bool mbVis;
+  iEditorBase* mpEditor;
+  unsigned int mlID;
+  tString      msName;
+  bool         mbVis;
 
-	tIntVec mvEntityIDs;
-	tUIntVec mvEntityGroups;
+  tIntVec  mvEntityIDs;
+  tUIntVec mvEntityGroups;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionGroupDeselectEntities : public iEditorAction
-{
+class cLevelEditorActionGroupDeselectEntities : public iEditorAction {
 public:
-	cLevelEditorActionGroupDeselectEntities(iEditorBase* apEditor, unsigned int alID);
+  cLevelEditorActionGroupDeselectEntities(iEditorBase* apEditor, unsigned int alID);
 
-	void Do();
-	void Undo();
+  void Do();
+  void Undo();
 
 protected:
-	iEditorBase* mpEditor;
-	cEditorEditModeSelect* mpEditMode;
-	unsigned int mlID;
+  iEditorBase*           mpEditor;
+  cEditorEditModeSelect* mpEditMode;
+  unsigned int           mlID;
 
-	tIntVec mvEntityIDs;
+  tIntVec mvEntityIDs;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionGroupRemoveSelected : public iEditorAction
-{
+class cLevelEditorActionGroupRemoveSelected : public iEditorAction {
 public:
-	cLevelEditorActionGroupRemoveSelected(iEditorBase* apEditor, unsigned int alID);
+  cLevelEditorActionGroupRemoveSelected(iEditorBase* apEditor, unsigned int alID);
 
-	void Do();
-	void Undo();
+  void Do();
+  void Undo();
 
 protected:
-	iEditorBase* mpEditor;
-	unsigned int mlID;
+  iEditorBase* mpEditor;
+  unsigned int mlID;
 
-	tIntVec mvEntityIDs;
+  tIntVec mvEntityIDs;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionGroupSelectEntities : public iEditorAction
-{
+class cLevelEditorActionGroupSelectEntities : public iEditorAction {
 public:
-	cLevelEditorActionGroupSelectEntities(iEditorBase* apEditor, unsigned int alID);
+  cLevelEditorActionGroupSelectEntities(iEditorBase* apEditor, unsigned int alID);
 
-	void Do();
-	void Undo();
+  void Do();
+  void Undo();
 
 protected:
-	iEditorBase* mpEditor;
-	cEditorEditModeSelect* mpEditMode;
-	unsigned int mlID;
+  iEditorBase*           mpEditor;
+  cEditorEditModeSelect* mpEditMode;
+  unsigned int           mlID;
 
-	tIntVec mvEntityIDs;
+  tIntVec mvEntityIDs;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionGroupSetName : public iEditorAction
-{
+class cLevelEditorActionGroupSetName : public iEditorAction {
 public:
-	cLevelEditorActionGroupSetName(iEditorBase* apEditor, unsigned int alID, const tString& asName);
+  cLevelEditorActionGroupSetName(iEditorBase* apEditor, unsigned int alID, const tString& asName);
 
-	void Do();
-	void Undo();
+  void Do();
+  void Undo();
+
 protected:
-	iEditorBase* mpEditor;
+  iEditorBase* mpEditor;
 
-	unsigned int mlID;
-	tString msOldName;
-	tString msNewName;
+  unsigned int mlID;
+  tString      msOldName;
+  tString      msNewName;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionGroupSetVisibility : public iEditorAction
-{
+class cLevelEditorActionGroupSetVisibility : public iEditorAction {
 public:
-	cLevelEditorActionGroupSetVisibility(iEditorBase* apEditor, unsigned int alID, bool abNewValue);
+  cLevelEditorActionGroupSetVisibility(iEditorBase* apEditor, unsigned int alID, bool abNewValue);
 
-	void Do();
-	void Undo();
+  void Do();
+  void Undo();
+
 protected:
-	iEditorBase* mpEditor;
+  iEditorBase* mpEditor;
 
-	unsigned int mlID;
-	bool mbNewValue;
-	bool mbOldValue;
+  unsigned int mlID;
+  bool         mbNewValue;
+  bool         mbOldValue;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionSetSkyboxActive : public iEditorActionWorldModifier
-{
+class cLevelEditorActionSetSkyboxActive : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionSetSkyboxActive(iEditorWorld* apWorld, bool abX);
+  cLevelEditorActionSetSkyboxActive(iEditorWorld* apWorld, bool abX);
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
 
 protected:
-	void Apply(bool abX);
+  void Apply(bool abX);
 
-	bool mbOldValue;
-	bool mbNewValue;
+  bool mbOldValue;
+  bool mbNewValue;
 };
 
-class cLevelEditorActionSetSkyboxTexture : public iEditorActionWorldModifier
-{
+class cLevelEditorActionSetSkyboxTexture : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionSetSkyboxTexture(iEditorWorld* apWorld, const tString& asX);
+  cLevelEditorActionSetSkyboxTexture(iEditorWorld* apWorld, const tString& asX);
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
 
 protected:
-	void Apply(const tString& asX);
+  void Apply(const tString& asX);
 
-	tString msOldValue;
-	tString msNewValue;
+  tString msOldValue;
+  tString msNewValue;
 };
 
-class cLevelEditorActionSetSkyboxColor : public iEditorActionWorldModifier
-{
+class cLevelEditorActionSetSkyboxColor : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionSetSkyboxColor(iEditorWorld* apWorld, const cColor& aX);
+  cLevelEditorActionSetSkyboxColor(iEditorWorld* apWorld, const cColor& aX);
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
 
 protected:
-	void Apply(const cColor& aX);
+  void Apply(const cColor& aX);
 
-	cColor mOldValue;
-	cColor mNewValue;
+  cColor mOldValue;
+  cColor mNewValue;
 };
 
 //--------------------------------------------------------------------------------------
 
-enum eFogBoolProp
-{
-	eFogBoolProp_Active,
-	eFogBoolProp_Culling,
+enum eFogBoolProp {
+  eFogBoolProp_Active,
+  eFogBoolProp_Culling,
 };
 
-enum eFogFloatProp
-{
-	eFogFloatProp_Start,
-	eFogFloatProp_End,
-	eFogFloatProp_FalloffExp
-};
-
-//--------------------------------------------------------------------------------------
-
-class cLevelEditorActionSetFogBoolProperty : public iEditorActionWorldModifier
-{
-public:
-	cLevelEditorActionSetFogBoolProperty(iEditorWorld* apWorld, eFogBoolProp aProp, bool abX);
-
-	void DoModify();
-	void UndoModify();
-
-protected:
-	void Apply(bool abX);
-	bool GetOldValue();
-
-	eFogBoolProp mProp;
-
-	bool mbOldValue;
-	bool mbNewValue;
+enum eFogFloatProp {
+  eFogFloatProp_Start,
+  eFogFloatProp_End,
+  eFogFloatProp_FalloffExp
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionSetFogFloatProperty : public iEditorActionWorldModifier
-{
+class cLevelEditorActionSetFogBoolProperty : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionSetFogFloatProperty(iEditorWorld* apWorld, eFogFloatProp aProp, float afX);
+  cLevelEditorActionSetFogBoolProperty(iEditorWorld* apWorld, eFogBoolProp aProp, bool abX);
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
 
 protected:
-	void Apply(float afX);
-	float GetOldValue();
+  void Apply(bool abX);
+  bool GetOldValue();
 
-	eFogFloatProp mProp;
+  eFogBoolProp mProp;
 
-	float mfOldValue;
-	float mfNewValue;
+  bool mbOldValue;
+  bool mbNewValue;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionSetFogColor : public iEditorActionWorldModifier
-{
+class cLevelEditorActionSetFogFloatProperty : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionSetFogColor(iEditorWorld* apWorld, const cColor& aX);
+  cLevelEditorActionSetFogFloatProperty(iEditorWorld* apWorld, eFogFloatProp aProp, float afX);
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
 
 protected:
-	void Apply(const cColor& aX);
+  void  Apply(float afX);
+  float GetOldValue();
 
-	cColor mOldValue;
-	cColor mNewValue;
+  eFogFloatProp mProp;
+
+  float mfOldValue;
+  float mfNewValue;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionSetGlobalMaxDecalTris : public iEditorActionWorldModifier
-{
+class cLevelEditorActionSetFogColor : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionSetGlobalMaxDecalTris(iEditorWorld* apWorld, int alMaxTris);
+  cLevelEditorActionSetFogColor(iEditorWorld* apWorld, const cColor& aX);
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
 
 protected:
-	void Apply(const int& aX);
+  void Apply(const cColor& aX);
 
-	int mOldValue;
-	int mNewValue;
+  cColor mOldValue;
+  cColor mNewValue;
+};
+
+//--------------------------------------------------------------------------------------
+
+class cLevelEditorActionSetGlobalMaxDecalTris : public iEditorActionWorldModifier {
+public:
+  cLevelEditorActionSetGlobalMaxDecalTris(iEditorWorld* apWorld, int alMaxTris);
+
+  void DoModify();
+  void UndoModify();
+
+protected:
+  void Apply(const int& aX);
+
+  int mOldValue;
+  int mNewValue;
 };
 
 //--------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionAddStaticObjectCombo : public iEditorActionWorldModifier
-{
+class cLevelEditorActionAddStaticObjectCombo : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionAddStaticObjectCombo(iEditorWorld* apWorld);
+  cLevelEditorActionAddStaticObjectCombo(iEditorWorld* apWorld);
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
+
 private:
-	int mlNewComboID;
+  int mlNewComboID;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionRemoveStaticObjectCombo : public iEditorActionWorldModifier
-{
+class cLevelEditorActionRemoveStaticObjectCombo : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionRemoveStaticObjectCombo(iEditorWorld* apWorld, int alComboID);
+  cLevelEditorActionRemoveStaticObjectCombo(iEditorWorld* apWorld, int alComboID);
 
-	bool IsValidAction() { return mlComboID!=-1; }
+  bool IsValidAction() { return mlComboID != -1; }
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
+
 protected:
-	int mlComboID;
-	cColor mColor;
-	tIntVec mvObjIds;
+  int     mlComboID;
+  cColor  mColor;
+  tIntVec mvObjIds;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionAddObjectToCombo : public iEditorActionWorldModifier
-{
+class cLevelEditorActionAddObjectToCombo : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionAddObjectToCombo(iEditorWorld* apWorld, cLevelEditorStaticObjectCombo* apCombo, cEntityWrapperStaticObject* apObj );
+  cLevelEditorActionAddObjectToCombo(iEditorWorld* apWorld, cLevelEditorStaticObjectCombo* apCombo, cEntityWrapperStaticObject* apObj);
 
-	bool IsValidAction() { return mlObjectID!=-1; }
+  bool IsValidAction() { return mlObjectID != -1; }
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
+
 private:
-	void Apply(int alComboToRemove, int alComboToAdd);
-	
-	int mlObjectID;
-	int mlOldComboID;
-	int mlNewComboID;
+  void Apply(int alComboToRemove, int alComboToAdd);
+
+  int mlObjectID;
+  int mlOldComboID;
+  int mlNewComboID;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionRemoveObjectFromCombo : public iEditorActionWorldModifier
-{
+class cLevelEditorActionRemoveObjectFromCombo : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionRemoveObjectFromCombo(iEditorWorld* apWorld, cLevelEditorStaticObjectCombo* apCombo, cEntityWrapperStaticObject* apObj );
+  cLevelEditorActionRemoveObjectFromCombo(iEditorWorld* apWorld, cLevelEditorStaticObjectCombo* apCombo, cEntityWrapperStaticObject* apObj);
 
-	bool IsValidAction() { return mlObjectID!=-1; }
+  bool IsValidAction() { return mlObjectID != -1; }
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
+
 private:
-
-	int mlComboID;
-	int mlObjectID;
+  int mlComboID;
+  int mlObjectID;
 };
 
 //--------------------------------------------------------------------------------------
 
-class cLevelEditorActionComboSetColor : public iEditorActionWorldModifier
-{
+class cLevelEditorActionComboSetColor : public iEditorActionWorldModifier {
 public:
-	cLevelEditorActionComboSetColor(iEditorWorld* apWorld, int alComboID, const cColor& aCol);
+  cLevelEditorActionComboSetColor(iEditorWorld* apWorld, int alComboID, const cColor& aCol);
 
-	void DoModify();
-	void UndoModify();
+  void DoModify();
+  void UndoModify();
+
 private:
-	void Apply(const cColor& aX);
+  void Apply(const cColor& aX);
 
-	int mlComboID;
-	cColor mNewColor;
-	cColor mOldColor;
+  int    mlComboID;
+  cColor mNewColor;
+  cColor mOldColor;
 };
 
 //--------------------------------------------------------------------------------------

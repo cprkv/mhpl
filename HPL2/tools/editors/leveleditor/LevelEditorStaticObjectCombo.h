@@ -36,47 +36,46 @@ class cEditorWindowViewport;
 
 //------------------------------------------------------
 
-class cLevelEditorStaticObjectCombo
-{
+class cLevelEditorStaticObjectCombo {
 public:
-	cLevelEditorStaticObjectCombo(cLevelEditorWorld* apWorld, int alComboID);
-	~cLevelEditorStaticObjectCombo();
+  cLevelEditorStaticObjectCombo(cLevelEditorWorld* apWorld, int alComboID);
+  ~cLevelEditorStaticObjectCombo();
 
-	int GetID() { return mlComboID; }
+  int GetID() { return mlComboID; }
 
-	bool AddObject(iEntityWrapper* apObj);
-	bool RemoveObject(iEntityWrapper* apObj);
-	bool HasObject(iEntityWrapper* apObj);
-	const tEntityWrapperList& GetObjects() { return mlstEntities; }
+  bool                      AddObject(iEntityWrapper* apObj);
+  bool                      RemoveObject(iEntityWrapper* apObj);
+  bool                      HasObject(iEntityWrapper* apObj);
+  const tEntityWrapperList& GetObjects() { return mlstEntities; }
 
-	const cColor& GetColor() { return mColor; }
-	void SetColor(const cColor& aCol);
+  const cColor& GetColor() { return mColor; }
+  void          SetColor(const cColor& aCol);
 
-	void Draw(cEditorWindowViewport* apViewport, cRendererCallbackFunctions* apFunctions);
+  void Draw(cEditorWindowViewport* apViewport, cRendererCallbackFunctions* apFunctions);
 
-	bool Load(cXmlElement* apElement);
-	bool Save(cXmlElement* apElement);
+  bool Load(cXmlElement* apElement);
+  bool Save(cXmlElement* apElement);
 
-	iEditorAction* CreateActionAddObject(iEntityWrapper* apObj);
-	iEditorAction* CreateActionRemoveObject(iEntityWrapper* apObj);
-	iEditorAction* CreateActionSetColor(const cColor& aCol);
-    
+  iEditorAction* CreateActionAddObject(iEntityWrapper* apObj);
+  iEditorAction* CreateActionRemoveObject(iEntityWrapper* apObj);
+  iEditorAction* CreateActionSetColor(const cColor& aCol);
+
 private:
-	bool IsValidObject(iEntityWrapper* apObj);
+  bool IsValidObject(iEntityWrapper* apObj);
 
-	cLevelEditorWorld* mpWorld;
-	int mlComboID;
+  cLevelEditorWorld* mpWorld;
+  int                mlComboID;
 
-	tEntityWrapperList mlstEntities;
+  tEntityWrapperList mlstEntities;
 
-	cColor mColor;
-	iGpuProgram* mpDrawProg;
+  cColor       mColor;
+  iGpuProgram* mpDrawProg;
 };
 
 //------------------------------------------------------
 
 typedef std::list<cLevelEditorStaticObjectCombo*> tStaticObjectComboList;
-typedef tStaticObjectComboList::iterator tStaticObjectComboListIt;
+typedef tStaticObjectComboList::iterator          tStaticObjectComboListIt;
 
 //------------------------------------------------------
 

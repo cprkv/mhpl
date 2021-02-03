@@ -31,32 +31,28 @@ class cModelEditor;
 
 //----------------------------------------------------------------
 
-class cModelEditorEditModeToolbox : public iEditorWindow
-{
+class cModelEditorEditModeToolbox : public iEditorWindow {
 public:
-	cModelEditorEditModeToolbox(cModelEditor* apEditor);
-	virtual ~cModelEditorEditModeToolbox();
+  cModelEditorEditModeToolbox(cModelEditor* apEditor);
+  virtual ~cModelEditorEditModeToolbox();
 
-	void OnInitLayout();
+  void OnInitLayout();
 
-	
 
-    
 protected:
-	///////////////////////////
-	// Own functions
-	bool Button_Pressed(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(Button_Pressed);
+  ///////////////////////////
+  // Own functions
+  bool Button_Pressed(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(Button_Pressed);
 
-	///////////////////////////
-	// Data
-	cModelEditor* mpEditor;
+  ///////////////////////////
+  // Data
+  cModelEditor* mpEditor;
 
-	cWidgetButton* mvButtons[8];
-	cGuiGfxElement* mvGfxButtons[8];
+  cWidgetButton*  mvButtons[8];
+  cGuiGfxElement* mvGfxButtons[8];
 };
 
 //----------------------------------------------------------------
 
 #endif // MODEL_EDITOR_EDIT_MODE_TOOLBOX_H
-

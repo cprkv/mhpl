@@ -25,66 +25,60 @@
 
 //----------------------------------------------------------------
 
-cLevelEditorEditModeToolbox::cLevelEditorEditModeToolbox(cLevelEditor* apEditor) : iLevelEditorWindow(apEditor,"Edit Mode ToolBox")
-{
+cLevelEditorEditModeToolbox::cLevelEditorEditModeToolbox(cLevelEditor* apEditor)
+    : iLevelEditorWindow(apEditor, "Edit Mode ToolBox") {
 }
 
 //----------------------------------------------------------------
 
-cLevelEditorEditModeToolbox::~cLevelEditorEditModeToolbox()
-{
+cLevelEditorEditModeToolbox::~cLevelEditorEditModeToolbox() {
 }
 
 //----------------------------------------------------------------
 
-void cLevelEditorEditModeToolbox::OnInitLayout()
-{
-	SetSize(cVector2f(50,500));
-	cVector3f vPos = cVector3f(5,5,0.1f);
+void cLevelEditorEditModeToolbox::OnInitLayout() {
+  SetSize(cVector2f(50, 500));
+  cVector3f vPos = cVector3f(5, 5, 0.1f);
 
-	tEditorEditModeVec& vEditModes = mpEditor->GetEditModes();
-	for(int i=0;i<(int)vEditModes.size();++i)
-	{
-		iEditorEditMode* pEditMode = vEditModes[i];
-		tString sFilename = cString::ToLowerCase(cString::ReplaceCharTo(pEditMode->GetName(), " ", ""));
-		cGuiGfxElement* pImg = mpSet->GetGui()->CreateGfxImage("editmode_" + sFilename + ".tga", eGuiMaterial_Alpha);
+  tEditorEditModeVec& vEditModes = mpEditor->GetEditModes();
+  for (int i = 0; i < (int) vEditModes.size(); ++i) {
+    iEditorEditMode* pEditMode = vEditModes[i];
+    tString          sFilename = cString::ToLowerCase(cString::ReplaceCharTo(pEditMode->GetName(), " ", ""));
+    cGuiGfxElement*  pImg      = mpSet->GetGui()->CreateGfxImage("editmode_" + sFilename + ".tga", eGuiMaterial_Alpha);
 
-		cWidgetButton* pButton = mpSet->CreateWidgetButton(vPos, 40, _W(""), mpBGFrame, true);
-		pButton->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(Button_Pressed));
-		pButton->SetUserData(pEditMode);
-		pButton->SetImage(pImg);
-		pButton->SetToolTip(cString::To16Char(pEditMode->GetName()));
-		pButton->SetToolTipEnabled(true);
+    cWidgetButton* pButton = mpSet->CreateWidgetButton(vPos, 40, _W(""), mpBGFrame, true);
+    pButton->AddCallback(eGuiMessage_ButtonPressed, this, kGuiCallback(Button_Pressed));
+    pButton->SetUserData(pEditMode);
+    pButton->SetImage(pImg);
+    pButton->SetToolTip(cString::To16Char(pEditMode->GetName()));
+    pButton->SetToolTipEnabled(true);
 
-		vPos.y += 45;
+    vPos.y += 45;
 
-		AddWidget(pButton);
-		mvButtons.push_back(pButton);
-	}
+    AddWidget(pButton);
+    mvButtons.push_back(pButton);
+  }
 }
 
 //----------------------------------------------------------------
 
-bool cLevelEditorEditModeToolbox::Button_Pressed(iWidget* apWidget, const cGuiMessageData& aData)
-{
-	mpEditor->SetCurrentEditMode((iEditorEditMode*)apWidget->GetUserData());
-	mpEditor->SetLayoutNeedsUpdate(true);
+bool cLevelEditorEditModeToolbox::Button_Pressed(iWidget* apWidget, const cGuiMessageData& aData) {
+  mpEditor->SetCurrentEditMode((iEditorEditMode*) apWidget->GetUserData());
+  mpEditor->SetLayoutNeedsUpdate(true);
 
-	return true;
+  return true;
 }
 kGuiCallbackDeclaredFuncEnd(cLevelEditorEditModeToolbox, Button_Pressed);
 
 //----------------------------------------------------------------
 
-void cLevelEditorEditModeToolbox::OnUpdate(float afTimeStep)
-{
-	iEditorEditMode* pEditMode = mpEditor->GetCurrentEditMode();
-	for(int i=0; i<(int)mvButtons.size(); ++i)
-	{
-		bool bPressed = (pEditMode==(iEditorEditMode*)mvButtons[i]->GetUserData());
+void cLevelEditorEditModeToolbox::OnUpdate(float afTimeStep) {
+  iEditorEditMode* pEditMode = mpEditor->GetCurrentEditMode();
+  for (int i = 0; i < (int) mvButtons.size(); ++i) {
+    bool bPressed = (pEditMode == (iEditorEditMode*) mvButtons[i]->GetUserData());
 
-		mvButtons[i]->SetPressed(bPressed);
-	}
+    mvButtons[i]->SetPressed(bPressed);
+  }
 }
 
 

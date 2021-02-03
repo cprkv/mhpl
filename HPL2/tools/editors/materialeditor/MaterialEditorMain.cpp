@@ -21,8 +21,8 @@
 #include "BuildID_MaterialEditor.h"
 
 #ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+  #define WIN32_LEAN_AND_MEAN
+  #include <windows.h>
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -30,34 +30,33 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-int hplMain(const tString& asCommandLine)
-{
-	//To allow drag and drop:
-	#ifdef WIN32
-	//////////////////////////
-	// Init BlackBox
-		HINSTANCE hBlackBoxLib = LoadLibrary( "BlackBox.dll" );
-		TCHAR buffer[MAX_PATH];
-		HMODULE module = GetModuleHandle(NULL);
-		GetModuleFileName(module, buffer,MAX_PATH);
-		tString sDir = cString::GetFilePath(buffer);
-		SetCurrentDirectory(sDir.c_str());
-	#endif
-	cMaterialEditor* pEditor = hplNew(cMaterialEditor,(cString::ReplaceCharTo(asCommandLine,"\"","")));
+int hplMain(const tString& asCommandLine) {
+//To allow drag and drop:
+#ifdef WIN32
+  //////////////////////////
+  // Init BlackBox
+  HINSTANCE hBlackBoxLib = LoadLibrary("BlackBox.dll");
+  TCHAR     buffer[MAX_PATH];
+  HMODULE   module = GetModuleHandle(NULL);
+  GetModuleFileName(module, buffer, MAX_PATH);
+  tString sDir = cString::GetFilePath(buffer);
+  SetCurrentDirectory(sDir.c_str());
+#endif
+  cMaterialEditor* pEditor = hplNew(cMaterialEditor, (cString::ReplaceCharTo(asCommandLine, "\"", "")));
 
-	cEngine* pEngine = pEditor->Init(NULL, "MaterialEditor", GetBuildID_MaterialEditor(), false);
-	pEngine->Run();
+  cEngine* pEngine = pEditor->Init(NULL, "MaterialEditor", GetBuildID_MaterialEditor(), false);
+  pEngine->Run();
 
-	hplDelete(pEditor);
-	DestroyHPLEngine(pEngine);
-	cMemoryManager::LogResults();
+  hplDelete(pEditor);
+  DestroyHPLEngine(pEngine);
+  cMemoryManager::LogResults();
 
-	//////////////////////////
-	// Exit BlackBox
-	#ifdef WIN32
-			if(hBlackBoxLib) FreeLibrary(hBlackBoxLib);
-	#endif
+//////////////////////////
+// Exit BlackBox
+#ifdef WIN32
+  if (hBlackBoxLib)
+    FreeLibrary(hBlackBoxLib);
+#endif
 
-	return 0;
+  return 0;
 }
-

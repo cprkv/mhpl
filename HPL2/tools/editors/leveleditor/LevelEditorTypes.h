@@ -23,8 +23,8 @@
 class cLevelEditorGroup;
 
 
-typedef std::map<unsigned int,cLevelEditorGroup> tGroupMap;
-typedef tGroupMap::iterator tGroupMapIt;
+typedef std::map<unsigned int, cLevelEditorGroup> tGroupMap;
+typedef tGroupMap::iterator                       tGroupMapIt;
 
 
 #endif // LEVEL_EDITOR_TYPES_H

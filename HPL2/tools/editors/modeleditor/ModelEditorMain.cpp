@@ -24,37 +24,37 @@ using namespace hpl;
 #include "BuildID_ModelEditor.h"
 
 #ifdef WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+  #define WIN32_LEAN_AND_MEAN
+  #include <windows.h>
 #endif
 
-int hplMain(const tString& asCommandLine)
-{
-	//////////////////////////
-	// Init BlackBox
-	#ifdef WIN32
-		HINSTANCE hBlackBoxLib = LoadLibrary( "BlackBox.dll" );
-	#endif
+int hplMain(const tString& asCommandLine) {
+//////////////////////////
+// Init BlackBox
+#ifdef WIN32
+  HINSTANCE hBlackBoxLib = LoadLibrary("BlackBox.dll");
+#endif
 
-	//cMemoryManager::SetLogCreation(true);
+  //cMemoryManager::SetLogCreation(true);
 
-	cModelEditor* pEditor = hplNew(cModelEditor, ());
+  cModelEditor* pEditor = hplNew(cModelEditor, ());
 
-	cEngine* pEngine = pEditor->Init(NULL, "ModelEditor", GetBuildID_ModelEditor(), false);
-	
-    pEngine->Run();	
+  cEngine* pEngine = pEditor->Init(NULL, "ModelEditor", GetBuildID_ModelEditor(), false);
 
-	hplDelete(pEditor);
+  pEngine->Run();
 
-	DestroyHPLEngine(pEngine);
+  hplDelete(pEditor);
 
-	cMemoryManager::LogResults();
+  DestroyHPLEngine(pEngine);
 
-	//////////////////////////
-	// Exit BlackBox
-	#ifdef WIN32
-			if(hBlackBoxLib) FreeLibrary(hBlackBoxLib);
-	#endif
+  cMemoryManager::LogResults();
 
-	return 0;
+//////////////////////////
+// Exit BlackBox
+#ifdef WIN32
+  if (hBlackBoxLib)
+    FreeLibrary(hBlackBoxLib);
+#endif
+
+  return 0;
 }

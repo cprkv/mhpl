@@ -32,43 +32,41 @@ class cLevelEditor;
 
 //---------------------------------------------------------------
 
-class cLevelEditorLowerToolbar : public iLevelEditorWindow
-{
+class cLevelEditorLowerToolbar : public iLevelEditorWindow {
 public:
-	cLevelEditorLowerToolbar(cLevelEditor* apEditor);
-	~cLevelEditorLowerToolbar();
+  cLevelEditorLowerToolbar(cLevelEditor* apEditor);
+  ~cLevelEditorLowerToolbar();
 
-	void OnUpdate(float afTimeStep);
+  void OnUpdate(float afTimeStep);
 
 protected:
-	////////////////////////////////
-	// Own functions
-	bool ButtonPressed(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ButtonPressed);
+  ////////////////////////////////
+  // Own functions
+  bool ButtonPressed(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ButtonPressed);
 
-	bool CheckBoxChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(CheckBoxChange);
+  bool CheckBoxChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(CheckBoxChange);
 
-	bool TextBoxChange(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(TextBoxChange);
+  bool TextBoxChange(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(TextBoxChange);
 
-	////////////////////////////////
-	// Implemented functions
-	void OnInitLayout();
+  ////////////////////////////////
+  // Implemented functions
+  void OnInitLayout();
 
-	////////////////////////////////
-	// Data
-	cWidgetButton* mvButtons[5];
+  ////////////////////////////////
+  // Data
+  cWidgetButton* mvButtons[5];
 
-	cWidgetGroup*	mpGridControlsGroup;
-	cWidgetLabel*	mvLabels[2];
-	cWidgetTextBox* mvTextBoxes[2];
+  cWidgetGroup*   mpGridControlsGroup;
+  cWidgetLabel*   mvLabels[2];
+  cWidgetTextBox* mvTextBoxes[2];
 
-	cWidgetCheckBox* mpSnapToGridCheckBox;
+  cWidgetCheckBox* mpSnapToGridCheckBox;
 
-	cWidgetCheckBox* mpCheckBoxGlobalAmbientLight;
-	cWidgetCheckBox* mpCheckBoxGlobalPointLight;
-
+  cWidgetCheckBox* mpCheckBoxGlobalAmbientLight;
+  cWidgetCheckBox* mpCheckBoxGlobalPointLight;
 };
 
 //--------------------------------------------------------------------

@@ -75,7 +75,7 @@ namespace hpl {
                                   eTextureUsage aUsage, eTextureType aType,
                                   unsigned int alTextureSizeLevel);
 
-    iTexture* FindTexture2D(const tString& asName, tWString& asFilePath);
+    iTexture* FindTexture2D(const tString& name, tWString& file_path);
 
     tTextureAttenuationMap m_mapAttenuationTextures;
 

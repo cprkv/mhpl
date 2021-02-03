@@ -29,34 +29,33 @@ class cEntityWrapperParticleEmitter;
 
 //-------------------------------------------------------------
 
-class cParticleEditorWindowEmitters : public iEditorWindow
-{
+class cParticleEditorWindowEmitters : public iEditorWindow {
 public:
-	cParticleEditorWindowEmitters(iEditorBase* apEditor);
-	~cParticleEditorWindowEmitters();
+  cParticleEditorWindowEmitters(iEditorBase* apEditor);
+  ~cParticleEditorWindowEmitters();
 
-	void SelectEntry(int alIdx);
-	void Reset();
+  void SelectEntry(int alIdx);
+  void Reset();
 
 protected:
-	void OnInitLayout();
-	void OnUpdate(float afTimeStep);
+  void OnInitLayout();
+  void OnUpdate(float afTimeStep);
 
-	bool WindowSpecificInputCallback(iEditorInput* apInput);
+  bool WindowSpecificInputCallback(iEditorInput* apInput);
 
-	bool Button_OnPressed(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(Button_OnPressed);
+  bool Button_OnPressed(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(Button_OnPressed);
 
 
-	cParticleEditorWindowEmitterParams* mpWEmitterParams;
+  cParticleEditorWindowEmitterParams* mpWEmitterParams;
 
-	bool mbEmittersUpdated;
-	cEditorInputEnum* mpEnumEmitters;
-	std::vector<cEntityWrapperParticleEmitter*> mvEmitters;
+  bool                                        mbEmittersUpdated;
+  cEditorInputEnum*                           mpEnumEmitters;
+  std::vector<cEntityWrapperParticleEmitter*> mvEmitters;
 
-	cWidgetButton* mpBNewEmitter;
-	cWidgetButton* mpBCopyEmitter;
-	cWidgetButton* mpBDeleteEmitter;
+  cWidgetButton* mpBNewEmitter;
+  cWidgetButton* mpBCopyEmitter;
+  cWidgetButton* mpBDeleteEmitter;
 };
 
 //-------------------------------------------------------------

@@ -27,29 +27,28 @@ using namespace hpl;
 
 //---------------------------------------------------------------
 
-class cModelEditorLowerToolbar : public iEditorWindowLowerToolbar
-{
+class cModelEditorLowerToolbar : public iEditorWindowLowerToolbar {
 public:
-	cModelEditorLowerToolbar(iEditorBase* apEditor);
-	~cModelEditorLowerToolbar();
+  cModelEditorLowerToolbar(iEditorBase* apEditor);
+  ~cModelEditorLowerToolbar();
 
-	void OnUpdate(float afTimeStep);
+  void OnUpdate(float afTimeStep);
 
 protected:
-	////////////////////////////////
-	// Own functions
-	bool ButtonPressed(iWidget* apWidget, const cGuiMessageData& aData);
-	kGuiCallbackDeclarationEnd(ButtonPressed);
-	
-	////////////////////////////////
-	// Implemented functions
-	void OnInitLayout();
+  ////////////////////////////////
+  // Own functions
+  bool ButtonPressed(iWidget* apWidget, const cGuiMessageData& aData);
+  kGuiCallbackDeclarationEnd(ButtonPressed);
 
-	////////////////////////////////
-	// Data
-	cWidgetButton* mpButtonTest;
+  ////////////////////////////////
+  // Implemented functions
+  void OnInitLayout();
 
-	iEditorWindow* mpTestWindow;	
+  ////////////////////////////////
+  // Data
+  cWidgetButton* mpButtonTest;
+
+  iEditorWindow* mpTestWindow;
 };
 
 //--------------------------------------------------------------------

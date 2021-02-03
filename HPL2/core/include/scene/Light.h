@@ -62,8 +62,8 @@ namespace hpl {
 
   //------------------------------------------
 
-  typedef std::map<iRenderable*, int>     tShadowCasterCacheMap;
-  typedef tShadowCasterCacheMap::iterator tShadowCasterCacheMapIt;
+  using tShadowCasterCacheMap   = std::map<iRenderable*, int>;
+  using tShadowCasterCacheMapIt = tShadowCasterCacheMap::iterator;
 
   //------------------------------------------
 
@@ -77,8 +77,9 @@ namespace hpl {
 
   class iLight : public iRenderable {
 #ifdef __GNUC__
-    typedef iRenderable __super;
+    using __super = iRenderable;
 #endif
+
   public:
     iLight(tString asName, cResources* apResources);
     virtual ~iLight();
@@ -121,7 +122,7 @@ namespace hpl {
 
     void                                    AttachBillboard(cBillboard* apBillboard, const cColor& aBaseColor);
     void                                    RemoveBillboard(cBillboard* apBillboard);
-    std::vector<cLightBillboardConnection>* GetBillboardVec() { return &mvBillboards; }
+    std::vector<cLightBillboardConnection>* GetBillboardVec() { return &billboards_; }
 
     //////////////////////////
     //Shadow caster cache
@@ -206,7 +207,6 @@ namespace hpl {
     virtual void SetRadius(float afX);
     float        GetRadius() { return mfRadius; }
 
-
     float GetSourceRadius() { return mfSourceRadius; }
     void  SetSourceRadius(float afX) { mfSourceRadius = afX; }
 
@@ -239,7 +239,7 @@ namespace hpl {
 
     cVisibleRCNodeTracker* mpVisibleNodeTracker;
 
-    std::vector<cLightBillboardConnection> mvBillboards;
+    std::vector<cLightBillboardConnection> billboards_;
 
     cColor mDiffuseColor;
     cColor mDefaultDiffuseColor;
@@ -291,7 +291,7 @@ namespace hpl {
     float mfFlickerStateLength;
   };
 
-  typedef std::list<iLight*>   tLightList;
-  typedef tLightList::iterator tLightListIt;
+  using tLightList   = std::list<iLight*>;
+  using tLightListIt = tLightList::iterator;
 };     // namespace hpl
 #endif // HPL_LIGHT_H

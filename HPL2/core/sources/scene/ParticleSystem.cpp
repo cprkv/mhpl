@@ -37,76 +37,68 @@
 
 namespace hpl {
 
-	//////////////////////////////////////////////////////////////////////////
-	// CREATOR
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CREATOR
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cParticleSystemData::cParticleSystemData(const tString &asName,
-												cResources* apResources,cGraphics *apGraphics)
-												: iResourceBase(asName, _W(""),0)
-	{
-		mpResources = apResources;
-		mpGraphics = apGraphics;
-	}
-	
-	//-----------------------------------------------------------------------
+  cParticleSystemData::cParticleSystemData(const tString& asName,
+                                           cResources* apResources, cGraphics* apGraphics)
+      : iResourceBase(asName, _W(""), 0) {
+    mpResources = apResources;
+    mpGraphics  = apGraphics;
+  }
 
-	cParticleSystemData::~cParticleSystemData()
-	{
-		STLDeleteAll(mvEmitterData);
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  cParticleSystemData::~cParticleSystemData() {
+    STLDeleteAll(mvEmitterData);
+  }
 
-	void cParticleSystemData::AddEmitterData(iParticleEmitterData *apData)
-	{
-		mvEmitterData.push_back(apData);
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void cParticleSystemData::AddEmitterData(iParticleEmitterData* apData) {
+    mvEmitterData.push_back(apData);
+  }
 
-	cParticleSystem* cParticleSystemData::Create(tString asName, cVector3f avSize)
-	{
-		if(mvEmitterData.empty())
-		{
-			Warning("Particle system '%s' has no emitters.\n",msName.c_str());
-			return NULL;
-		}
+  //-----------------------------------------------------------------------
 
-		cParticleSystem *pPS = hplNew( cParticleSystem, (asName,this,mpResources,mpGraphics) );
-		
-		for(size_t i=0; i<mvEmitterData.size(); ++i)
-		{
-			///////////////////////////
-			// Create and add
-			iParticleEmitter *pPE = static_cast<iParticleEmitter*>(mvEmitterData[i]->Create(asName, avSize));
-			pPS->AddEmitter(pPE);
-			pPE->SetSystem(pPS);
-		}
+  cParticleSystem* cParticleSystemData::Create(tString asName, cVector3f avSize) {
+    if (mvEmitterData.empty()) {
+      Warning("Particle system '%s' has no emitters.\n", msName.c_str());
+      return NULL;
+    }
 
-		return pPS;
-	}
+    cParticleSystem* pPS = hplNew(cParticleSystem, (asName, this, mpResources, mpGraphics));
 
-	//-----------------------------------------------------------------------
+    for (size_t i = 0; i < mvEmitterData.size(); ++i) {
+      ///////////////////////////
+      // Create and add
+      iParticleEmitter* pPE = static_cast<iParticleEmitter*>(mvEmitterData[i]->Create(asName, avSize));
+      pPS->AddEmitter(pPE);
+      pPE->SetSystem(pPS);
+    }
 
-	bool cParticleSystemData::LoadFromFile(const tWString &asFile)
-	{
-		SetFullPath(asFile);
+    return pPS;
+  }
 
-		iXmlDocument* pXmlDoc = mpResources->GetLowLevel()->CreateXmlDocument();
-		if(pXmlDoc->CreateFromFile(asFile)==false)
-		{
-			hplDelete(pXmlDoc);
-			return false;
-		}
+  //-----------------------------------------------------------------------
 
-		bool bRet = LoadFromElement(pXmlDoc);
+  bool cParticleSystemData::LoadFromFile(const tWString& asFile) {
+    SetFullPath(asFile);
 
-		hplDelete(pXmlDoc);
-		return bRet;
-		/*
+    iXmlDocument* pXmlDoc = mpResources->GetLowLevel()->CreateXmlDocument();
+    if (pXmlDoc->CreateFromFile(asFile) == false) {
+      hplDelete(pXmlDoc);
+      return false;
+    }
+
+    bool bRet = LoadFromElement(pXmlDoc);
+
+    hplDelete(pXmlDoc);
+    return bRet;
+    /*
 		
 		FILE *pFile = _wfopen(asFile.c_str(),_W("rb"));
 		if(pFile==NULL) return false;
@@ -128,29 +120,27 @@ namespace hpl {
 
         hplDelete(pXmlDoc);
 		return bRet;*/
-	}
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	bool cParticleSystemData::LoadFromElement(cXmlElement* apElement)
-	{
-		if(apElement->GetValue()!="ParticleSystem")
-			return false;
+  bool cParticleSystemData::LoadFromElement(cXmlElement* apElement) {
+    if (apElement->GetValue() != "ParticleSystem")
+      return false;
 
-		cXmlNodeListIterator it = apElement->GetChildIterator();
-		while(it.HasNext())
-		{
-			cXmlElement* pElem = it.Next()->ToElement();
-			if(pElem->GetValue()!="ParticleEmitter")
-				continue;
+    cXmlNodeListIterator it = apElement->GetChildIterator();
+    while (it.HasNext()) {
+      cXmlElement* pElem = it.Next()->ToElement();
+      if (pElem->GetValue() != "ParticleEmitter")
+        continue;
 
-			cParticleEmitterData_UserData *pPE = hplNew( cParticleEmitterData_UserData,("",	mpResources,mpGraphics) );
-			pPE->LoadFromElement(pElem);
+      cParticleEmitterData_UserData* pPE = hplNew(cParticleEmitterData_UserData, ("", mpResources, mpGraphics));
+      pPE->LoadFromElement(pElem);
 
-			mvEmitterData.push_back(pPE);
-		}
+      mvEmitterData.push_back(pPE);
+    }
 
-		/*cXmlElement *pEmitterElem = apElement->GetFirstElement("ParticleEmitter");
+    /*cXmlElement *pEmitterElem = apElement->GetFirstElement("ParticleEmitter");
 		for(; pEmitterElem != NULL; pEmitterElem = pEmitterElem->NextSiblingElement("ParticleEmitter"))
 		{
 			cParticleEmitterData_UserData *pPE = hplNew( cParticleEmitterData_UserData,("",
@@ -161,202 +151,187 @@ namespace hpl {
 			mvEmitterData.push_back(pPE);
 		}*/
 
-		return (mvEmitterData.empty()==false);
-	}
+    return (mvEmitterData.empty() == false);
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////
+  // CONSTRUCTORS
+  //////////////////////////////////////////////////////////////////////////
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cParticleSystem::cParticleSystem(const tString asName, 
-										cParticleSystemData *apData,
-										cResources *apResources, cGraphics *apGraphics)
-		: iEntity3D(asName)
-	{
-		mpResources = apResources;
-		mpGraphics = apGraphics;
-		mpParticleManager = NULL;
-		mpData = apData;
+  cParticleSystem::cParticleSystem(const tString        asName,
+                                   cParticleSystemData* apData,
+                                   cResources* apResources, cGraphics* apGraphics)
+      : iEntity3D(asName) {
+    mpResources       = apResources;
+    mpGraphics        = apGraphics;
+    mpParticleManager = NULL;
+    mpData            = apData;
 
-		mbRemoveWhenDead = true;
+    mbRemoveWhenDead = true;
 
-		mbIsVisible = true;
+    mbIsVisible = true;
 
-		mbFirstUpdate = true;
+    mbFirstUpdate = true;
 
-		mColor = cColor(1,1);
-		mbFadeAtDistance = false;
-		mfMinFadeDistanceStart = 2;
-		mfMinFadeDistanceEnd = 1;
-		mfMaxFadeDistanceStart = 100;
-		mfMaxFadeDistanceEnd = 110;
-	}
+    mColor                 = cColor(1, 1);
+    mbFadeAtDistance       = false;
+    mfMinFadeDistanceStart = 2;
+    mfMinFadeDistanceEnd   = 1;
+    mfMaxFadeDistanceStart = 100;
+    mfMaxFadeDistanceEnd   = 110;
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	cParticleSystem::~cParticleSystem()
-	{
-		for(size_t i=0; i< mvEmitters.size(); ++i)
-		{
-			hplDelete(mvEmitters[i]);
-		}
-		if(mpParticleManager) mpParticleManager->Destroy(mpData);
-	}
+  cParticleSystem::~cParticleSystem() {
+    for (size_t i = 0; i < mvEmitters.size(); ++i) {
+      hplDelete(mvEmitters[i]);
+    }
+    if (mpParticleManager)
+      mpParticleManager->Destroy(mpData);
+  }
 
-	//-----------------------------------------------------------------------
+  //-----------------------------------------------------------------------
 
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
-	
-	//-----------------------------------------------------------------------
+  //////////////////////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  //////////////////////////////////////////////////////////////////////////
 
-	void cParticleSystem::SetVisible(bool abVisible)
-	{
-		if(mbIsVisible == abVisible) return;
+  //-----------------------------------------------------------------------
 
-		mbIsVisible = abVisible;
-		
-		for(size_t i=0; i< mvEmitters.size(); ++i)
-		{
-			mvEmitters[i]->SetVisible(mbIsVisible);
-		}
-		
-	}
-	
-	//-----------------------------------------------------------------------
+  void cParticleSystem::SetVisible(bool abVisible) {
+    if (mbIsVisible == abVisible)
+      return;
 
-	bool cParticleSystem::IsDead()
-	{
-		size_t lCount =0;
+    mbIsVisible = abVisible;
 
-		for(size_t i=0; i< mvEmitters.size(); ++i)
-		{
-			iParticleEmitter *pPE = mvEmitters[i];
+    for (size_t i = 0; i < mvEmitters.size(); ++i) {
+      mvEmitters[i]->SetVisible(mbIsVisible);
+    }
+  }
 
-			if(pPE->IsDead()) lCount++;
-		}
+  //-----------------------------------------------------------------------
 
-		if(lCount == mvEmitters.size()) return true;
+  bool cParticleSystem::IsDead() {
+    size_t lCount = 0;
 
-		return false;
-	}
+    for (size_t i = 0; i < mvEmitters.size(); ++i) {
+      iParticleEmitter* pPE = mvEmitters[i];
 
-	bool cParticleSystem::IsDying()
-	{
-		size_t lCount =0;
+      if (pPE->IsDead())
+        lCount++;
+    }
 
-		for(size_t i=0; i< mvEmitters.size(); ++i)
-		{
-			iParticleEmitter *pPE = mvEmitters[i];
+    if (lCount == mvEmitters.size())
+      return true;
 
-			if(pPE->IsDying()) lCount++;
-		}
+    return false;
+  }
 
-		if(lCount == mvEmitters.size()) return true;
+  bool cParticleSystem::IsDying() {
+    size_t lCount = 0;
 
-		return false;
-	}
+    for (size_t i = 0; i < mvEmitters.size(); ++i) {
+      iParticleEmitter* pPE = mvEmitters[i];
 
-	//-----------------------------------------------------------------------
+      if (pPE->IsDying())
+        lCount++;
+    }
 
-	void cParticleSystem::Kill()
-	{
-		//SetIsSaved(false);
-		for(size_t i=0; i< mvEmitters.size(); ++i)
-		{
-			iParticleEmitter *pPE = mvEmitters[i];
+    if (lCount == mvEmitters.size())
+      return true;
 
-			pPE->Kill();
-		}
-	}
-	
-	//-----------------------------------------------------------------------
+    return false;
+  }
 
-	void cParticleSystem::KillInstantly()
-	{
-		//SetIsSaved(false);
-		for(size_t i=0; i< mvEmitters.size(); ++i)
-		{
-			iParticleEmitter *pPE = mvEmitters[i];
+  //-----------------------------------------------------------------------
 
-			pPE->KillInstantly();
-		}
-	}
+  void cParticleSystem::Kill() {
+    //SetIsSaved(false);
+    for (size_t i = 0; i < mvEmitters.size(); ++i) {
+      iParticleEmitter* pPE = mvEmitters[i];
 
-	//-----------------------------------------------------------------------
-	
-	void cParticleSystem::UpdateLogic(float afTimeStep)
-	{
-		if(IsActive()==false) return;
+      pPE->Kill();
+    }
+  }
 
-		for(size_t i=0; i< mvEmitters.size(); ++i)
-		{
-			iParticleEmitter *pPE = mvEmitters[i];
+  //-----------------------------------------------------------------------
 
-			//////////////////////////
-			//Warm Up
-			if(mbFirstUpdate)
-			{
-				iParticleEmitterData *pData =  mpData->GetEmitterData((int)i);
-				
-				if(pData->GetWarmUpTime() >0)
-				{
-					float fTime = pData->GetWarmUpTime();
-					float fStepSize = 1.0f /pData->GetWarmUpStepsPerSec();
+  void cParticleSystem::KillInstantly() {
+    //SetIsSaved(false);
+    for (size_t i = 0; i < mvEmitters.size(); ++i) {
+      iParticleEmitter* pPE = mvEmitters[i];
 
-					while(fTime >0)
-					{
-						pPE->UpdateLogic(fStepSize);
-						fTime -= fStepSize;
-					}
-				}
-			}
-			
-			//////////////////////////
-			//Update
-			pPE->UpdateLogic(afTimeStep);
-		}
+      pPE->KillInstantly();
+    }
+  }
 
-		//No loner first time!
-		mbFirstUpdate = false;
-	}
+  //-----------------------------------------------------------------------
 
-	//-----------------------------------------------------------------------
+  void cParticleSystem::UpdateLogic(float afTimeStep) {
+    if (IsActive() == false)
+      return;
 
-	void cParticleSystem::AddEmitter(iParticleEmitter* apEmitter)
-	{
-		mvEmitters.push_back(apEmitter);
+    for (size_t i = 0; i < mvEmitters.size(); ++i) {
+      iParticleEmitter* pPE = mvEmitters[i];
 
-		AddChild(apEmitter);
-	}
-	
-	//-----------------------------------------------------------------------
+      //////////////////////////
+      //Warm Up
+      if (mbFirstUpdate) {
+        iParticleEmitterData* pData = mpData->GetEmitterData((int) i);
 
-	iParticleEmitter* cParticleSystem::GetEmitter(int alIdx)
-	{
-		return mvEmitters[alIdx];
-	}
-	
-	//-----------------------------------------------------------------------
+        if (pData->GetWarmUpTime() > 0) {
+          float fTime     = pData->GetWarmUpTime();
+          float fStepSize = 1.0f / pData->GetWarmUpStepsPerSec();
 
-	int cParticleSystem::GetEmitterNum()
-	{
-		return (int)mvEmitters.size();
-	}
+          while (fTime > 0) {
+            pPE->UpdateLogic(fStepSize);
+            fTime -= fStepSize;
+          }
+        }
+      }
 
-	//-----------------------------------------------------------------------
+      //////////////////////////
+      //Update
+      pPE->UpdateLogic(afTimeStep);
+    }
 
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
+    //No loner first time!
+    mbFirstUpdate = false;
+  }
 
-	//-----------------------------------------------------------------------
-	
-	//-----------------------------------------------------------------------
-}
+  //-----------------------------------------------------------------------
+
+  void cParticleSystem::AddEmitter(iParticleEmitter* apEmitter) {
+    mvEmitters.push_back(apEmitter);
+
+    AddChild(apEmitter);
+  }
+
+  //-----------------------------------------------------------------------
+
+  iParticleEmitter* cParticleSystem::GetEmitter(int alIdx) {
+    return mvEmitters[alIdx];
+  }
+
+  //-----------------------------------------------------------------------
+
+  int cParticleSystem::GetEmitterNum() {
+    return (int) mvEmitters.size();
+  }
+
+  //-----------------------------------------------------------------------
+
+  //////////////////////////////////////////////////////////////////////////
+  // PRIVATE METHODS
+  //////////////////////////////////////////////////////////////////////////
+
+  //-----------------------------------------------------------------------
+
+  //-----------------------------------------------------------------------
+} // namespace hpl
